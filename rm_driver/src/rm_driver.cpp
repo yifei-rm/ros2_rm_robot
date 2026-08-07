@@ -14,13 +14,61 @@
 
 
 #include "rm_driver.h"
+#include <cerrno>
+#include <cstring>
+#include <mutex>
+#include <stdexcept>
 
 using namespace std::chrono_literals;
 
-static void my_handler(int sig)  // can be called asynchronously
-{ 
+namespace
+{
+volatile sig_atomic_t hangup_requested = 0;
+std::mutex arm_lifecycle_mutex;
+bool rm_api_initialized = false;
+
+void hangup_handler(int sig)
+{
     (void)sig;
-    ctrl_flag = true; // set flag
+    hangup_requested = 1;
+}
+
+bool install_hangup_handler()
+{
+    struct sigaction action {};
+    action.sa_handler = hangup_handler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0;
+    return sigaction(SIGHUP, &action, nullptr) == 0;
+}
+
+void monitor_hangup()
+{
+    while(rclcpp::ok())
+    {
+        if(hangup_requested != 0)
+        {
+            rclcpp::shutdown();
+            return;
+        }
+        std::this_thread::sleep_for(50ms);
+    }
+}
+
+void Arm_Destroy()
+{
+    std::lock_guard<std::mutex> lock(arm_lifecycle_mutex);
+    if(robot_handle != nullptr)
+    {
+        Rm_Api.rm_delete_robot_arm(robot_handle);
+        robot_handle = nullptr;
+    }
+    if(rm_api_initialized)
+    {
+        Rm_Api.rm_destroy();
+        rm_api_initialized = false;
+    }
+}
 }
 
 //连接机械臂网络   
@@ -108,19 +156,35 @@ int Arm_Socket_Start_Connect(void)
 
 int Arm_Start(void)
 {
+    std::lock_guard<std::mutex> lock(arm_lifecycle_mutex);
     std::string version;
-    Rm_Api.rm_init(RM_TRIPLE_MODE_E);
+    if(!rm_api_initialized)
+    {
+        int init_result = Rm_Api.rm_init(RM_TRIPLE_MODE_E);
+        if(init_result != 0)
+        {
+            return init_result;
+        }
+        rm_api_initialized = true;
+    }
 
     version = Rm_Api.rm_api_version();
     // std::cout << version.c_str() << std::endl;
     // Rm_Api.rm_set_log_call_back(NULL ,0);
     // Rm_Api.rm_set_log_save("/home/yangfan/Plog.txt");
-    robot_handle = Rm_Api.rm_create_robot_arm((char*)tcp_ip, tcp_port);
-    if(robot_handle->id < 0)
+    rm_robot_handle *new_handle = Rm_Api.rm_create_robot_arm((char*)tcp_ip, tcp_port);
+    if(new_handle == nullptr)
     {
-        rm_delete_robot_arm(robot_handle);
-        std::cout<<"arm connect err..."<< robot_handle << std::endl;
+        return -1;
     }
+    if(new_handle->id < 0)
+    {
+        int create_result = new_handle->id;
+        Rm_Api.rm_delete_robot_arm(new_handle);
+        std::cout<<"arm connect err..."<< new_handle << std::endl;
+        return create_result;
+    }
+    robot_handle = new_handle;
     // else if(robot_handle != NULL)
     // {
     //     std::cout<<"connect success, arm id :"<<robot_handle->id<<std::endl;
@@ -130,7 +194,12 @@ int Arm_Start(void)
 
 void Arm_Close(void)
 {
-    Rm_Api.rm_delete_robot_arm(robot_handle);
+    std::lock_guard<std::mutex> lock(arm_lifecycle_mutex);
+    if(robot_handle != nullptr)
+    {
+        Rm_Api.rm_delete_robot_arm(robot_handle);
+        robot_handle = nullptr;
+    }
 }
 
 void RmArm::Arm_MoveJ_Callback(rm_ros_interfaces::msg::Movej::SharedPtr msg)
@@ -1363,16 +1432,17 @@ void RmArm::Set_Controller_RS485_Mode_Callback(const rm_ros_interfaces::msg::RS4
 {
     int32_t res;
     // copy = msg;
-    int tool_rs485_mode,baudrate;
+    int tool_rs485_mode,baudrate,timeout;
     std_msgs::msg::Bool controller_RS485_mode_set_result;
     tool_rs485_mode = msg->mode;
     baudrate = msg->baudrate;
     // RCLCPP_INFO (this->get_logger(),"mode is %d baudrate is %d\n",tool_rs485_mode,baudrate);
+    timeout = msg->timeout > 0 ? msg->timeout : TIME_OUT;
     if(controller_type == 4)
     res = Rm_Api.rm_set_controller_rs485_mode(robot_handle, tool_rs485_mode, baudrate);
     else
     {
-        res = Rm_Api.rm_set_modbus_mode(robot_handle, tool_rs485_mode, baudrate, TIME_OUT);
+        res = Rm_Api.rm_set_modbus_mode(robot_handle, tool_rs485_mode, baudrate, timeout);
     }
     if(res == 0)
     {
@@ -1398,7 +1468,8 @@ void RmArm::Set_Controller_Tcp_Mode_Callback(const rm_ros_interfaces::msg::Modbu
         ip_str = msg->ip;
         const char *ip = ip_str.c_str();
         port = msg->port;
-        res = Rm_Api.rm_set_modbustcp_mode(robot_handle, ip, port, 2000);
+        const int timeout = msg->timeout > 0 ? msg->timeout : 2000;
+        res = Rm_Api.rm_set_modbustcp_mode(robot_handle, ip, port, timeout);
         if(res == 0)
         {
             controller_Tcp_mode_set_result.data = true;
@@ -1479,17 +1550,22 @@ void RmArm::Close_Controller_Tcp_Modbus_Callback(const std_msgs::msg::Empty::Sha
 void RmArm::Get_Controller_RS485_Mode_v4_Callback(const std_msgs::msg::Empty::SharedPtr msg)
 {
     int32_t res;
-    int tool_rs485_mode, baudrate;
+    int tool_rs485_mode = 0, baudrate = 0;
+    int timeout = 0;
     rm_ros_interfaces::msg::RS485params controller_rs485_mode_get_result;
     copy = msg;
     
-    res = Rm_Api.rm_get_controller_rs485_mode_v4(robot_handle, &tool_rs485_mode, &baudrate);
+    if(controller_type == 4)
+        res = Rm_Api.rm_get_controller_rs485_mode_v4(robot_handle, &tool_rs485_mode, &baudrate);
+    else
+        res = Rm_Api.rm_get_controller_RS485_mode(robot_handle, &tool_rs485_mode, &baudrate, &timeout);
     
     if(res == 0)
     {
         controller_rs485_mode_get_result.mode = tool_rs485_mode;
         controller_rs485_mode_get_result.baudrate = baudrate;
         controller_rs485_mode_get_result.state = true;
+        controller_rs485_mode_get_result.timeout = timeout;
         this->Get_Controller_RS485_Mode_v4_Result->publish(controller_rs485_mode_get_result);
     }
     else
@@ -1528,14 +1604,19 @@ void RmArm::Get_Tool_RS485_Mode_v4_Callback(const std_msgs::msg::Empty::SharedPt
     int tool_rs485_mode = 0;
     int baudrate = 0;
     rm_ros_interfaces::msg::RS485params tool_rs485_mode_get_result;
+    int timeout = 0;
     copy = msg;
-    res = Rm_Api.rm_get_tool_rs485_mode_v4(robot_handle, &tool_rs485_mode, &baudrate);
+    if(controller_type == 4)
+        res = Rm_Api.rm_get_tool_rs485_mode_v4(robot_handle, &tool_rs485_mode, &baudrate);
+    else
+        res = Rm_Api.rm_get_tool_RS485_mode(robot_handle, &tool_rs485_mode, &baudrate, &timeout);
     
     if(res == 0)
     {
         tool_rs485_mode_get_result.mode = tool_rs485_mode;
         tool_rs485_mode_get_result.baudrate = baudrate;
         tool_rs485_mode_get_result.state = true;
+        tool_rs485_mode_get_result.timeout = timeout;
         this->Get_Tool_RS485_Mode_v4_Result->publish(tool_rs485_mode_get_result);
     }
     else
@@ -3992,25 +4073,20 @@ void UdpPublisherNode::udp_timer_callback()
             udp_onezeroforce_.force_fz = Udp_RM_Joint.one_zero_force;
             this->One_Zero_Force_Result->publish(udp_onezeroforce_);
         }
-        if(ctrl_flag == true )
-        {
-            rclcpp::shutdown();
-        }
     }
     else
     {
         if(come_time == 0)
         {Arm_Close();}
         come_time++;
-        while(Arm_Socket_Start_Connect())
+        while(rclcpp::ok() && Arm_Socket_Start_Connect())
         {
-            if(ctrl_flag == true )
-            {
-                rclcpp::shutdown();
-                exit(0);
-            }
             RCLCPP_INFO (this->get_logger(),"Wait for connect ");
             sleep(1);
+        }
+        if(!rclcpp::ok())
+        {
+            return;
         }
         come_time = 0;
         connect_state = 0;
@@ -4043,10 +4119,7 @@ void UdpPublisherNode::heart_timer_callback()
     }
     else
     {
-        if(robot_handle != NULL)
-        {
-            Rm_Api.rm_delete_robot_arm(robot_handle);
-        }
+        Arm_Close();
     }
 }
 
@@ -4119,7 +4192,7 @@ UdpPublisherNode::UdpPublisherNode():
 
 RmArm::~RmArm()
 { 
-    Arm_Close();
+    Arm_Destroy();
 }
 
 RmArm::RmArm():
@@ -4232,17 +4305,20 @@ RmArm::RmArm():
     udp_joint_speed_state_g = udp_joint_speed_state_;
     udp_arm_current_status_state_g = udp_arm_current_status_state_;
     // RCLCPP_INFO (this->get_logger(),"arm_ip is %s", arm_ip_.c_str());
-    while(Arm_Socket_Start_Connect())
+    while(rclcpp::ok() && Arm_Socket_Start_Connect())
     {
-        if(ctrl_flag == true )
-        {
-            rclcpp::shutdown();
-            exit(0);
-        }
         RCLCPP_INFO (this->get_logger(),"Waiting for connect");
         sleep(1);
     }
+    if(!rclcpp::ok())
+    {
+        throw std::runtime_error("Shutdown requested while waiting for the robot connection");
+    }
     usleep(2000000);
+    if(!rclcpp::ok())
+    {
+        throw std::runtime_error("Shutdown requested during driver startup");
+    }
     RCLCPP_INFO (this->get_logger(),"%s_driver is running ",arm_type_.c_str());
     /************************************************初始化变量********************************************/
     udp_real_joint_.name.resize(arm_dof_);
@@ -4814,13 +4890,42 @@ RmArm::RmArm():
 
 int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
-    signal(SIGINT, my_handler); 
-    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(),8,true);
-    auto node = std::make_shared<RmArm>();
-    auto udpnode = std::make_shared<UdpPublisherNode>();
-    executor.add_node(node);
-    executor.add_node(udpnode);
-    executor.spin();
-    rclcpp::shutdown();
-    return EXIT_SUCCESS;
+    if(!install_hangup_handler())
+    {
+        std::cerr << "Failed to install SIGHUP handler: " << strerror(errno) << std::endl;
+        rclcpp::shutdown();
+        return EXIT_FAILURE;
+    }
+
+    std::thread hangup_monitor(monitor_hangup);
+    int exit_code = EXIT_SUCCESS;
+    try
+    {
+        rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(),8,true);
+        auto node = std::make_shared<RmArm>();
+        auto udpnode = std::make_shared<UdpPublisherNode>();
+        executor.add_node(node);
+        executor.add_node(udpnode);
+        executor.spin();
+    }
+    catch(const std::exception &exception)
+    {
+        if(rclcpp::ok())
+        {
+            std::cerr << "rm_driver stopped with an exception: " << exception.what() << std::endl;
+            exit_code = EXIT_FAILURE;
+            rclcpp::shutdown();
+        }
+    }
+
+    Arm_Destroy();
+    if(rclcpp::ok())
+    {
+        rclcpp::shutdown();
+    }
+    if(hangup_monitor.joinable())
+    {
+        hangup_monitor.join();
+    }
+    return exit_code;
 }

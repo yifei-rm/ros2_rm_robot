@@ -450,7 +450,7 @@
     </collision>
     <visual>
       <origin
-        xyz="0 -0.119000004117148 0"
+        xyz="0 -0.0962 0"
         rpy="1.57079632679489 0 0" />
       <geometry>
         <mesh
@@ -464,7 +464,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 -0.119000004117148 0"
+        xyz="0 -0.0962 0"
         rpy="1.57079632679489 0 0" />
       <geometry>
         <mesh
@@ -496,7 +496,7 @@
     name="left_tool0_fixed"
     type="fixed">
     <origin
-      xyz="0 -0.119000004117148 0"
+      xyz="0 -0.0962 0"
       rpy="1.57079632679489 0 0" />
     <parent
       link="left_Link7" />
@@ -934,7 +934,7 @@
     </collision>
     <visual>
       <origin
-        xyz="0 0.119000004117148 0"
+        xyz="0 0.0962 0"
         rpy="-1.5707963267949 0 0" />
       <geometry>
         <mesh
@@ -948,7 +948,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0.119000004117148 0"
+        xyz="0 0.0962 0"
         rpy="-1.5707963267949 0 0" />
       <geometry>
         <mesh
@@ -979,7 +979,7 @@
     name="right_tool0_fixed"
     type="fixed">
     <origin
-      xyz="0 0.119000004117148 0"
+      xyz="0 0.0962 0"
       rpy="-1.5707963267949 0 0" />
     <parent
       link="right_Link7" />

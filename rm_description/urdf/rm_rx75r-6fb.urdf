@@ -494,7 +494,7 @@
     name="J8"
     type="revolute">
     <origin
-      xyz="0 0.119000004117148 0"
+      xyz="0 0.0962 0"
       rpy="-1.5707963267949 0 0" />
     <parent
       link="Link7" />

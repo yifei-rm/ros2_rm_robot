@@ -127,8 +127,6 @@ using namespace std::chrono_literals;
 //udp数据处理函数
 // void Udp_RobotStatuscallback(RobotStatus Udp_RM_Callback);
 void Udp_Robot_Status_Callback(rm_realtime_arm_joint_state_t data);
-//ctrl+c执行程序
-static void my_handler(int sig);
 //机械臂型号信息
 int realman_arm;
 //tcp ip
@@ -141,8 +139,6 @@ int udp_cycle_g = 5;
 int arm_dof_g = 6;
 // controller verison
 int controller_version = 3;
-//ctrl+c触发信号
-bool ctrl_flag = false;
 // 灵巧手数据发布
 bool udp_hand_g = false;
 // 末端设备基础信息发布
