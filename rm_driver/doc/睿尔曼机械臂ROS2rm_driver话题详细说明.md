@@ -1,13 +1,13 @@
 <div align="right">
 
-[中文简体](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_driver/doc/%E7%9D%BF%E5%B0%94%E6%9B%BC%E6%9C%BA%E6%A2%B0%E8%87%82ROS2rm_driver%E8%AF%9D%E9%A2%98%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E.md)|
-[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_driver/doc/RealMan%20Robotic%20Arm%20rm_driver%20Topic%20Detailed%20Description%20(ROS2).md)
+[中文简体](https://github.com/RealManRobot/ros2_rm_robot/blob/jazzy/rm_driver/doc/%E7%9D%BF%E5%B0%94%E6%9B%BC%E6%9C%BA%E6%A2%B0%E8%87%82ROS2rm_driver%E8%AF%9D%E9%A2%98%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E.md)|
+[English](https://github.com/RealManRobot/ros2_rm_robot/blob/jazzy/rm_driver/doc/RealMan%20Robotic%20Arm%20rm_driver%20Topic%20Detailed%20Description%20(ROS2).md)
 
 </div>
 
 <div align="center">
 
-# 睿尔曼机械臂接口函数说明(ROS2)V1.1.7
+# 睿尔曼机械臂接口函数说明(ROS2)V1.1.8
 
 睿尔曼智能科技(北京)有限公司
 
@@ -24,6 +24,7 @@
 | V1.1.5 | 2025-02-19 |                            修订（适配API2、添加末端生态协议接口、更新UDP接口）                            |
 | V1.1.6 | 2025-05-19 | 修订（适配四代控制器、添加版本查询接口、添加笛卡尔空间直线偏移运动接口、添加Modbus接口、添加轨迹列表接口） |
 | V1.1.7 | 2025-05-19 |                            修订（适配四代控制器、添加三代控制器modbus相关功能）                            |
+| V1.1.8 | 2025-05-19 |                              修正（部分描写错误，为部分modbus添加timeout参数）                    |
 
 </div>
 

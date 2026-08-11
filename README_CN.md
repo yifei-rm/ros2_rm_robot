@@ -1,7 +1,7 @@
 <div align="right">
 
-[中文简体](https://github.com/RealManRobot/ros2_rm_robot/blob/jazzy/README_CN.md)|
-[English](https://github.com/RealManRobot/ros2_rm_robot/blob/jazzy/README.md)
+[中文简体](README_CN.md)|
+[English](README.md)
 
 </div>
 
@@ -10,8 +10,8 @@
 该功能包的主要作用为提供机械臂的ROS2支持，以下为使用环境。
 
 * 当前支持的机械臂有RM65系列、RM75系列、ECO62系列、ECO63系列、ECO65系列、RML63系列、GEN72系列、RX75人形双臂系列，详细可参考网址 [RealMan robots](http://www.realman-robotics.com/)。
-* 版本1.7.0.
-* 基于机械臂控制器版本1.7.3。
+* 版本1.7.1.
+* 基于机械臂控制器版本1.7.5。
 * 基于的Ubuntu版本为24.04，ROS2版本为Jazzy。
 
 下面为功能包安装使用教程。
@@ -34,6 +34,7 @@
 我们提供了ROS2的安装脚本ros2_install.sh，该脚本位于rm_install功能包中的scripts文件夹下，在实际使用时我们需要移动到该路径执行如下指令。
 
 ```
+cd ./ros2_rm_robot/rm_install/scripts
 sudo bash ros2_install.sh
 ```
 
@@ -68,9 +69,9 @@ sudo bash lib_install.sh
 以上执行成功后，可以执行如下指令进行功能包编译，首先需要构建工作空间，并将功能包文件导入工作空间下的src文件夹下，之后使用colcon build指令进行编译。
 
 ```
-mkdir -p ~/ros2_ws/src
-cp -r ros2_rm_robot ~/ros2_ws/src
-cd ~/ros2_ws
+mkdir -p ./ros2_ws/src
+cp -r ros2_rm_robot ./ros2_ws/src
+cd ./ros2_ws
 colcon build --packages-select rm_ros_interfaces
 source ./install/setup.bash
 colcon build
@@ -130,6 +131,28 @@ colcon build
 
 以上为当前的主要功能包，每个功能包都有其独特的作用，详情请参考 `rm_doc` 功能包中的相关文档。
 
+### 2.0 统一启动入口
+
+推荐使用 `rm_bringup.launch.py`：`arm_type` 用于选择机械臂型号，必须指定；
+`arm_variant` 用于选择末端版本，默认值为 `standard`；`mode` 用于选择
+真实机械臂或 Gazebo，默认值为 `real`。例如：
+
+```bash
+# 真实机械臂
+ros2 launch rm_bringup rm_bringup.launch.py \
+  arm_type:=65 arm_variant:=standard mode:=real
+
+# Gazebo
+ros2 launch rm_bringup rm_bringup.launch.py \
+  arm_type:=65 arm_variant:=standard mode:=gazebo
+```
+
+不支持的型号与末端组合会在启动任何节点前直接报错。下面按型号拆分的
+旧 launch 文件会作为兼容 wrapper 转发到统一入口，原文件名和命令继续
+可用。末端版本的可用范围取决于型号；RX75 必须显式指定 `6fb` 或
+`6fb_v`。完整支持矩阵和高级参数见
+[rm_bringup README](rm_bringup/README_CN.md)。
+
 ### 2.1运行虚拟机械臂
 
 ---
@@ -137,7 +160,7 @@ colcon build
 使用如下指令可以启动gazebo显示仿真机械臂，并同时启动moveit2进行仿真机械臂的规划操控。
 
 ```
-source ~/ros2_ws/install/setup.bash
+source ./ros2_ws/install/setup.bash
 ros2 launch rm_bringup rm_<arm_type>_gazebo.launch.py
 ```
 
@@ -156,7 +179,7 @@ ros2 launch rm_bringup rm_65_gazebo.launch.py
 使用如下指令可以启动机械臂硬件驱动，并同时启动moveit2进行机械臂的规划操控。
 
 ```
-source ~/ros2_ws/install/setup.bash
+source ./ros2_ws/install/setup.bash
 ros2 launch rm_bringup rm_<arm_type>_bringup.launch.py
 ```
 

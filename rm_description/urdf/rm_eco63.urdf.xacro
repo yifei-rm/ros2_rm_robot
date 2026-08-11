@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot  name="rm_eco63" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot  name="rm_eco63_description" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <!-- link6_type -->
     <xacro:arg name="link6_type" default="Link6" />
     <!-- arg->property -->
