@@ -1922,6 +1922,31 @@ RM_INTERFACE_EXPORT int rm_set_IO_mode(rm_robot_handle *handle, int io_num, int 
  */
 RM_INTERFACE_EXPORT int rm_set_DO_state(rm_robot_handle *handle, int io_num, int state);
 /**
+ * @brief 设置 SN 号
+ * 
+ * @param handle 机械臂控制句柄
+ * @param sn SN 号字符串
+ * @return int 函数执行的状态码。  
+ *            - 0: 成功。  
+ *            - 1: 控制器返回false，SN为空字符串或参数错误。  
+ *            - -1: 数据发送失败，通信过程中出现问题。
+ *            - -2: 数据接收失败，通信过程中出现问题或者控制器超时没有返回。  
+ *            - -3: 返回值解析失败，接收到的数据格式不正确或不完整。 
+ */
+RM_INTERFACE_EXPORT int rm_set_sn(rm_robot_handle *handle, const char *sn);
+/**
+ * @brief 获取 SN 号
+ * 
+ * @param handle 机械臂控制句柄
+ * @param sn SN 号字符串，长度不超过28字节
+ * @return int 函数执行的状态码。  
+ *            - 0: 成功。  
+ *            - -1: 数据发送失败，通信过程中出现问题。
+ *            - -2: 数据接收失败，通信过程中出现问题或者控制器超时没有返回。  
+ *            - -3: 返回值解析失败，接收到的数据格式不正确或不完整。 
+ */
+RM_INTERFACE_EXPORT int rm_get_sn(rm_robot_handle *handle, char *sn);
+/**
  * @brief 
  * 
  * @param handle 机械臂控制句柄 
@@ -3845,8 +3870,150 @@ RM_INTERFACE_EXPORT int rm_set_collision_remove_enable(rm_robot_handle *handle, 
 */
 RM_INTERFACE_EXPORT int rm_get_collision_remove_enable(rm_robot_handle *handle, bool *enable_state);
 
+/**
+ * @brief 关节空间阻抗控制（力矩传感器）| 阻抗透传运动
+ *
+ * @param handle 机械臂控制句柄
+ * @param joint 关节目标角度数组（单位：°）
+ *
+ * @param speed 关节目标速度数组（单位：°/s）
+ *              - 可选参数：传 NULL 时由控制器自动规划速度
+ *
+ * @param kp 阻抗控制刚度参数数组（单位：无量纲）
 
+ *
+ * @param kd 阻抗控制阻尼参数数组（单位：无量纲）
 
+ *
+ * @param state 输出状态指针
+ *              - false 表示参数错误
+ *              - 正常执行无明确返回值（由控制器反馈）
+ *
+ * @return int 函数执行状态码
+ *         - 0: 成功
+ *         - 1: 控制器返回 false（参数错误或机械臂状态异常）
+ *         - -1: 数据发送失败（如机械臂断开连接）
+ *         - -2: 数据接收失败（通信异常或超时）
+ *         - -3: 返回值解析失败
+ */
+RM_INTERFACE_EXPORT int rm_torque_arm_impedence_move(rm_robot_handle *handle,
+                                 const float joint[],
+                                 const float speed[],
+                                 const float kp[],
+                                 const float kd[],
+                                 bool *state);
+
+/**
+ * @brief 位姿空间阻抗控制（力矩传感器）| 位姿阻抗透传运动
+ *
+ * @param handle 机械臂控制句柄
+ * @param pose 位姿结构体指针（rm_pose_t）
+ *        - position: 位置（单位：m）
+ *        - quaternion: 四元数（单位化，优先使用）
+ *        - euler: 欧拉角（单位：rad，当四元数无效时使用）
+ *
+ *
+ * @param mode 模式：
+ *        - 0：工作坐标系
+ *        - 1：工具坐标系
+ *
+ * @param follow 跟随模式：
+ *        - true：高跟随
+ *        - false：低跟随
+ *
+ * @param control_mode 六维力位混合模式 [Fx Fy Fz Mx My Mz]
+ *        - 0：固定模式
+ *        - 9：阻抗透传
+ *
+ * @param state 输出状态指针
+ *        - false：参数错误或控制器返回失败
+ *
+ * @return int 函数执行状态码
+ *         - 0  : 成功
+ *         - 1  : 控制器返回 false
+ *         - -1 : 发送失败
+ *         - -2 : 接收失败
+ *         - -3 : 解析失败
+ */
+RM_INTERFACE_EXPORT int rm_force_impedence_position_move(rm_robot_handle *handle,
+                                      const rm_pose_t *pose,
+                                      int mode,
+                                      bool follow,
+                                      const int control_mode[],
+                                      bool *state);
+
+                                                               /**
+/**
+ * @brief 设置位姿力控MBK参数
+ * @param handle 机械臂控制句柄
+ * @param b 阻尼参数数组（float）
+ * @param k 刚度参数数组（float）
+ * @param state 输出状态指针，false表示参数错误或设置失败
+ * @return int 函数执行状态码
+ *         - 0: 成功
+ *         - 1: 控制器返回false
+ *         - -1: 数据发送失败
+ *         - -2: 数据接收失败
+ *         - -3: 返回值解析失败
+ */
+RM_INTERFACE_EXPORT int rm_set_force_impedence_mbk_data(rm_robot_handle *handle,
+                                                         const float b[],
+                                                         const float k[],
+                                                         bool *state);
+
+/**
+ * @brief 设置力控阻尼MBK参数初始化
+ * @param handle 机械臂控制句柄
+ * @param set_state 输出状态指针，true=设置成功，false=设置失败
+ * @return int 函数执行的状态码
+ *         - 0: 成功
+ *         - 1: 控制器返回false，参数错误或机械臂状态发生错误
+ *         - -1: 数据发送失败，通信过程中出现问题
+ *         - -2: 数据接收失败，通信过程中出现问题或者控制器超时没有返回
+ *         - -3: 返回值解析失败，接收到的数据格式不正确或不完整
+ */
+RM_INTERFACE_EXPORT int rm_set_force_impedence_mbk_init(rm_robot_handle *handle, bool *set_state);
+
+/**
+ * @brief 获取负载自碰撞使能状态
+ * @param handle 机械臂控制句柄
+ * @param enable_state 输出状态指针，true=使能，false=未使能
+ * @return int 函数执行的状态码
+ *         - 0: 成功
+ *         - 1: 控制器返回false，参数错误或机械臂状态发生错误
+ *         - -1: 数据发送失败，通信过程中出现问题
+ *         - -2: 数据接收失败，通信过程中出现问题或者控制器超时没有返回
+ *         - -3: 返回值解析失败，接收到的数据格式不正确或不完整
+ */
+RM_INTERFACE_EXPORT int rm_get_self_endeffector_collision_enable(rm_robot_handle *handle, bool *enable_state);
+
+/**
+ * @brief 负载自碰撞使能设置
+ * @param handle 机械臂控制句柄
+ * @param set_enable 自碰撞功能设置值，true=使能，false=禁使能
+ * @param set_state 输出状态指针，true=设置成功，false=设置失败
+ * @return int 函数执行的状态码
+ *         - 0: 成功
+ *         - 1: 控制器返回false，参数错误或机械臂状态发生错误
+ *         - -1: 数据发送失败，通信过程中出现问题
+ *         - -2: 数据接收失败，通信过程中出现问题或者控制器超时没有返回
+ *         - -3: 返回值解析失败，接收到的数据格式不正确或不完整
+ */
+RM_INTERFACE_EXPORT int rm_set_self_endeffector_collision_enable(rm_robot_handle *handle, bool set_enable, bool *set_state);
+
+/**
+ * @brief 力矩传感器数据获取
+ * @param handle 机械臂控制句柄
+ * @param torque_data 输出力矩数据数组，单位0.001Nm，数组长度需大于等于机械臂最大自由度（10）
+ * @param data_len 输出实际力矩数据的长度，即机械臂自由度
+ * @return int 函数执行的状态码
+ *         - 0: 成功
+ *         - 1: 控制器返回false，参数错误或机械臂状态发生错误
+ *         - -1: 数据发送失败，通信过程中出现问题
+ *         - -2: 数据接收失败，通信过程中出现问题或者控制器超时没有返回
+ *         - -3: 返回值解析失败，接收到的数据格式不正确或不完整
+ */
+RM_INTERFACE_EXPORT int rm_get_torque_data(rm_robot_handle *handle, int torque_data[], int *data_len);
 /******************************************算法接口*******************************************************/
 /**  
  * @defgroup Algo 算法接口
