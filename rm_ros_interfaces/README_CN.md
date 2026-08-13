@@ -1,7 +1,7 @@
 <div align="right">
   
-[中文简体](https://github.com/RealManRobot/ros2_rm_robot/blob/humble/rm_ros_interfaces/README_CN.md)|
-[English](https://github.com/RealManRobot/ros2_rm_robot/blob/humble/rm_ros_interfaces/README.md)
+[中文简体](README_CN.md)|
+[English](README.md)
 
 </div>
 
@@ -90,21 +90,31 @@ rm_ros_interface功能包的主要作用为为机械臂在ROS2的框架下运行
 ## rm_ros_interface功能包架构说明
 ### 功能包文件总览
 ```
-当前rm_driver功能包的文件构成如下。
-├── CMakeLists.txt                #编译规则文件
-├── include                       #依赖头文件文件夹
-│   └── rm_ros_interfaces
-├── msg                          #当前的消息文件（详细请看下方介绍）
+当前rm_ros_interfaces功能包的文件构成如下。
+├── CMakeLists.txt                # 编译规则文件
+├── README.md                     # 英文说明文档
+├── README_CN.md                  # 中文说明文档
+├── msg                           # 当前的消息文件（详细请看下方介绍）
+│   ├── Alohastate.msg
 │   ├── Armcurrentstatus.msg
 │   ├── Armoriginalstate.msg
+│   ├── Armsoftversion.msg
+│   ├── Armsoftversionv3.msg
+│   ├── Armsoftversionv4.msg
 │   ├── Armstate.msg
 │   ├── Cartepos.msg
 │   ├── Carteposcustom.msg
+│   ├── Expandpos.msg
+│   ├── Expandstate.msg
+│   ├── Flowchartrunstate.msg
+│   ├── Force_Position_State.msg
+│   ├── Forcepositionmove.msg
 │   ├── Forcepositionmovejoint.msg
 │   ├── Forcepositionmovepose.msg
-│   ├── Force_Position_State.msg
-│   ├── Getallframe.msg
 │   ├── GetArmState_Command.msg
+│   ├── Getallframe.msg
+│   ├── Getmodbustcpmasterlist.msg
+│   ├── Gettrajectorylist.msg
 │   ├── Gripperpick.msg
 │   ├── Gripperset.msg
 │   ├── Handangle.msg
@@ -117,31 +127,52 @@ rm_ros_interface功能包的主要作用为为机械臂在ROS2的框架下运行
 │   ├── Jointenflag.msg
 │   ├── Jointerrclear.msg
 │   ├── Jointerrorcode.msg
-│   ├── Jointposeeuler.msg
 │   ├── Jointpos.msg
 │   ├── Jointposcustom.msg
+│   ├── Jointposeeuler.msg
 │   ├── Jointspeed.msg
 │   ├── Jointteach.msg
 │   ├── Jointtemperature.msg
+│   ├── Jointversion.msg
 │   ├── Jointvoltage.msg
 │   ├── Liftheight.msg
 │   ├── Liftspeed.msg
 │   ├── Liftstate.msg
+│   ├── Mastername.msg
+│   ├── Modbusreaddata.msg
+│   ├── Modbusrtureadparams.msg
+│   ├── Modbusrtuwriteparams.msg
+│   ├── Modbustcpmasterinfo.msg
+│   ├── Modbustcpmasterlist.msg
+│   ├── Modbustcpmasterupdata.msg
+│   ├── Modbustcpreadparams.msg
+│   ├── Modbustcpwriteparams.msg
 │   ├── Movec.msg
 │   ├── Movej.msg
 │   ├── Movejp.msg
 │   ├── Movel.msg
+│   ├── Moveloffset.msg
 │   ├── Ortteach.msg
 │   ├── Posteach.msg
+│   ├── Programrunstate.msg
+│   ├── RS485params.msg
 │   ├── Rmerr.msg
 │   ├── Rmplusbase.msg
 │   ├── Rmplusstate.msg
+│   ├── Rmversion.msg
+│   ├── RobotInfo.msg
+│   ├── Sendproject.msg
 │   ├── Setforceposition.msg
 │   ├── Setrealtimepush.msg
 │   ├── Sixforce.msg
-│   └── Stop.msg
-├── package.xml                       #依赖声明文件
-└── src
+│   ├── Softwarebuildinfo.msg
+│   ├── Stop.msg
+│   ├── Toolsoftwareversionv4.msg
+│   ├── Trajectoryinfo.msg
+│   ├── Trajectorylist.msg
+│   ├── Udpexpandstate.msg
+│   └── Udpliftstate.msg
+└── package.xml                   # 依赖声明文件
 ```
 ## rm_ros_interface消息说明
 ### 关节错误代码Jointerrorcode_msg
@@ -760,4 +791,4 @@ __radio__
 设置曲线拟合模式下平滑系数（范围0-100）或者滤波模式下的滤波参数（范围0-1000），数值越大表示平滑效果越好。
 
 
-主要为套用API实现的一些机械臂本体的功能，其详细介绍和使用在此不详细展开，可以通过专门的文档《[睿尔曼机械臂ROS2话题详细说明](https://github.com/kaola-zero/ros2_rm_robot/blob/main/rm_driver/doc/%E7%9D%BF%E5%B0%94%E6%9B%BC%E6%9C%BA%E6%A2%B0%E8%87%82ROS2rm_driver%E8%AF%9D%E9%A2%98%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E.md)》进行查看。
+主要为套用API实现的一些机械臂本体的功能，其详细介绍和使用在此不详细展开，可以通过专门的文档《[睿尔曼机械臂ROS2话题详细说明](../rm_driver/doc/睿尔曼机械臂ROS2rm_driver话题详细说明.md)》进行查看。

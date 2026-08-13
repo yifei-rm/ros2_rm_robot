@@ -1,7 +1,7 @@
 <div align="right">
 
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/humble/rm_moveit2_config/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/humble/rm_moveit2_config/README.md)
- 
+[简体中文](README_CN.md)|[English](README.md)
+
 </div>
 
 <div align="center">
@@ -59,7 +59,7 @@ The command to start the integrated six-axis force version is currently availabl
 ```
 rm@rm-desktop:~$ ros2 launch rm_<arm_type>_config demo_6fb.launch.py
 ```
-In practice, the above <arm_type> needs to be replaced by the actual model of the robotic arm. The available models are 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, gen72_II, and RX75. RX75 uses dedicated launch files under `rm_rx75_config`: `ros2 launch rm_rx75_config demo_6fb_v.launch.py` for RX75-6FB-V and `ros2 launch rm_rx75_config demo_6fb.launch.py` for RX75-6FB.  
+In practice, the above <arm_type> needs to be replaced by the actual model of the robotic arm. The available models are 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, gen72_II, and RX75. RX75 uses dedicated launch files under `rm_rx75_config`: `ros2 launch rm_rx75_config demo_6fb_v.launch.py` for RX75-6FB-V and `ros2 launch rm_rx75_config demo_6fb.launch.py` for RX75-6FB.
 For example, the launch command of 65 robotic arm:
 ```
 rm@rm-desktop:~$ ros2 launch rm_65_config demo.launch.py
@@ -104,7 +104,7 @@ The command to start the integrated six-axis force version is currently availabl
 ```
 rm@rm-desktop:~$ ros2 launch rm_<arm_type>_config real_moveit_demo_6fb.launch.py
 ```
-Note that the above commands need to replace <arm_type> with the corresponding robotic arm model, which can be selected as 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, and gen72_II. RX75 uses dedicated launch files under `rm_rx75_config`: `ros2 launch rm_rx75_config real_moveit_demo_6fb_v.launch.py` for RX75-6FB-V and `ros2 launch rm_rx75_config real_moveit_demo_6fb.launch.py` for RX75-6FB.  
+Note that the above commands need to replace <arm_type> with the corresponding robotic arm model, which can be selected as 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, and gen72_II. RX75 uses dedicated launch files under `rm_rx75_config`: `ros2 launch rm_rx75_config real_moveit_demo_6fb_v.launch.py` for RX75-6FB-V and `ros2 launch rm_rx75_config real_moveit_demo_6fb.launch.py` for RX75-6FB.
 After completing the above operations, the following interface appears, and we can control the movement of the robotic arm by dragging the control ball.  
 **Note: The newly added gen72_II and 63_III models are both included in their respective model files. The difference lies in the fact that during startup, it is necessary to append the identifier II or III after "demo"**
 The start command for 63_III is as follows:

@@ -3942,7 +3942,6 @@ RM_INTERFACE_EXPORT int rm_force_impedence_position_move(rm_robot_handle *handle
                                       const int control_mode[],
                                       bool *state);
 
-                                                               /**
 /**
  * @brief 设置位姿力控MBK参数
  * @param handle 机械臂控制句柄

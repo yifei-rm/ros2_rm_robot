@@ -1,7 +1,7 @@
 <div align="right">
 
-[中文简体](https://github.com/RealManRobot/ros2_rm_robot/blob/humble/README_CN.md)|
-[English](https://github.com/RealManRobot/ros2_rm_robot/blob/humble/README.md)
+[中文简体](README_CN.md)|
+[English](README.md)
 
 </div>
 
@@ -12,7 +12,7 @@
 * 当前支持的机械臂有RM65系列、RM75系列、ECO62系列、ECO63系列、ECO65系列、RML63系列、GEN72系列、RX75人形双臂系列，详细可参考网址 [RealMan robots](http://www.realman-robotics.com/)。
 * 版本1.7.1.
 * 基于机械臂控制器版本1.7.5。
-* 基于的Ubuntu版本为22.04，ROS2版本为Humble。
+* 基于Ubuntu 22.04，ROS 2版本为Humble。
 
 下面为功能包安装使用教程。
 
@@ -34,6 +34,7 @@
 我们提供了ROS2的安装脚本ros2_install.sh，该脚本位于rm_install功能包中的scripts文件夹下，在实际使用时我们需要移动到该路径执行如下指令。
 
 ```
+cd ./ros2_rm_robot/rm_install/scripts
 sudo bash ros2_install.sh
 ```
 
@@ -68,9 +69,9 @@ sudo bash lib_install.sh
 以上执行成功后，可以执行如下指令进行功能包编译，首先需要构建工作空间，并将功能包文件导入工作空间下的src文件夹下，之后使用colcon build指令进行编译。
 
 ```
-mkdir -p ~/ros2_ws/src
-cp -r ros2_rm_robot ~/ros2_ws/src
-cd ~/ros2_ws
+mkdir -p ./ros2_ws/src
+cp -r ros2_rm_robot ./ros2_ws/src
+cd ./ros2_ws
 colcon build --packages-select rm_ros_interfaces
 source ./install/setup.bash
 colcon build
@@ -112,7 +113,7 @@ colcon build
 
 * 该功能包为机械臂的moveit2适配功能包，其作用为适配和实现各系列机械臂的moveit2规划控制功能，主要包括虚拟机械臂控制和真实机械臂控制两部分控制功能。
 
-10. Moveit2与硬件驱动通信连接([rm_config](https://github.com/RealManRobot/ros2_rm_robot/tree/humble/rm_control))
+10. Moveit2与硬件驱动通信连接([rm_control](https://github.com/RealManRobot/ros2_rm_robot/tree/humble/rm_control))
 
 * 该功能包为底层驱动功能包（rm_driver）和moveit2功能包（rm_moveit2_config）之间的通信连接功能包，主要功能为将moveit2的规划点进行细分然后通过透传的形式传递给底层驱动功能包控制机械臂运动。
 
@@ -120,15 +121,38 @@ colcon build
 
 * 该功能包为gazebo仿真机械臂功能包，主要功能为在gazebo仿真环境中显示机械臂模型，可通过moveit2对仿真的机械臂进行规划控制。
 
-12. 使用案例([rm_examples](https://github.com/RealManRobot/ros2_rm_robot/tree/humble/rm_example))
+12. 使用案例([rm_example](https://github.com/RealManRobot/ros2_rm_robot/tree/humble/rm_example))
 
 * 该功能包为机械臂的一些使用案例，主要功能为实现机械臂的一些基本的控制功能和运动功能的使用案例。
 
-13. 技术文档([rm_docs](https://github.com/RealManRobot/ros2_rm_robot/tree/humble/rm_doc))
+13. 技术文档([rm_doc](https://github.com/RealManRobot/ros2_rm_robot/tree/humble/rm_doc))
 
 * 该功能包为介绍文档的功能包，其主要包括为对整体的功能包内容和使用方式进行总体介绍的文档和对每个功能包中的内容和使用方式进行详细介绍的文档。
 
 以上为当前的主要功能包，每个功能包都有其独特的作用，详情请参考 `rm_doc` 功能包中的相关文档。
+
+### 2.0 统一启动入口
+
+推荐使用 `rm_bringup.launch.py`：`arm_type` 用于选择机械臂型号，必须指定；
+`arm_variant` 用于选择末端版本，默认值为 `auto`，RX75会自动解析为
+`6fb`，其他型号自动解析为 `standard`；`mode` 用于选择真实机械臂或
+Gazebo，默认值为 `real`。例如：
+
+```bash
+# 真实机械臂
+ros2 launch rm_bringup rm_bringup.launch.py \
+  arm_type:=65 mode:=real
+
+# Gazebo
+ros2 launch rm_bringup rm_bringup.launch.py \
+  arm_type:=rx75 mode:=gazebo
+```
+
+不支持的型号与末端组合会在启动任何节点前直接报错。下面按型号拆分的
+旧 launch 文件会作为兼容 wrapper 转发到统一入口，原文件名和命令继续
+可用。末端版本的可用范围取决于型号；RX75默认使用 `6fb`，需要视觉版本
+时可显式传入 `arm_variant:=6fb_v`。完整支持矩阵和高级参数见
+[rm_bringup README](rm_bringup/README_CN.md)。
 
 ### 2.1运行虚拟机械臂
 
@@ -137,7 +161,7 @@ colcon build
 使用如下指令可以启动gazebo显示仿真机械臂，并同时启动moveit2进行仿真机械臂的规划操控。
 
 ```
-source ~/ros2_ws/install/setup.bash
+source ./ros2_ws/install/setup.bash
 ros2 launch rm_bringup rm_<arm_type>_gazebo.launch.py
 ```
 
@@ -156,7 +180,7 @@ ros2 launch rm_bringup rm_65_gazebo.launch.py
 使用如下指令可以启动机械臂硬件驱动，并同时启动moveit2进行机械臂的规划操控。
 
 ```
-source ~/ros2_ws/install/setup.bash
+source ./ros2_ws/install/setup.bash
 ros2 launch rm_bringup rm_<arm_type>_bringup.launch.py
 ```
 
