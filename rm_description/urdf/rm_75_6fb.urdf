@@ -89,13 +89,13 @@
     type="revolute">
     <origin
       xyz="0 0 0.2405"
-      rpy="0 0 0" />
+      rpy="-1.5708 0 0" />
     <parent
       link="base_link" />
     <child
       link="Link_1" />
     <axis
-      xyz="0 0 -1" />
+      xyz="0 -1 0" />
     <limit
       lower="-3.105"
       upper="3.105"
@@ -147,13 +147,13 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="1.5708 -1.5708 0" />
+      rpy="1.5708 0 0" />
     <parent
       link="Link_1" />
     <child
       link="Link_2" />
     <axis
-      xyz="0 0 1" />
+      xyz="0 1 0" />
     <limit
       lower="-2.269"
       upper="2.269"
@@ -204,14 +204,14 @@
     name="joint_3"
     type="revolute">
     <origin
-      xyz="0.256 0 0"
-      rpy="-1.5708 0 -1.5708" />
+      xyz="0 0 0.256"
+      rpy="-1.5708 0 0" />
     <parent
       link="Link_2" />
     <child
       link="Link_3" />
     <axis
-      xyz="0 0 -1" />
+      xyz="0 -1 0" />
     <limit
       lower="-3.105"
       upper="3.105"
@@ -263,13 +263,13 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="-1.5708 0 -3.1416" />
+      rpy="1.5708 0 0" />
     <parent
       link="Link_3" />
     <child
       link="Link_4" />
     <axis
-      xyz="0 0 1" />
+      xyz="0 1 0" />
     <limit
       lower="-2.356"
       upper="2.356"
@@ -320,14 +320,14 @@
     name="joint_5"
     type="revolute">
     <origin
-      xyz="0 -0.21 0"
-      rpy="1.5708 0 0" />
+      xyz="0 0 0.21"
+      rpy="-1.5708 0 0" />
     <parent
       link="Link_4" />
     <child
       link="Link_5" />
     <axis
-      xyz="0 0 -1" />
+      xyz="0 -1 0" />
     <limit
       lower="-3.105"
       upper="3.105"
@@ -379,13 +379,13 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="-1.5708 0 0" />
+      rpy="1.5708 0 0" />
     <parent
       link="Link_5" />
     <child
       link="Link_6" />
     <axis
-      xyz="0 0 1" />
+      xyz="0 1 0" />
     <limit
       lower="-2.234"
       upper="2.234"
@@ -436,8 +436,8 @@
     name="joint7"
     type="revolute">
     <origin
-      xyz="0 -0.1613 0"
-      rpy="1.5708 0 0" />
+      xyz="0 0 0.1612"
+      rpy="0 0 0" />
     <parent
       link="Link_6" />
     <child

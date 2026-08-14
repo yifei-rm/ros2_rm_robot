@@ -147,7 +147,7 @@
     type="revolute">
     <origin
       xyz="-0.086 0 0"
-      rpy="-1.5708 -1.5708 0" />
+      rpy="1.5708 0 0" />
     <parent
       link="link1" />
     <child
@@ -204,8 +204,8 @@
     name="joint3"
     type="revolute">
     <origin
-      xyz="0.26 0 0"
-      rpy="0 0 0" />
+      xyz="0 0.26 0"
+      rpy="3.1416 0 1.5708" />
     <parent
       link="link2" />
     <child
