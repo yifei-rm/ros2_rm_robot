@@ -4,8 +4,9 @@ import xacro
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, EmitEvent
 from launch.conditions import IfCondition
+from launch.events import Shutdown
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -159,6 +160,9 @@ def generate_rx75_moveit_launch(
                 ),
             ),
             Node(
+                on_exit=[
+                    EmitEvent(event=Shutdown(reason="MoveIt move_group exited"))
+                ],
                 package="moveit_ros_move_group",
                 executable="move_group",
                 output="screen",

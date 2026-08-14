@@ -1,12 +1,12 @@
 <div align="right">
 
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_moveit2/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_moveit2/README.md)
+[简体中文](README_CN.md)|[English](README.md)
 
 </div>
 
 <div align="center">
 
-# 睿尔曼机械臂rm_moveit2使用说明书V1.0
+# 睿尔曼机械臂rm_moveit2使用说明书V1.1
 
 睿尔曼智能科技（北京）有限公司
 文件修订记录：
@@ -14,6 +14,7 @@
 | 版本号 |   时间   | 备注 |
 | :----: | :-------: | :--: |
 |  V1.0  | 2026-4-16 | 拟制 |
+|  V1.1  | 2026-8-13 | 修订（同步运动示例） |
 
 </div>
 
@@ -62,11 +63,13 @@ rm@rm-desktop:~$ ros2 launch rm_moveit2 moveit_rm75.launch.py
 rm@rm-desktop:~$ ros2 launch rm_moveit2 moveit_rx75.launch.py
 ```
 
-启动机械臂示例前，使用以下命令启动对应的MoveIt环境。
+启动RX75示例前，默认使用RX75-6FB的MoveIt环境：
 
 ```
-rm@rm-desktop:~$ ros2 launch rm_<arm_type>_config demo_*.launch.py
+rm@rm-desktop:~$ ros2 launch rm_rx75_config demo_6fb.launch.py
 ```
+
+仅在使用RX75-6FB-V时改用 `demo_6fb_v.launch.py`。
 
 ### 高级功能包使用
 
@@ -79,6 +82,8 @@ rm_moveit2的通用参数在launch文件中配置。
 参数home_named_target：运动到初始姿态时使用的命名目标。
 参数enable_pose_target：是否直接规划到pose_target_csv给定的位姿目标。
 参数pose_target_csv：x,y,z,rx,ry,rz格式的位姿目标。
+参数pose_target_position_in_mm：pose_target_csv中的x、y、z是否使用毫米，默认值为true。
+参数pose_target_rpy_in_degrees：pose_target_csv中的rx、ry、rz是否使用角度，默认值为false。
 参数pose_reference_frame：位姿目标使用的参考坐标系。
 参数prefer_named_start：该参数仅用于RX75双臂launch文件，用于优先采用命名起始姿态。
 参数enable_cartesian_demo：该参数仅用于RX75双臂launch文件，用于控制是否执行笛卡尔示例。

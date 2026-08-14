@@ -1,12 +1,12 @@
 <div align="right">
  
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_driver/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_driver/README.md)
+[简体中文](README_CN.md)|[English](README.md)
 
 </div>
 
 <div align="center">
 
-# 睿尔曼机器人rm_driver使用说明书V1.7
+# 睿尔曼机器人rm_driver使用说明书V1.7.1
  
 睿尔曼智能科技（北京）有限公司 
 文件修订记录：
@@ -22,6 +22,7 @@
 |V1.5    |2025-05-29|修订（适配四代控制器、添加版本查询接口、添加笛卡尔空间直线偏移运动接口、添加Modbus接口、添加轨迹列表接口详见话题接口说明文档）|
 |V1.6    |2025-11-13|修订（添加UDP所有基础使能配置）|
 |V1.7    |2026-4-16 |修订（添加ECO62、RX75适配文件）|
+|V1.7.1    |2026-8-14 |修订（统一启动、Modbus超时、端点独占与信号安全清理）|
 
 </div>
 
@@ -46,6 +47,37 @@ rm_driver功能包在机械臂ROS2功能包中是十分重要的，该功能包�
 * 3.熟悉功能包相关的话题，方便开发和使用  
 ## rm_driver功能包使用
 ### 功能包基础使用
+推荐使用统一入口：
+
+```bash
+ros2 launch rm_driver rm_driver.launch.py arm_type:=65
+```
+
+启动参数：
+
+- `arm_type`（必填）：`63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、
+  `eco65`、`gen72`、`gen72_ii` 或 `rx75`。
+- `driver_config`（默认 `auto`）：单臂型号的YAML路径。
+- `left_driver_config` / `right_driver_config`（默认 `auto`）：
+  RX75左/右臂YAML路径。
+
+无效的型号/配置组合或不存在的YAML会在driver节点启动前报错。
+RX75会启动两个带namespace的driver节点。原有8个按型号启动的文件
+保留为兼容wrapper。
+
+driver在SDK初始化前对 `arm_ip:tcp_port` 取主机本地非阻塞锁。
+同一端点的第二个进程以非零状态退出，不同端点可并存。SIGINT、
+SIGTERM和SIGHUP汇合到同一个幂等SDK清理路径。该清理是尽力而为，
+对SIGKILL、掉电或崩溃并不能替代控制器watchdog和硬件急停。
+
+Modbus V1.7.1消息变更：
+
+- `RS485params.timeout`：三代Modbus RTU超时，单位100 ms；非正数使用
+  兼容默认值 `5`（500 ms）。
+- `Modbustcpmasterinfo.timeout`：三代Modbus TCP超时，单位ms；
+  非正数使用兼容默认值 `2000` ms。
+- 四代SDK查询路径不提供超时值，查询结果回填 `timeout=0`。
+
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，控制机械臂。  
 当前的控制基于我们没有改变过机械臂的IP即当前机械臂的IP仍为192.168.1.18。  
 rm@rm-desktop:~$ ros2 launch rm_driver rm_<arm_type>_driver.launch.py  
@@ -150,6 +182,7 @@ rm@rm-desktop: ~/ros2_ws$ colcon build
 │       ├── rm_service.h           #API头文件
 │       └── robot_define.h         #API头文件
 ├── launch
+│   ├── rm_driver.launch.py        #统一driver启动入口
 │   ├── rm_63_driver.launch.py     #63启动文件
 │   ├── rm_65_driver.launch.py     #65启动文件
 │   ├── rm_75_driver.launch.py     #75启动文件

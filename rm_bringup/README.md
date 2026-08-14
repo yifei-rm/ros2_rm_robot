@@ -1,12 +1,12 @@
 <div align="right">
 
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_bringup/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_bringup/README.md)
+[简体中文](README_CN.md)|[English](README.md)
  
 </div>
 
 <div align="center">
 
-# RealMan Robot rm_bringup User Manual V1.6
+# RealMan Robot rm_bringup User Manual V1.7
 
 RealMan Intelligent Technology (Beijing) Co., Ltd. 
 
@@ -21,6 +21,7 @@ Revision History:
 |V1.4 	  | 2025-4-7 | Amend(Add GEN72_II adapter files) |
 |V1.5 	  | 2025-11-13 | Amend(Add RML63_III adapter files) |
 |V1.6 	  | 2026-4-16 | Amend(Add ECO62 and RX75 adapter files) |
+|V1.7 	  | 2026-8-14 | Amend(Add the Foxy unified launch entry and model-aware `arm_variant:=auto` defaults) |
 
 </div>
 
@@ -44,6 +45,52 @@ Through the introduction of the three parts, it can help you:
 * 3.Familiar with the topic related to the package for easy development and use.
 Source code address: https://github.com/RealManRobot/ros2_rm_robot.git。
 ## rm_bringup_Package_Use
+### Unified launch entry
+
+The recommended entry point is `rm_bringup.launch.py`. It composes the Foxy
+driver, description, control, Gazebo Classic, and MoveIt launches. The 42
+historical model-specific files remain available as compatibility wrappers.
+
+```bash
+ros2 launch rm_bringup rm_bringup.launch.py \
+  arm_type:=65 arm_variant:=6f mode:=gazebo
+```
+
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | `63/63_iii/65/75/eco62/eco63/eco65/gen72/gen72_ii/rx75` |
+| `arm_variant` | `auto` | RX75 resolves to `6fb`; other models resolve to `standard`; explicit supported values are `standard/6f/6fb/6fb_v` |
+| `mode` | `real` | `real` or `gazebo` |
+| `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; use `false` for the first real-robot validation |
+| `use_moveit` | `true` | Start MoveIt; when false, also set `use_rviz:=false` |
+| `use_rviz` | `true` | Start MoveIt RViz |
+| `driver_config` | `auto` | Single-arm driver YAML in real mode |
+| `left_driver_config` / `right_driver_config` | `auto` | RX75 left/right driver YAML in real mode |
+| `follow` | `auto` | Real-mode control policy: `auto/true/false` |
+| `joint_states_topic` | `auto` | Only `auto` is public; it selects the model/mode default |
+| `start_gazebo` | `true` | Start Gazebo Classic in gazebo mode |
+| `use_gazebo_gui` | `true` | Start the Gazebo Classic GUI |
+
+Supported combinations:
+
+| Model | Variants |
+| :--- | :--- |
+| `63` | `standard`, `6f`, `6fb` |
+| `63_iii` | `standard`, `6fb` |
+| `65` | `standard`, `6f`, `6fb` |
+| `75` | `standard`, `6f`, `6fb` |
+| `eco62` | `standard` |
+| `eco63` | `standard`, `6fb` |
+| `eco65` | `standard`, `6f`, `6fb` |
+| `gen72` | `standard` |
+| `gen72_ii` | `standard` |
+| `rx75` | `6fb`, `6fb_v` |
+
+Unsupported combinations fail before any node starts. Real-only arguments are
+rejected in gazebo mode. RX75 defaults to `6fb`; select `arm_variant:=6fb_v`
+explicitly for the vision-enabled model. Gazebo mode preserves the historical
+eight-second delay before MoveIt starts.
+
 ### moveit2_Controlling_Real_Robotic_Arm
 First, after configuring the environment and completing the connection, we can directly launch the node and run the launch.py file in the rm_bringup package through the following command.
 ```
@@ -106,6 +153,7 @@ The current rm_bringup package is composed of the following files.
 │   ├── rm_bringup2.png                # pictures2
 │   └── rm_bringup3.png                # pictures3
 ├── launch
+│   ├── rm_bringup.launch.py            # unified model/variant/mode entry
 │   ├── rm_63_6f_bringup.launch.py     # 63 arm six-axis force moveit2 launch file
 │   ├── rm_63_6f_gazebo.launch.py      # 63 arm six-axis force gazebo launch file
 │   ├── rm_63_6fb_bringup.launch.py    # 63 arm integrated six-axis force moveit2 launch file

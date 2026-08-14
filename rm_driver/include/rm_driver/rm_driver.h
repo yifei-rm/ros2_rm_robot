@@ -27,6 +27,15 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <algorithm>
+#include <condition_variable>
+#include <cstdlib>
+#include <mutex>
+#include <stdexcept>
+#include <system_error>
+#include <sys/file.h>
+#include <sys/stat.h>
+
 
 #include <sys/ioctl.h>          // 设置非阻塞需要用到的头文件
 #include <sys/time.h>
@@ -127,8 +136,6 @@ using namespace std::chrono_literals;
 //udp数据处理函数
 // void Udp_RobotStatuscallback(RobotStatus Udp_RM_Callback);
 void Udp_Robot_Status_Callback(rm_realtime_arm_joint_state_t data);
-//ctrl+c执行程序
-static void my_handler(int sig);
 //机械臂型号信息
 int realman_arm;
 //tcp ip
@@ -141,8 +148,6 @@ int udp_cycle_g = 5;
 int arm_dof_g = 6;
 // controller verison
 int controller_version = 3;
-//ctrl+c触发信号
-bool ctrl_flag = false;
 // 灵巧手数据发布
 bool udp_hand_g = false;
 // 末端设备基础信息发布
@@ -166,7 +171,7 @@ RM_Service Rm_Api;
 //机械臂TCp网络通信套接字
 // SOCKHANDLE m_sockhand = -1;
 //机械臂控制句柄
-rm_robot_handle *robot_handle;
+rm_robot_handle *robot_handle = nullptr;
 
 //末端设备基础信息
 typedef struct{
@@ -380,9 +385,9 @@ public:
     void Get_Modbus_Tcp_Master_Callback(const rm_ros_interfaces::msg::Mastername::SharedPtr msg);             //查询指定modbus主站
     void Get_Modbus_Tcp_Master_List_Callback(const rm_ros_interfaces::msg::Getmodbustcpmasterlist::SharedPtr msg);   //查询modbus主站列表
     void Set_Controller_RS485_Mode_Callback(const rm_ros_interfaces::msg::RS485params::SharedPtr msg);   // 设置控制器RS485模式(四代控制器支持)
-    void Get_Controller_RS485_Mode_v4_Callback(const std_msgs::msg::Empty::SharedPtr msg);   // 查询控制器RS485模式(四代控制器支持)
+    void Get_Controller_RS485_Mode_v4_Callback(const std_msgs::msg::Empty::SharedPtr msg);   // 查询控制器RS485模式(三四代控制器支持)
     void Set_Tool_RS485_Mode_Callback(const rm_ros_interfaces::msg::RS485params::SharedPtr msg);   // 设置工具端RS485模式(四代控制器支持)
-    void Get_Tool_RS485_Mode_v4_Callback(const std_msgs::msg::Empty::SharedPtr msg);   // 查询工具端RS485模式(四代控制器支持)
+    void Get_Tool_RS485_Mode_v4_Callback(const std_msgs::msg::Empty::SharedPtr msg);   // 查询工具端RS485模式(三四代控制器支持)
     void Read_Modbus_RTU_Coils_Callback(const rm_ros_interfaces::msg::Modbusrtureadparams::SharedPtr msg);// Modbus RTU协议读线圈
     void Write_Modbus_RTU_Coils_Callback(const rm_ros_interfaces::msg::Modbusrtuwriteparams::SharedPtr msg);// Modbus RTU协议写线圈
     void Read_Modbus_RTU_Input_Status_Callback(const rm_ros_interfaces::msg::Modbusrtureadparams::SharedPtr msg);// Modbus RTU协议读离散量输入
@@ -544,13 +549,13 @@ private:
     /*************************************************设置控制器RS485模式(四代三代控制器支持)****************************************/
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr Set_Controller_RS485_Mode_Result;
     rclcpp::Subscription<rm_ros_interfaces::msg::RS485params>::SharedPtr Set_Controller_RS485_Mode_Cmd;
-    /*************************************************查询控制器RS485模式(四代控制器支持)****************************************/
+    /*************************************************查询控制器RS485模式(三四代控制器支持)****************************************/
     rclcpp::Publisher<rm_ros_interfaces::msg::RS485params>::SharedPtr Get_Controller_RS485_Mode_v4_Result;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr Get_Controller_RS485_Mode_v4_Cmd;
     /*************************************************设置工具端RS485模式(四代控制器支持)****************************************/
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr Set_Tool_RS485_Mode_Result;
     rclcpp::Subscription<rm_ros_interfaces::msg::RS485params>::SharedPtr Set_Tool_RS485_Mode_Cmd;
-    /*************************************************查询工具端RS485模式(四代控制器支持)****************************************/
+    /*************************************************查询工具端RS485模式(三四代控制器支持)****************************************/
     rclcpp::Publisher<rm_ros_interfaces::msg::RS485params>::SharedPtr Get_Tool_RS485_Mode_v4_Result;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr Get_Tool_RS485_Mode_v4_Cmd;
 

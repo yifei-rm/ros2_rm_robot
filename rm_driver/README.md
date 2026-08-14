@@ -1,12 +1,12 @@
 <div align="right">
 
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_driver/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_driver/README.md)
+[简体中文](README_CN.md)|[English](README.md)
  
 </div>
 
 <div align="center">
 
-# RealMan Robot rm_driver User Manual V1.7
+# RealMan Robot rm_driver User Manual V1.7.1
 
 RealMan Intelligent Technology (Beijing) Co., Ltd. 
 
@@ -23,6 +23,7 @@ Revision History:
 |V1.5   | 2025-5-29 | Amend(Adapt to fourth-generation controllers, add a version query interface, Cartesian space linear offset motion interface, Modbus interface, and trajectory list interface; see the topic interface description document for details) |
 |V1.6   | 2025-11-13 | Amend(Add basic UDP enable configurations) |
 |V1.7   | 2026-4-16 | Amend(Add ECO62 and RX75 adapter files) |
+|V1.7.1 | 2026-8-14 | Amend(Add SDK V1.1.6, unified launch, Modbus timeouts, endpoint ownership, and signal-safe cleanup for Foxy) |
 
 </div>
 
@@ -53,6 +54,40 @@ Through the introduction of the three parts, it can help you:
 Source code address:https://github.com/RealManRobot/ros2_rm_robot.git.
 ## 2. rm_driver package use
 ### 2.1 Basic use of the package
+The unified entry point is recommended:
+
+```bash
+ros2 launch rm_driver rm_driver.launch.py arm_type:=65
+```
+
+Launch arguments:
+
+- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`,
+  `eco65`, `gen72`, `gen72_ii`, or `rx75`.
+- `driver_config` (default `auto`): YAML path for a single-arm model.
+- `left_driver_config` / `right_driver_config` (default `auto`): RX75
+  left/right YAML paths.
+
+Invalid model/config combinations and missing YAML files fail before a driver
+node starts. RX75 launches two namespaced driver nodes. The eight historical
+model launch files remain supported as compatibility wrappers.
+
+The driver takes a host-local non-blocking lock on `arm_ip:tcp_port` before SDK
+initialization. A second process using the same endpoint exits non-zero; a
+different endpoint may run concurrently. SIGINT, SIGTERM, and SIGHUP converge
+on the same idempotent SDK cleanup path. This cleanup is best effort and does
+not replace a controller watchdog or hardware emergency stop for SIGKILL,
+power loss, or process crashes.
+
+Modbus V1.7.1 message additions:
+
+- `RS485params.timeout`: third-generation Modbus RTU timeout in 100 ms units;
+  non-positive input uses the compatible default `5` (500 ms).
+- `Modbustcpmasterinfo.timeout`: third-generation Modbus TCP timeout in ms;
+  non-positive input uses the compatible default `2000` ms.
+- Fourth-generation query responses report `timeout=0` because that SDK path
+  does not expose a timeout value.
+
 First, after configuring the environment and completing the connection, we can directly start the node and control the robotic arm through the following command.
 The current control is based on the fact that we have not changed the IP of the robotic arm, which is still 192.168.1.18.
 rm@rm-desktop:~$ ros2 launch rm_driver rm_<arm_type>_driver.launch.py
@@ -158,6 +193,7 @@ The current rm_driver package is composed of the following files.
 │       ├── rm_service.h           # API header file
 │       └── robot_define.h         # API header file
 ├── launch
+│   ├── rm_driver.launch.py        # unified driver launch entry
 │   ├── rm_63_driver.launch.py     # 63 launch file
 │   ├── rm_65_driver.launch.py     # 65 launch file
 │   ├── rm_75_driver.launch.py     # 75 launch file

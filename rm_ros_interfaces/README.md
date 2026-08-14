@@ -1,13 +1,13 @@
 <div align="right">
   
-[中文简体](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_ros_interfaces/README_CN.md)|
-[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_ros_interfaces/README.md)
+[中文简体](README_CN.md)|
+[English](README.md)
 
 </div>
 
 <div align="center">
 
-# RealMan Robot rm_ros_interface User Manual V1.2
+# RealMan Robot rm_ros_interface User Manual V1.4
 
 
  
@@ -23,6 +23,7 @@ Revision History-
 |V1.1 | 7-8-2024  | Amend(Add teaching message) |
 |V1.2 | 12-25-2024  | Amend(Add UDP report message) |
 |V1.3 | 04-07-2025  | Amend(API2 Adaptation) |
+|V1.4 | 08-14-2026  | Amend(Add Modbus RTU/TCP timeout fields and direct builtin interface dependency) |
 
 
 </div>
@@ -87,6 +88,17 @@ Through the introduction of the three parts, it can help you-
 * 3.Familiar with the topic related to the package for easy development and use.  
 ## rm_ros_interface_Package_Use
 This package does not have any executable commands, but it is used to provide the necessary message files for other packages.
+
+V1.7.1 adds timeout information to two Modbus messages:
+
+| Message field | Meaning |
+| :--- | :--- |
+| `RS485params.timeout` | Third-generation Modbus RTU timeout in 100 ms units; non-positive setting input uses `5` (500 ms); fourth-generation query output is `0` |
+| `Modbustcpmasterinfo.timeout` | Third-generation Modbus TCP timeout in ms; non-positive setting input uses `2000`; fourth-generation query output is `0` |
+
+Because message layout changed, rebuild `rm_ros_interfaces` and all consumers
+before sourcing the workspace. Detailed topics are documented in the
+[rm_driver topic manual](../rm_driver/doc/RealMan%20Robotic%20Arm%20rm_driver%20Topic%20Detailed%20Description%20%28ROS2%29.md).
 ## rm_ros_interface_Package_Architecture_Description
 ### Overview_of_Package_Files
 ```
@@ -758,4 +770,4 @@ When the high following mode is set, multiple modes are supported, including 0- 
 __radio__  
 Set the smoothing coefficient in curve fitting mode (range 0-100) or the filter parameter in filtering mode (range 0-1000). The higher the value, the better the smoothing effect.  
 
-It is mainly for the application of API to achieve some of the robotic arm functions; for a more complete introduction and use, please see the special document "[RealMan Robotic Arm ROS2 Topic Detailed Description](https://github.com/kaola-zero/ros2_rm_robot/blob/foxy/rm_driver/doc/RealMan%20Robotic%20Arm%20rm_driver%20Topic%20Detailed%20Description%20(ROS2).md)".
+It is mainly for the application of API to achieve some of the robotic arm functions; for a more complete introduction and use, please see the special document "[RealMan Robotic Arm ROS2 Topic Detailed Description](../rm_driver/doc/RealMan%20Robotic%20Arm%20rm_driver%20Topic%20Detailed%20Description%20%28ROS2%29.md)".

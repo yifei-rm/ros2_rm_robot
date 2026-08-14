@@ -1,12 +1,12 @@
 <div align="right">
  
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_description/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_description/README.md)
+[简体中文](README_CN.md)|[English](README.md)
 
 </div>
 
 <div align="center">
 
-# 睿尔曼机器人rm_description使用说明书V1.6
+# 睿尔曼机器人rm_description使用说明书V1.7
  
 睿尔曼智能科技（北京）有限公司 
 文件修订记录：
@@ -20,6 +20,7 @@
 | V1.4  |2025-4-7 |修订(添加了GEN72_II适配文件) |
 | V1.5  |2025-11-13 |修订(添加了RML63_III适配文件) |
 | V1.6  |2026-4-16 |修订(添加ECO62、RX75适配文件) |
+| V1.7  |2026-8-14 |修订(新增统一模型描述入口、同步URDF数据并修正RX75 J8偏移) |
 
 </div>
 
@@ -40,6 +41,28 @@ rm_description功能包为显示机器人模型和TF变换的功能包，通过�
 * 2.熟悉功能包中的文件构成及作用。
 * 3.熟悉功能包相关的话题，方便开发和使用
 ## rm_description功能包使用
+推荐使用统一入口：
+
+```bash
+ros2 launch rm_description rm_description.launch.py \
+  arm_type:=65 arm_variant:=6f use_rviz:=true
+```
+
+`arm_type` 支持的十个型号族见
+[rm_bringup能力表](../rm_bringup/README_CN.md)。`arm_variant:=auto`对RX75选择
+`6fb`，对其他型号选择 `standard`。入口还提供 `use_sim_time`、
+`joint_states_topic`、`use_joint_state_bridge`、
+`use_joint_state_publisher_gui` 和 `use_rviz`。RX75默认自动启用双臂
+joint-state bridge。不支持的组合会在启动节点前报错；原有21个
+display入口保留为兼容wrapper。
+
+Foxy URDF数值按字段从 `rm_models` 提交
+`bdb12ca3db532cb677ae33fa94795ac9c1b01f98` 同步，同时保留Foxy的package URI、
+命名、transmission和Gazebo集成。该来源不包含独立GEN72-II模型，因此
+GEN72-II保留Foxy现有模型，不声称已完成来源同步。RX75-6FB的J8为
+左 `-0.0962 m`、右 `+0.0962 m`；RX75-6FB-V保持左 `-0.119 m`、右
+`+0.119 m`。
+
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_description功能包。  
 ```
 rm@rm-desktop:~$ ros2 launch rm_description rm_<arm_type>_display.launch.py
@@ -83,6 +106,7 @@ rm@rm-desktop:~$ rviz2
 ```
 ├── CMakeLists.txt                #编译规则文件
 ├── launch
+│   ├── rm_description.launch.py     #统一模型描述入口
 │   ├── rm_63_6f_display.launch.py  #63六维力启动文件
 │   ├── rm_63_6fb_display.launch.py #63一体化六维力启动文件
 │   ├── rm_63_display.launch.py     #63启动文件

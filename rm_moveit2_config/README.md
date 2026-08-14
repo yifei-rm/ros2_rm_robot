@@ -1,12 +1,12 @@
 <div align="right">
 
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_moveit2_config/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_moveit2_config/README.md)
+[简体中文](README_CN.md)|[English](README.md)
  
 </div>
 
 <div align="center">
 
-# RealMan Robotic Arm rm_moveit2_config User Manual V1.6
+# RealMan Robotic Arm rm_moveit2_config User Manual V1.7
 
 RealMan Intelligent Technology (Beijing) Co., Ltd. 
 
@@ -21,6 +21,7 @@ Revision History:
 |V1.4    | 2025-4-3 | Amend(Add Gen72_II adapter files) |
 |V1.5    | 2025-11-13 | Amend(Add RML63_III adapter files) |
 |V1.6    | 2026-4-16 | Amend(Add ECO62 and RX75 adapter files) |
+|V1.7    | 2026-8-14 | Amend(Standardize real/Gazebo MoveIt launch safety arguments) |
 
 </div>
 
@@ -46,6 +47,20 @@ Through the introduction of the three parts, it can help you:
 * 3.Familiar with the topic related to the package for easy development and use.
 Source code address: https://github.com/RealManRobot/ros2_rm_robot.git。
 ## rm_moveit2_config_Use
+### Common launch arguments
+
+All 44 `real_moveit_demo*` and `gazebo_moveit_demo*` launch entries accept:
+
+- `use_rviz` (default `true`): start or suppress MoveIt RViz.
+- `allow_trajectory_execution` (default `true`): permit MoveIt trajectory
+  execution. For the first real-robot validation, pass
+  `allow_trajectory_execution:=false` so planning can be inspected without
+  sending trajectories.
+
+For complete system startup, prefer the unified
+[`rm_bringup.launch.py`](../rm_bringup/README.md). It forwards both arguments.
+A `move_group` process exit requests shutdown of the containing launch.
+
 ### moveit2_Controlling_Virtual_Robotic_Arm
 First, after configuring the environment and completing the connection, we can directly launch the node through the following command.
 ```
@@ -105,7 +120,6 @@ The command to start the integrated six-axis force version is currently availabl
 rm@rm-desktop:~$ ros2 launch rm_<arm_type>_config real_moveit_demo_6fb.launch.py
 ```
 Note that the above commands need to replace <arm_type> with the corresponding robotic arm model, which can be selected as 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, and gen72_II. RX75 uses dedicated launch files under `rm_rx75_config`: `ros2 launch rm_rx75_config real_moveit_demo_6fb_v.launch.py` for RX75-6FB-V and `ros2 launch rm_rx75_config real_moveit_demo_6fb.launch.py` for RX75-6FB.  
-After completing the above operations, the following interface appears, and we can control the movement of the robotic arm by dragging the control ball.  
 **Note: The newly added gen72_II and 63_III models are both included in their respective model files. The difference lies in the fact that during startup, it is necessary to append the identifier II or III after "demo"**
 The start command for 63_III is as follows:
 ``` C++
@@ -114,6 +128,12 @@ ros2 launch rm_63_config demo_III.launch.py
 //Six-axis force 6FB version
 ros2 launch rm_63_config demo_III_6fb.launch.py
 ```
+You can also use the rm_bringup package to start all four packages at once
+(strongly recommended):
+```
+rm@rm-desktop:~$ ros2 launch rm_bringup rm_bringup.launch.py arm_type:=65 mode:=real
+```
+After completing the above operations, the following interface appears, and we can control the movement of the robotic arm by dragging the control ball.  
 ![image](doc/rm_moveit2_config4.png)
 ## rm_moveit2_config_Architecture_Description
 ### Overview_of_package_files

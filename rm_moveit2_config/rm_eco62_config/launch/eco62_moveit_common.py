@@ -4,9 +4,12 @@ import xacro
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, EmitEvent
+from launch.conditions import IfCondition
+from launch.events import Shutdown
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def load_file(package_name, file_path):
@@ -31,7 +34,7 @@ def load_yaml(package_name, file_path):
         return None
 
 
-def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
+def generate_moveit_launch(robot_xacro, xacro_mappings=None):
     package_name = "rm_eco62_config"
 
     tutorial_arg = DeclareLaunchArgument(
@@ -104,7 +107,17 @@ def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
         "use_fake_hardware": False,
     }
 
+    move_group_configuration = {
+        "allow_trajectory_execution": ParameterValue(
+            LaunchConfiguration("allow_trajectory_execution"),
+            value_type=bool,
+        )
+    }
+
     move_group_node = Node(
+        on_exit=[
+            EmitEvent(event=Shutdown(reason="MoveIt move_group exited"))
+        ],
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
@@ -116,11 +129,13 @@ def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
+            move_group_configuration,
         ],
     )
 
     rviz_config = LaunchConfiguration("rviz_config")
     rviz_node = Node(
+        condition=IfCondition(LaunchConfiguration("use_rviz")),
         package="rviz2",
         executable="rviz2",
         name="rviz2",
@@ -137,6 +152,10 @@ def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
     return LaunchDescription(
         [
             tutorial_arg,
+            DeclareLaunchArgument("use_rviz", default_value="true"),
+            DeclareLaunchArgument(
+                "allow_trajectory_execution", default_value="true"
+            ),
             DeclareLaunchArgument(
                 "rviz_config",
                 default_value=os.path.join(
@@ -149,3 +168,11 @@ def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
             move_group_node,
         ]
     )
+
+
+def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
+    return generate_moveit_launch(robot_xacro, xacro_mappings)
+
+
+def generate_moveit_real_launch(robot_xacro, xacro_mappings=None):
+    return generate_moveit_launch(robot_xacro, xacro_mappings)

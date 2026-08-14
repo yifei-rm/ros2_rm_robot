@@ -1,12 +1,12 @@
 <div align="right">
  
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/tree/foxy/rm_bringup/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/tree/foxy/rm_bringup/README.md)
+[简体中文](README_CN.md)|[English](README.md)
 
 </div>
 
 <div align="center">
 
-# 睿尔曼机器人rm_bringup使用说明书V1.6
+# 睿尔曼机器人rm_bringup使用说明书V1.7
  
 睿尔曼智能科技（北京）有限公司 
 文件修订记录：
@@ -20,6 +20,7 @@
 |V1.4    |2025-4-7 |修订(添加了GEN72_II适配文件) |
 |V1.5    |2025-11-13 |修订(添加了RML63_III适配文件) |
 |V1.6    |2026-4-16 |修订(添加ECO62、RX75适配文件) |
+|V1.7    |2026-8-14 |修订(新增统一启动入口) |
 
 </div>
 
@@ -42,6 +43,50 @@ rm_bringup功能包为实现多个launch文件同时运行所设计的功能包�
 * 2.熟悉功能包中的文件构成及作用。
 * 3.熟悉功能包相关的话题，方便开发和使用
 ## rm_bringup功能包使用
+### 统一启动入口
+
+推荐使用 `rm_bringup.launch.py`。它组合Foxy的driver、description、control、
+Gazebo Classic和MoveIt launch。原有42个按型号拆分的文件保留为兼容wrapper。
+
+```bash
+ros2 launch rm_bringup rm_bringup.launch.py \
+  arm_type:=65 arm_variant:=6f mode:=gazebo
+```
+
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | `63/63_iii/65/75/eco62/eco63/eco65/gen72/gen72_ii/rx75` |
+| `arm_variant` | `auto` | RX75解析为 `6fb`，其他型号解析为 `standard`；也可显式选择型号支持的 `standard/6f/6fb/6fb_v` |
+| `mode` | `real` | `real` 或 `gazebo` |
+| `allow_trajectory_execution` | `true` | 是否允许MoveIt执行轨迹；首次真机验证应使用 `false` |
+| `use_moveit` | `true` | 是否启动MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
+| `use_rviz` | `true` | 是否启动MoveIt RViz |
+| `driver_config` | `auto` | 真机模式下的单臂driver YAML |
+| `left_driver_config` / `right_driver_config` | `auto` | 真机模式下的RX75左/右臂driver YAML |
+| `follow` | `auto` | 真机控制策略：`auto/true/false` |
+| `joint_states_topic` | `auto` | 公开入口当前仅支持 `auto`，按型号和模式选择默认Topic |
+| `start_gazebo` | `true` | Gazebo模式下是否启动Gazebo Classic |
+| `use_gazebo_gui` | `true` | 是否启动Gazebo Classic图形界面 |
+
+支持的型号与末端版本：
+
+| 型号 | 支持版本 |
+| :--- | :--- |
+| `63` | `standard`, `6f`, `6fb` |
+| `63_iii` | `standard`, `6fb` |
+| `65` | `standard`, `6f`, `6fb` |
+| `75` | `standard`, `6f`, `6fb` |
+| `eco62` | `standard` |
+| `eco63` | `standard`, `6fb` |
+| `eco65` | `standard`, `6f`, `6fb` |
+| `gen72` | `standard` |
+| `gen72_ii` | `standard` |
+| `rx75` | `6fb`, `6fb_v` |
+
+不支持的组合会在启动任何节点前报错，Gazebo模式会拒绝真机专用参数。
+RX75默认选择 `6fb`；需要视觉版本时必须显式使用 `arm_variant:=6fb_v`。
+Gazebo模式保留历史行为，延时8秒后启动MoveIt。
+
 ### moveit2控制真实机械臂
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_bringup功能包中的launch.py文件。
 ```
@@ -105,6 +150,7 @@ rm@rm-desktop:~$ ros2 launch rm_bringup rm_65_gazebo.launch.py
 │   ├── rm_bringup2.png                 #图片2
 │   └── rm_bringup3.png                 #图片3
 ├── launch                              #启动文件
+│   ├── rm_bringup.launch.py             #所有支持型号/末端/模式的统一入口
 │   ├── rm_63_6f_bringup.launch.py      #63臂六维力moveit2启动文件
 │   ├── rm_63_6f_gazebo.launch.py       #63臂六维力gazebo启动文件
 │   ├── rm_63_6fb_bringup.launch.py     #63臂一体化六维力moveit2启动文件

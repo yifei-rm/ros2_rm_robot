@@ -4,6 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    EmitEvent,
     ExecuteProcess,
     IncludeLaunchDescription,
     RegisterEventHandler,
@@ -11,34 +12,52 @@ from launch.actions import (
 )
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 import xacro
 
 
-def generate_gazebo_classic_demo_launch(
+def resolve_auto_joint_states_topic(value, default_topic):
+    requested = value.strip()
+    if requested != "auto":
+        raise RuntimeError(
+            "Launch argument 'joint_states_topic' currently only supports "
+            f"'auto'; received '{requested or '<empty>'}'."
+        )
+    return default_topic
+
+
+def _shutdown(reason):
+    return EmitEvent(event=Shutdown(reason=reason))
+
+
+def generate_gazebo_classic_demo_actions(
     *,
     urdf_filename,
     robot_name_in_model,
     controller_names,
     xacro_mappings=None,
     static_transforms=None,
-    clock_topic_default="/clock",
-    joint_states_topic_default="/joint_states",
+    start_gazebo=True,
+    use_gazebo_gui=True,
+    clock_topic="/clock",
+    joint_states_topic="/joint_states",
+    spawn_entity_timeout="120",
+    use_sim_time=True,
     post_spawn_actions=None,
 ):
+    """Build shared Gazebo Classic actions for one resolved robot variant."""
     package_name = "rm_gazebo"
-    start_gazebo = LaunchConfiguration("start_gazebo")
-    use_gazebo_gui = LaunchConfiguration("use_gazebo_gui")
-    clock_topic = LaunchConfiguration("clock_topic")
-    joint_states_topic = LaunchConfiguration("joint_states_topic")
-    spawn_entity_timeout = LaunchConfiguration("spawn_entity_timeout")
-
     pkg_share = get_package_share_directory(package_name)
     gazebo_ros_share = get_package_share_directory("gazebo_ros")
     urdf_model_path = os.path.join(pkg_share, "config", urdf_filename)
+
+    if not os.path.isfile(urdf_model_path):
+        raise RuntimeError(f"Gazebo model file does not exist: {urdf_model_path}")
 
     robot_description = xacro.process_file(
         urdf_model_path,
@@ -53,6 +72,7 @@ def generate_gazebo_classic_demo_launch(
         launch_arguments={
             "init": "true",
             "factory": "true",
+            "server_required": "true",
             "verbose": "true",
         }.items(),
         condition=IfCondition(start_gazebo),
@@ -62,16 +82,26 @@ def generate_gazebo_classic_demo_launch(
         PythonLaunchDescriptionSource(
             os.path.join(gazebo_ros_share, "launch", "gzclient.launch.py")
         ),
-        launch_arguments={
-            "verbose": "true",
-        }.items(),
+        launch_arguments={"verbose": "true"}.items(),
         condition=IfCondition(use_gazebo_gui),
     )
 
     node_robot_state_publisher = Node(
+        on_exit=[
+            _shutdown("Gazebo robot_state_publisher exited")
+        ],
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        parameters=[{"use_sim_time": True}, params, {"publish_frequency": 15.0}],
+        parameters=[
+            {
+                "use_sim_time": ParameterValue(
+                    use_sim_time,
+                    value_type=bool,
+                )
+            },
+            params,
+            {"publish_frequency": 15.0},
+        ],
         remappings=[
             ("/clock", clock_topic),
             ("/joint_states", joint_states_topic),
@@ -131,22 +161,93 @@ def generate_gazebo_classic_demo_launch(
         for controller in controller_names
     ]
 
-    def spawn_controllers_after_success(event, _):
-        if event.returncode == 0:
-            actions = [TimerAction(period=2.0, actions=spawn_controllers)]
-            if post_spawn_actions:
-                if isinstance(post_spawn_actions, list):
-                    actions.extend(post_spawn_actions)
-                else:
-                    actions.append(post_spawn_actions)
-            return actions
-        return []
+    def spawn_controllers_after_success(event, _context):
+        if event.returncode != 0:
+            return [
+                _shutdown(
+                    f"Gazebo entity '{robot_name_in_model}' failed to spawn "
+                    f"(exit code {event.returncode})."
+                )
+            ]
+
+        actions = [TimerAction(period=2.0, actions=spawn_controllers)]
+        if post_spawn_actions:
+            if isinstance(post_spawn_actions, list):
+                actions.extend(post_spawn_actions)
+            else:
+                actions.append(post_spawn_actions)
+        return actions
 
     spawn_controllers_event = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=spawn_entity,
             on_exit=spawn_controllers_after_success,
         )
+    )
+
+    controller_exit_events = []
+    for controller_name, controller_process in zip(
+        controller_names, spawn_controllers
+    ):
+        def stop_on_controller_failure(
+            event,
+            _context,
+            name=controller_name,
+        ):
+            if event.returncode == 0:
+                return []
+            return [
+                _shutdown(
+                    f"Controller '{name}' failed to start "
+                    f"(exit code {event.returncode})."
+                )
+            ]
+
+        controller_exit_events.append(
+            RegisterEventHandler(
+                event_handler=OnProcessExit(
+                    target_action=controller_process,
+                    on_exit=stop_on_controller_failure,
+                )
+            )
+        )
+
+    return [
+        spawn_controllers_event,
+        *controller_exit_events,
+        gzserver,
+        gzclient,
+        node_robot_state_publisher,
+        *static_transform_nodes,
+        spawn_entity,
+    ]
+
+
+def generate_gazebo_classic_demo_launch(
+    *,
+    urdf_filename,
+    robot_name_in_model,
+    controller_names,
+    xacro_mappings=None,
+    static_transforms=None,
+    clock_topic_default="/clock",
+    joint_states_topic_default="/joint_states",
+    post_spawn_actions=None,
+):
+    """Build a legacy per-model Gazebo Classic launch description."""
+    actions = generate_gazebo_classic_demo_actions(
+        urdf_filename=urdf_filename,
+        robot_name_in_model=robot_name_in_model,
+        controller_names=controller_names,
+        xacro_mappings=xacro_mappings,
+        static_transforms=static_transforms,
+        start_gazebo=LaunchConfiguration("start_gazebo"),
+        use_gazebo_gui=LaunchConfiguration("use_gazebo_gui"),
+        clock_topic=LaunchConfiguration("clock_topic"),
+        joint_states_topic=LaunchConfiguration("joint_states_topic"),
+        spawn_entity_timeout=LaunchConfiguration("spawn_entity_timeout"),
+        use_sim_time=True,
+        post_spawn_actions=post_spawn_actions,
     )
 
     return LaunchDescription(
@@ -163,12 +264,7 @@ def generate_gazebo_classic_demo_launch(
                 default_value="120",
                 description="Seconds to wait for Gazebo spawn_entity service.",
             ),
-            spawn_controllers_event,
-            gzserver,
-            gzclient,
-            node_robot_state_publisher,
-            *static_transform_nodes,
-            spawn_entity,
+            *actions,
         ]
     )
 

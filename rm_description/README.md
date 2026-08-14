@@ -1,12 +1,12 @@
 <div align="right">
 
-[简体中文](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_description/README_CN.md)|[English](https://github.com/RealManRobot/ros2_rm_robot/blob/foxy/rm_description/README.md)
+[简体中文](README_CN.md)|[English](README.md)
  
 </div>
 
 <div align="center">
 
-# RealMan Robot rm_description User Manual V1.6
+# RealMan Robot rm_description User Manual V1.7
 
 RealMan Intelligent Technology (Beijing) Co., Ltd. 
 
@@ -21,6 +21,7 @@ Revision History:
 |V1.4   | 2025-4-7 | Amend(Add GEN72_II adapter files) |
 |V1.5   | 2025-11-13 | Amend(Add RML63_III adapter files) |
 |V1.6   | 2026-4-16 | Amend(Add ECO62 and RX75 adapter files) |
+|V1.7   | 2026-8-14 | Amend(Add the Foxy unified description entry, synchronize URDF data, and correct RX75 J8 offsets) |
 
 </div>
 
@@ -42,6 +43,28 @@ Through the introduction of the three parts, it can help you:
 * 3.Familiar with the topic related to the package for easy development and use.
 Source code address:https://github.com/RealManRobot/ros2_rm_robot.git.
 ## rm_description_Package_Use
+The unified entry point is recommended:
+
+```bash
+ros2 launch rm_description rm_description.launch.py \
+  arm_type:=65 arm_variant:=6f use_rviz:=true
+```
+
+`arm_type` accepts the ten model families listed in the
+[rm_bringup support matrix](../rm_bringup/README.md). `arm_variant:=auto`
+selects `6fb` for RX75 and `standard` for other models. The entry also exposes
+`use_sim_time`, `joint_states_topic`, `use_joint_state_bridge`,
+`use_joint_state_publisher_gui`, and `use_rviz`. RX75 enables its dual-arm
+joint-state bridge automatically. Unsupported combinations fail before nodes
+start; all 21 historical display files remain compatibility wrappers.
+
+The Foxy URDF values were synchronized field by field from `rm_models` commit
+`bdb12ca3db532cb677ae33fa94795ac9c1b01f98` while preserving Foxy package URIs,
+names, transmissions, and Gazebo integration. That source has no independent
+GEN72-II model, so GEN72-II remains the existing Foxy model and is not claimed
+as source-synchronized. For RX75-6FB, J8 is left `-0.0962 m` and right
+`+0.0962 m`; RX75-6FB-V remains left `-0.119 m` and right `+0.119 m`.
+
 First, after configuring the environment and completing the connection, we can directly start the node and run the rm_description package.
 ```
 rm@rm-desktop:~$ ros2 launch rm_description rm_<arm_type>_display.launch.py
@@ -86,6 +109,7 @@ The current rm_description package is composed of the following files.
 ```
 ├── CMakeLists.txt                # compilation rule file
 ├── launch
+│   ├── rm_description.launch.py     # unified model-description entry
 │   ├── rm_63_6f_display.launch.py  # 63 six-axis force launch file
 │   ├── rm_63_6fb_display.launch.py # 63 integrated six-axis force launch file
 │   ├── rm_63_display.launch.py     # 63 launch file
