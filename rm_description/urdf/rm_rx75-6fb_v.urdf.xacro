@@ -43,7 +43,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/base_link.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -57,7 +57,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/base_link.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -65,17 +65,17 @@
     name="left_Link1">
     <inertial>
       <origin
-        xyz="-0.488E-3 -13.727E-3 -10.765E-3"
+        xyz="-0.000290039965074493 -0.017324479063518 -0.0195297930889112"
         rpy="0 0 0" />
       <mass
-        value="1.559" />
+        value="0.851539025255045" />
       <inertia
-        ixx="2661.923E-6"
-        ixy="-31.029E-6"
-        ixz="9.34E-6"
-        iyy="2302.513E-6"
-        iyz="151.466E-6"
-        izz="1676.59E-6" />
+        ixx="0.00161691934372323"
+        ixy="-8.95170264050262E-06"
+        ixz="3.54023443014755E-06"
+        iyy="0.00155955305368666"
+        iyz="0.000290448081740522"
+        izz="0.000931373436376791" />
     </inertial>
     <visual>
       <origin
@@ -83,7 +83,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link1.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link1.STL" />
       </geometry>
       <material
         name="">
@@ -97,7 +97,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link1.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -114,8 +114,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-3.0194"
-      upper="3.0194"
+      lower="-3.105"
+      upper="3.105"
       effort="60"
       velocity="3.14" />
   </joint>
@@ -123,17 +123,17 @@
     name="left_Link2">
     <inertial>
       <origin
-        xyz="-0.112E-3 -148.134E-3 4.111E-3"
+        xyz="-0.000198065601723252 -0.121926317726403 0.0072587186335575"
         rpy="0 0 0" />
       <mass
-        value="1.394" />
+        value="0.870077465148622" />
       <inertia
-        ixx="6927.314E-6"
-        ixy="0.302E-6"
-        ixz="-2.679E-6"
-        iyy="1045.02E-6"
-        iyz="-801.141E-6"
-        izz="6864.526E-6" />
+        ixx="0.00342065901382288"
+        ixy="5.08107324203785E-06"
+        ixz="4.6897776824868E-07"
+        iyy="0.000757976929562103"
+        iyz="-0.000468041558256912"
+        izz="0.00341269847558394" />
     </inertial>
     <visual>
       <origin
@@ -141,7 +141,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link2.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link2.STL" />
       </geometry>
       <material
         name="">
@@ -155,7 +155,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link2.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -164,7 +164,7 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="-1.57079632679489 -1.5707963267949 0" />
+      rpy="1.57079632679489 -1.5707963267949 0" />
     <parent
       link="left_Link1" />
     <child
@@ -172,8 +172,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.6109"
-      upper="3.1067"
+      lower="-0.697"
+      upper="3.837"
       effort="60"
       velocity="3.14" />
   </joint>
@@ -181,17 +181,17 @@
     name="left_Link3">
     <inertial>
       <origin
-        xyz="0.032E-3 15.649E-3 -11.225E-3"
+        xyz="-0.000185688342147207 0.0189545043853434 -0.0222212911462448"
         rpy="0 0 0" />
       <mass
-        value="1.117" />
+        value="0.593225766113055" />
       <inertia
-        ixx="1757.334E-6"
-        ixy="0.706E-6"
-        ixz="3.864E-6"
-        iyy="1468.535E-6"
-        iyz="-112.641E-6"
-        izz="979.743E-6" />
+        ixx="0.000987322499389567"
+        ixy="5.33226956673084E-06"
+        ixz="2.46957622944146E-06"
+        iyy="0.000924038544676145"
+        iyz="-0.000182195069939146"
+        izz="0.000522426034777855" />
     </inertial>
     <visual>
       <origin
@@ -199,7 +199,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link3.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link3.STL" />
       </geometry>
       <material
         name="">
@@ -213,7 +213,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link3.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link3.STL" />
       </geometry>
     </collision>
   </link>
@@ -230,8 +230,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-3.0194"
-      upper="3.0194"
+      lower="-3.105"
+      upper="3.105"
       effort="30"
       velocity="3.925" />
   </joint>
@@ -239,17 +239,17 @@
     name="left_Link4">
     <inertial>
       <origin
-        xyz="-0.001E-3 85.449E-3 4.844E-3"
+        xyz="-1.56713806214975E-06 0.070361505538576 0.00824535562548243"
         rpy="0 0 0" />
       <mass
-        value="0.673" />
+        value="0.395483565870343" />
       <inertia
-        ixx="1283.435E-6"
-        ixy="-0.072E-6"
-        ixz="0.003E-6"
-        iyy="344.097E-6"
-        iyz="229.828E-6"
-        izz="1257.753E-6" />
+        ixx="0.000610265900032592"
+        ixy="-1.23566834166975E-09"
+        ixz="8.8946527472201E-09"
+        iyy="0.000225904948310313"
+        iyz="0.000115003375900826"
+        izz="0.000613899218313925" />
     </inertial>
     <visual>
       <origin
@@ -257,7 +257,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link4.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link4.STL" />
       </geometry>
       <material
         name="">
@@ -271,7 +271,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link4.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link4.STL" />
       </geometry>
     </collision>
   </link>
@@ -288,8 +288,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-2.2689"
-      upper="0.2618"
+      lower="-2.355"
+      upper="2.355"
       effort="30"
       velocity="3.925" />
   </joint>
@@ -297,17 +297,17 @@
     name="left_Link5">
     <inertial>
       <origin
-        xyz="-0.001E-3 -14.741E-3 -80.627E-3"
+        xyz="-1.06801658796215E-06 -0.0178419575517058 -0.076517474887456"
         rpy="0 0 0" />
       <mass
-        value="1.13" />
+        value="0.845200261498234" />
       <inertia
-        ixx="2343.205E-6"
-        ixy="0.074E-6"
-        ixz="-0.026E-6"
-        iyy="1934.356E-6"
-        iyz="443.762E-6"
-        izz="1091.781E-6" />
+        ixx="0.00155701312924725"
+        ixy="2.10574893252017E-08"
+        ixz="-3.0288997460395E-08"
+        iyy="0.00141119231348779"
+        iyz="0.000269335537553634"
+        izz="0.00070954635319368" />
     </inertial>
     <visual>
       <origin
@@ -315,7 +315,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link5.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link5.STL" />
       </geometry>
       <material
         name="">
@@ -329,7 +329,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link5.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link5.STL" />
       </geometry>
     </collision>
   </link>
@@ -346,8 +346,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-3.0194"
-      upper="3.0194"
+      lower="-3.105"
+      upper="3.105"
       effort="10"
       velocity="3.925" />
   </joint>
@@ -355,17 +355,17 @@
     name="left_Link6">
     <inertial>
       <origin
-        xyz="13.909E-3 -1.02E-3 3.245E-3"
+        xyz="0.012330807376007 0.00135452616166095 0.00645399584433975"
         rpy="0 0 0" />
       <mass
-        value="0.559" />
+        value="0.280942850777542" />
       <inertia
-        ixx="354.166E-6"
-        ixy="0.248E-6"
-        ixz="27.608E-6"
-        iyy="288.125E-6"
-        iyz="-0.694E-6"
-        izz="312.482E-6" />
+        ixx="0.000122186285621494"
+        ixy="-2.28189014024603E-06"
+        ixz="8.22069567209981E-06"
+        iyy="0.000141918728413125"
+        iyz="3.15709541385663E-06"
+        izz="0.000122117670908298" />
     </inertial>
     <visual>
       <origin
@@ -373,7 +373,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link6.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link6.STL" />
       </geometry>
       <material
         name="">
@@ -387,7 +387,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link6.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link6.STL" />
       </geometry>
     </collision>
   </link>
@@ -404,8 +404,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.9599"
-      upper="0.9599"
+      lower="-1.046"
+      upper="1.046"
       effort="10"
       velocity="3.925" />
   </joint>
@@ -413,17 +413,17 @@
     name="left_Link7">
     <inertial>
       <origin
-        xyz="20.024E-3 -71.000E-3 4.396E-3"
+        xyz="0.012883498052865615 -0.06802685939403529 0.00526417961581023"
         rpy="0 0 0" />
       <mass
-        value="0.483" />
+        value="0.4048" />
       <inertia
-        ixx="810.611E-6"
-        ixy="154.761E-6"
-        ixz="41.707E-6"
-        iyy="1152.095E-6"
-        iyz="-133.039E-6"
-        izz="1640.216E-6" />
+        ixx="0.0005393349281932882"
+        ixy="-0.0001227770843829096"
+        ixz="-1.949420011133908E-05"
+        iyy="0.000275709279620946"
+        iyz="-8.925280487085298E-05"
+        izz="0.0005558653531971319" />
     </inertial>
     <visual>
       <origin
@@ -431,7 +431,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link7.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link7.STL" />
       </geometry>
       <material
         name="">
@@ -445,7 +445,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link7.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link7.STL" />
       </geometry>
     </collision>
     <visual>
@@ -454,7 +454,7 @@
         rpy="1.57079632679489 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link8.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link8.STL" />
       </geometry>
       <material
         name="">
@@ -468,7 +468,7 @@
         rpy="1.57079632679489 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link8.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_left_arm_v/Link8.STL" />
       </geometry>
     </collision>
   </link>
@@ -485,8 +485,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-1.9024"
-      upper="0.6109"
+      lower="-0.697"
+      upper="1.988"
       effort="10"
       velocity="3.925" />
   </joint>
@@ -527,7 +527,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/base_link.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -541,7 +541,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/base_link.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -549,17 +549,17 @@
     name="right_Link1">
     <inertial>
       <origin
-        xyz="0.018E-3 -13.67E-3 -10.1E-3"
+        xyz="0.000281933525441178 0.0173244767243729 -0.0192845208683138"
         rpy="0 0 0" />
       <mass
-        value="1.559" />
+        value="0.851539173063523" />
       <inertia
-        ixx="2693.824E-6"
-        ixy="-0.293E-6"
-        ixz="2.442E-6"
-        iyy="2324.503E-6"
-        iyz="193.031E-6"
-        izz="1662.437E-6" />
+        ixx="0.00161711732486907"
+        ixy="-8.738491302599E-06"
+        ixz="-6.62994047326203E-06"
+        iyy="0.00155955306286215"
+        iyz="-0.000296910960072184"
+        izz="0.000931175547858567" />
     </inertial>
     <visual>
       <origin
@@ -567,7 +567,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link1.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link1.STL" />
       </geometry>
       <material
         name="">
@@ -581,7 +581,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link1.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -598,8 +598,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-3.0194"
-      upper="3.0194"
+      lower="-3.1"
+      upper="0.785"
       effort="60"
       velocity="3.14" />
   </joint>
@@ -607,17 +607,17 @@
     name="right_Link2">
     <inertial>
       <origin
-        xyz="-0.197E-3 -149.264E-3 -3.905E-3"
+        xyz="-2.7317E-05 -0.12193 -0.0073906"
         rpy="0 0 0" />
       <mass
-        value="1.384" />
+        value="0.87008" />
       <inertia
-        ixx="6726E-6"
-        ixy="0"
-        ixz="4E-6"
-        iyy="1028E-6"
-        iyz="750E-6"
-        izz="6677E-6" />
+        ixx="0.0034226"
+        ixy="7.938E-07"
+        ixz="-6.0676E-07"
+        iyy="0.00075798"
+        iyz="0.00047147"
+        izz="0.0034108" />
     </inertial>
     <visual>
       <origin
@@ -625,7 +625,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link2.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link2.STL" />
       </geometry>
       <material
         name="">
@@ -639,7 +639,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link2.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -648,7 +648,7 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="-1.5708 -1.5708 0" />
+      rpy="1.5708 -1.5708 0" />
     <parent
       link="right_Link1" />
     <child
@@ -656,8 +656,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.6109"
-      upper="3.1067"
+      lower="-0.524"
+      upper="3.11"
       effort="60"
       velocity="3.14" />
   </joint>
@@ -665,17 +665,17 @@
     name="right_Link3">
     <inertial>
       <origin
-        xyz="-0.154E-3 -15.652E-3 -11.241E-3"
+        xyz="0.00021396472224095 -0.0189545043784095 -0.0220154436028749"
         rpy="0 0 0" />
       <mass
-        value="1.117" />
+        value="0.593225765910811" />
       <inertia
-        ixx="1756.36E-6"
-        ixy="-4.257E-6"
-        ixz="-0.403E-6"
-        iyy="1468.096E-6"
-        iyz="112.003E-6"
-        izz="980.233E-6" />
+        ixx="0.000986910219936935"
+        ixy="5.83211562548265E-06"
+        ixz="-3.95759209043154E-06"
+        iyy="0.000924038544009075"
+        iyz="0.0001858435329204"
+        izz="0.000522838313490278" />
     </inertial>
     <visual>
       <origin
@@ -683,7 +683,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link3.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link3.STL" />
       </geometry>
       <material
         name="">
@@ -697,7 +697,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link3.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link3.STL" />
       </geometry>
     </collision>
   </link>
@@ -714,8 +714,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-3.0194"
-      upper="3.0194"
+      lower="-3.11"
+      upper="3.11"
       effort="30"
       velocity="3.925" />
   </joint>
@@ -723,17 +723,17 @@
     name="right_Link4">
     <inertial>
       <origin
-        xyz="0 86.537E-3 -4.411E-6"
+        xyz="6.19013993736592E-08 0.0703615063744377 -0.00824597973475982"
         rpy="0 0 0" />
       <mass
-        value="0.665" />
+        value="0.395483546701072" />
       <inertia
-        ixx="1209.416E-6"
-        ixy="0.112E-6"
-        ixz="0.007E-6"
-        iyy="332.227E-6"
-        iyz="-205.297E-6"
-        izz="1191.661E-6" />
+        ixx="0.000610273049120049"
+        ixy="4.90906926066453E-09"
+        ixz="1.73152622272655E-09"
+        iyy="0.000225904935160654"
+        iyz="-0.000115001851716899"
+        izz="0.000613892038453037" />
     </inertial>
     <visual>
       <origin
@@ -741,7 +741,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link4.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link4.STL" />
       </geometry>
       <material
         name="">
@@ -755,7 +755,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link4.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link4.STL" />
       </geometry>
     </collision>
   </link>
@@ -772,8 +772,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-2.2689"
-      upper="0.2618"
+      lower="-2.62"
+      upper="0"
       effort="30"
       velocity="3.925" />
   </joint>
@@ -781,17 +781,17 @@
     name="right_Link5">
     <inertial>
       <origin
-        xyz="0 14.739E-3 -80.627E-3"
+        xyz="7.18600424760887E-07 0.0178397746184391 -0.0765177293014231"
         rpy="0 0 0" />
       <mass
-        value="1.13" />
+        value="0.845201652493134" />
       <inertia
-        ixx="2343.069E-6"
-        ixy="0.048E-6"
-        ixz="0.015E-6"
-        iyy="1934.377E-6"
-        iyz="-443.673E-6"
-        izz="1091.67E-6" />
+        ixx="0.00155700921373504"
+        ixy="2.30662444536284E-08"
+        ixz="3.12697029261968E-08"
+        iyy="0.0014111953094615"
+        iyz="-0.000269335055058286"
+        izz="0.000709555431204978" />
     </inertial>
     <visual>
       <origin
@@ -799,7 +799,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link5.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link5.STL" />
       </geometry>
       <material
         name="">
@@ -813,7 +813,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link5.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link5.STL" />
       </geometry>
     </collision>
   </link>
@@ -830,8 +830,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-3.0194"
-      upper="3.0194"
+      lower="-3.11"
+      upper="3.11"
       effort="10"
       velocity="3.925" />
   </joint>
@@ -839,17 +839,17 @@
     name="right_Link6">
     <inertial>
       <origin
-        xyz="13.908E-3 -1.017E-3 -3.245E-3"
+        xyz="0.0123315374763978 0.00135875853089277 -0.00645514633066691"
         rpy="0 0 0" />
       <mass
-        value="0.559" />
+        value="0.280941853294711" />
       <inertia
-        ixx="354.168E-6"
-        ixy="-0.391E-6"
-        ixz="-27.069E-6"
-        iyy="288.127E-6"
-        iyz="0.742E-6"
-        izz="312.487E-6" />
+        ixx="0.000122186224957964"
+        ixy="-2.15955531399414E-06"
+        ixz="-8.22212756963968E-06"
+        iyy="0.000141920133270318"
+        iyz="-3.15815294288415E-06"
+        izz="0.000122120440173525" />
     </inertial>
     <visual>
       <origin
@@ -857,7 +857,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link6.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link6.STL" />
       </geometry>
       <material
         name="">
@@ -871,7 +871,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link6.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link6.STL" />
       </geometry>
     </collision>
   </link>
@@ -888,8 +888,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.9599"
-      upper="0.9599"
+      lower="-1.13"
+      upper="1.13"
       effort="10"
       velocity="3.925" />
   </joint>
@@ -897,17 +897,17 @@
     name="right_Link7">
     <inertial>
       <origin
-        xyz="20.008E-3 71E-3 4.302E-3"
+        xyz="0.009919069110329167 0.06765824548889174 0.005247446369401909"
         rpy="0 0 0" />
       <mass
-        value="0.483" />
+        value="0.395592830144305" />
       <inertia
-        ixx="810.996E-6"
-        ixy="155.421E-6"
-        ixz="42.374E-6"
-        iyy="1152.802E-6"
-        iyz="132.415E-6"
-        izz="1640.52E-6" />
+        ixx="0.0005508313551283986"
+        ixy="9.716722505344388E-05"
+        ixz="-1.4995092763820632E-05"
+        iyy="0.0002546219483334733"
+        iyz="9.227801252615191E-05"
+        izz="0.000547911950048062" />
     </inertial>
     <visual>
       <origin
@@ -915,7 +915,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link7.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link7.STL" />
       </geometry>
       <material
         name="">
@@ -929,7 +929,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link7.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link7.STL" />
       </geometry>
     </collision>
     <visual>
@@ -938,7 +938,7 @@
         rpy="-1.5707963267949 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link8.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link8.STL" />
       </geometry>
       <material
         name="">
@@ -952,7 +952,7 @@
         rpy="-1.5707963267949 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link8.STL" />
+          filename="package://rm_description/meshes/rm_rx75_arm/rm_rx75_right_arm_v/Link8.STL" />
       </geometry>
     </collision>
   </link>
@@ -969,8 +969,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.6109"
-      upper="1.9024"
+      lower="-0.697"
+      upper="1.99"
       effort="10"
       velocity="3.925" />
   </joint>
