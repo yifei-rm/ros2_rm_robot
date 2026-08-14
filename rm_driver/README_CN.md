@@ -62,6 +62,8 @@ RX75 使用左右两份配置；如需覆盖默认配置，应使用 `left_drive
 
 原有 8 个型号入口（`63`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`rx75`）现为兼容 wrapper，原命令仍可继续使用。
 
+驱动会按规范化后的 `arm_ip:tcp_port` 获取进程级独占锁。同一用户启动的第二个 `rm_driver` 若连接相同端点，会在初始化SDK前直接报错退出；不同IP或端口的机械臂仍可并行运行。正常退出和启动异常都会释放锁，锁文件位于 `XDG_RUNTIME_DIR/rm_driver`，无可用运行目录时使用当前用户私有的 `/tmp/rm_driver-<uid>`。
+
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，控制机械臂。  
 当前的控制基于我们没有改变过机械臂的IP即当前机械臂的IP仍为192.168.1.18。  
 rm@rm-desktop:~$ ros2 launch rm_driver rm_<arm_type>_driver.launch.py  

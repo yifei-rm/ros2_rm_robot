@@ -69,6 +69,8 @@ RX75 uses separate left and right configurations; override them with `left_drive
 
 The eight legacy model entry points (`63`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, and `rx75`) are now compatibility wrappers, and their existing commands remain supported.
 
+The driver acquires a process-level exclusive lock for the normalized `arm_ip:tcp_port` endpoint. A second `rm_driver` process owned by the same user and targeting that endpoint exits before SDK initialization, while drivers for different endpoints can run in parallel. Normal shutdown and startup failures release the lock. Lock files are stored under `XDG_RUNTIME_DIR/rm_driver`, with a private per-user `/tmp/rm_driver-<uid>` fallback.
+
 First, after configuring the environment and completing the connection, we can directly start the node and control the robotic arm through the following command.
 The current control is based on the fact that we have not changed the IP of the robotic arm, which is still 192.168.1.18.
 rm@rm-desktop:~$ ros2 launch rm_driver rm_<arm_type>_driver.launch.py

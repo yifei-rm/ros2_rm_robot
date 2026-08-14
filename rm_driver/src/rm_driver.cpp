@@ -15,9 +15,13 @@
 
 #include "rm_driver.h"
 #include <cerrno>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <mutex>
 #include <stdexcept>
+#include <sys/file.h>
+#include <sys/stat.h>
 
 using namespace std::chrono_literals;
 
@@ -26,6 +30,8 @@ namespace
 volatile sig_atomic_t hangup_requested = 0;
 std::mutex arm_lifecycle_mutex;
 bool rm_api_initialized = false;
+int arm_ownership_fd = -1;
+char arm_ownership_endpoint[INET_ADDRSTRLEN + 7] {};
 
 void hangup_handler(int sig)
 {
@@ -52,6 +58,126 @@ void monitor_hangup()
             return;
         }
         std::this_thread::sleep_for(50ms);
+    }
+}
+
+std::string normalize_ipv4_address(const std::string & address)
+{
+    struct in_addr binary_address {};
+    if(inet_pton(AF_INET, address.c_str(), &binary_address) != 1)
+    {
+        throw std::invalid_argument("Invalid arm_ip IPv4 address: " + address);
+    }
+
+    char normalized[INET_ADDRSTRLEN] {};
+    if(inet_ntop(AF_INET, &binary_address, normalized, sizeof(normalized)) == nullptr)
+    {
+        throw std::runtime_error(
+            "Failed to normalize arm_ip " + address + ": " + strerror(errno));
+    }
+    return normalized;
+}
+
+bool ensure_private_directory(const std::string & path)
+{
+    if(mkdir(path.c_str(), 0700) != 0 && errno != EEXIST)
+    {
+        return false;
+    }
+
+    struct stat directory_stat {};
+    if(lstat(path.c_str(), &directory_stat) != 0)
+    {
+        return false;
+    }
+    return S_ISDIR(directory_stat.st_mode) &&
+           directory_stat.st_uid == getuid() &&
+           (directory_stat.st_mode & 0077) == 0;
+}
+
+std::string arm_lock_directory()
+{
+    const char * runtime_dir = std::getenv("XDG_RUNTIME_DIR");
+    if(runtime_dir != nullptr && runtime_dir[0] == '/')
+    {
+        const std::string candidate = std::string(runtime_dir) + "/rm_driver";
+        if(ensure_private_directory(candidate))
+        {
+            return candidate;
+        }
+    }
+
+    const std::string fallback = "/tmp/rm_driver-" + std::to_string(getuid());
+    if(!ensure_private_directory(fallback))
+    {
+        throw std::runtime_error(
+            "Unable to create a private rm_driver lock directory at " + fallback);
+    }
+    return fallback;
+}
+
+void Acquire_Arm_Ownership(const std::string & ip, int port)
+{
+    if(port <= 0 || port > 65535)
+    {
+        throw std::invalid_argument("Invalid tcp_port: " + std::to_string(port));
+    }
+
+    const std::string endpoint = ip + ":" + std::to_string(port);
+    if(arm_ownership_fd >= 0)
+    {
+        if(endpoint == arm_ownership_endpoint)
+        {
+            return;
+        }
+        throw std::logic_error(
+            "rm_driver already owns endpoint " + std::string(arm_ownership_endpoint));
+    }
+
+    const std::string lock_path =
+        arm_lock_directory() + "/arm-" + ip + "-" + std::to_string(port) + ".lock";
+    const int lock_fd = open(
+        lock_path.c_str(), O_RDWR | O_CREAT | O_CLOEXEC | O_NOFOLLOW, 0600);
+    if(lock_fd < 0)
+    {
+        throw std::runtime_error(
+            "Unable to open ownership lock for " + endpoint + ": " + strerror(errno));
+    }
+
+    if(flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+    {
+        const int lock_error = errno;
+        close(lock_fd);
+        if(lock_error == EWOULDBLOCK || lock_error == EAGAIN)
+        {
+            throw std::runtime_error(
+                "Robot endpoint " + endpoint +
+                " is already owned by another rm_driver process");
+        }
+        throw std::runtime_error(
+            "Unable to lock robot endpoint " + endpoint + ": " + strerror(lock_error));
+    }
+
+    const std::string owner =
+        "pid=" + std::to_string(getpid()) + " endpoint=" + endpoint + "\n";
+    if(ftruncate(lock_fd, 0) == 0)
+    {
+        const ssize_t ignored = write(lock_fd, owner.data(), owner.size());
+        (void)ignored;
+    }
+    arm_ownership_fd = lock_fd;
+    std::snprintf(
+        arm_ownership_endpoint, sizeof(arm_ownership_endpoint), "%s", endpoint.c_str());
+}
+
+void Release_Arm_Ownership()
+{
+    if(arm_ownership_fd >= 0)
+    {
+        flock(arm_ownership_fd, LOCK_UN);
+        close(arm_ownership_fd);
+        arm_ownership_fd = -1;
+        arm_ownership_endpoint[0] = '\0';
     }
 }
 
@@ -4294,9 +4420,11 @@ RmArm::RmArm():
     {
         realman_arm = 75;
     }
-    tcp_ip = (char*)arm_ip_.c_str();
-    
+    arm_ip_ = normalize_ipv4_address(arm_ip_);
     tcp_port = tcp_port_;
+    tcp_ip = const_cast<char *>(arm_ip_.c_str());
+    Acquire_Arm_Ownership(arm_ip_, tcp_port);
+
     udp_hand_g = udp_hand_;
     rm_plus_base_g = udp_rm_plus_base_;
     rm_plus_state_g = udp_rm_plus_state_;
@@ -4919,6 +5047,7 @@ int main(int argc, char **argv) {
     }
 
     Arm_Destroy();
+    Release_Arm_Ownership();
     if(rclcpp::ok())
     {
         rclcpp::shutdown();
