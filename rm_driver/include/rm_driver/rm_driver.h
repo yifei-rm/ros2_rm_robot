@@ -27,6 +27,15 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <mutex>
+#include <stdexcept>
+#include <sys/file.h>
+#include <sys/stat.h>
+
 
 #include <sys/ioctl.h>          // 设置非阻塞需要用到的头文件
 #include <sys/time.h>
