@@ -113,7 +113,7 @@ Package introduction
 
 * This package is the moveit2 adaptation package of the robotic arm. It is used to adapt and realize the moveit2 planning and control functions of various series of robotic arms, mainly including the control functions of virtual robotic arm control and real robotic arm control.
 
-10. Moveit2 and hardware driver communication connection ([rm_config](https://github.com/RealManRobot/ros2_rm_robot/tree/jazzy/rm_control))
+10. Moveit2 and hardware driver communication connection ([rm_control](https://github.com/RealManRobot/ros2_rm_robot/tree/jazzy/rm_control))
 
 * This package is the communication connection package between the underlying driver package (rm_driver) and the moveit2 package (rm_moveit2_config). It is mainly used to subdivide the planning points of moveit2 and then pass them to the underlying driver package in the form of transmission to control the motion of the robotic arm.
 

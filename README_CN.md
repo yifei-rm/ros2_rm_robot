@@ -113,7 +113,7 @@ colcon build
 
 * 该功能包为机械臂的moveit2适配功能包，其作用为适配和实现各系列机械臂的moveit2规划控制功能，主要包括虚拟机械臂控制和真实机械臂控制两部分控制功能。
 
-10. Moveit2与硬件驱动通信连接([rm_config](https://github.com/RealManRobot/ros2_rm_robot/tree/jazzy/rm_control))
+10. Moveit2与硬件驱动通信连接([rm_control](https://github.com/RealManRobot/ros2_rm_robot/tree/jazzy/rm_control))
 
 * 该功能包为底层驱动功能包（rm_driver）和moveit2功能包（rm_moveit2_config）之间的通信连接功能包，主要功能为将moveit2的规划点进行细分然后通过透传的形式传递给底层驱动功能包控制机械臂运动。
 
