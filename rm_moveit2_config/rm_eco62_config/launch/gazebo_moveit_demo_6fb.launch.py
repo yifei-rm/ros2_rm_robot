@@ -100,6 +100,8 @@ def my_generate_moveit_rviz_launch(ld, moveit_config):
     )
 
     rviz_parameters = [
+        moveit_config.robot_description,
+        moveit_config.robot_description_semantic,
         moveit_config.planning_pipelines,
         moveit_config.robot_description_kinematics,
     ]
