@@ -8,12 +8,13 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
+from rm_description.variant_catalog import format_arm_type
+
 
 def generate_legacy_bringup(arm_type, arm_variant, mode):
     """Route one legacy filename into the component-level unified launch."""
     arguments = {
-        'arm_type': arm_type,
-        'arm_variant': arm_variant,
+        'arm_type': format_arm_type(arm_type, arm_variant),
         'mode': mode,
     }
     actions = []

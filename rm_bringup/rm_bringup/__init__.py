@@ -8,7 +8,6 @@ from .variant_catalog import (
     LaunchReference,
     MODES,
     normalize_arm_type,
-    normalize_arm_variant,
     normalize_mode,
     resolve_variant,
     ResolvedBringupPlan,
@@ -29,7 +28,6 @@ __all__ = [
     'ResolvedBringupPlan',
     'VariantEntry',
     'normalize_arm_type',
-    'normalize_arm_variant',
     'normalize_mode',
     'resolve_variant',
 ]

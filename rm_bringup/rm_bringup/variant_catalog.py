@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 import re
 
+from rm_description.variant_catalog import format_arm_type, normalize_selection
+
 
 PACKAGE_NAME = 'rm_bringup'
 
@@ -461,25 +463,6 @@ def normalize_arm_type(value: str | None) -> str:
     return normalized
 
 
-def normalize_arm_variant(value: str | None) -> str:
-    """Normalize case and separators in an end-link variant name."""
-    raw_value = _require_token(value, 'arm_variant')
-    compact_value = _compact_token(raw_value)
-    aliases = {
-        'standard': 'standard',
-        '6f': '6f',
-        '6fb': '6fb',
-        '6fbv': '6fb_v',
-    }
-    normalized = aliases.get(compact_value)
-    if normalized is None:
-        raise ValueError(
-            f'Unsupported arm_variant: {raw_value}. '
-            f"Valid arm variants: {', '.join(ARM_VARIANTS)}."
-        )
-    return normalized
-
-
 def normalize_mode(value: str | None) -> str:
     """Normalize a launch mode while rejecting unsupported simulation aliases."""
     raw_value = _require_token(value, 'mode')
@@ -493,22 +476,22 @@ def normalize_mode(value: str | None) -> str:
 
 def resolve_variant(
     arm_type: str | None,
-    arm_variant: str | None = 'standard',
     mode: str | None = 'real',
 ) -> ResolvedBringupPlan:
     """Resolve public selector values to a component-level bringup plan."""
-    canonical_arm_type = normalize_arm_type(arm_type)
-    canonical_arm_variant = normalize_arm_variant(arm_variant)
+    family, canonical_arm_variant = normalize_selection(arm_type)
+    canonical_arm_type = normalize_arm_type(family)
     canonical_mode = normalize_mode(mode)
 
     entry = VARIANT_CATALOG.get((canonical_arm_type, canonical_arm_variant))
     if entry is None:
-        valid_variants = ', '.join(VARIANTS_BY_ARM_TYPE[canonical_arm_type])
+        valid_selections = ', '.join(
+            format_arm_type(canonical_arm_type, variant)
+            for variant in VARIANTS_BY_ARM_TYPE[canonical_arm_type]
+        )
         raise ValueError(
-            'Unsupported combination: '
-            f'arm_type={canonical_arm_type}, '
-            f'arm_variant={canonical_arm_variant}.\n'
-            f'Valid variants for {canonical_arm_type}: {valid_variants}.'
+            f'Unsupported arm_type: {arm_type}. '
+            f'Valid arm_type values for {canonical_arm_type}: {valid_selections}.'
         )
 
     moveit_package, real_moveit_launch, gazebo_moveit_launch = (

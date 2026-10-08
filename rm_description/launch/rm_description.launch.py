@@ -7,8 +7,11 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
-from rm_description.variant_catalog import normalize_selection, resolve_variant
+from rm_description.variant_catalog import (
+    DESCRIPTION_VARIANTS, MODEL_FORMATS, normalize_selection, resolve_variant,
+)
 
 
 _TRUE_VALUES = {"1", "true", "yes", "on"}
@@ -42,15 +45,14 @@ def _xacro_command(model_path, mappings):
 
 def _launch_setup(context):
     requested_arm_type = _launch_value(context, "arm_type")
-    requested_variant = _launch_value(context, "arm_variant")
     try:
-        spec = resolve_variant(requested_arm_type, requested_variant)
+        spec = resolve_variant(
+            requested_arm_type, _launch_value(context, "model"),
+        )
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
 
-    arm_type, arm_variant = normalize_selection(
-        requested_arm_type, requested_variant
-    )
+    arm_type, arm_variant = normalize_selection(requested_arm_type)
     description_share = get_package_share_directory("rm_description")
     model_path = os.path.join(description_share, "urdf", spec.model_file)
     rviz_path = os.path.join(description_share, "rviz", spec.rviz_file)
@@ -60,15 +62,22 @@ def _launch_setup(context):
         )
 
     mappings = dict(spec.xacro_mappings)
+    original_mappings = dict(DESCRIPTION_VARIANTS[(arm_type, arm_variant)].xacro_mappings)
     for mapping_name in ("link6_type", "link7_type", "base_type"):
         override = _launch_value(context, f"{mapping_name}_override").strip()
         if override:
-            if mapping_name not in mappings:
+            if mapping_name not in original_mappings:
                 raise RuntimeError(
                     f"'{mapping_name}_override' is not valid for "
-                    f"arm_type='{arm_type}', arm_variant='{arm_variant}'."
+                    f"arm_type='{requested_arm_type}'."
                 )
-            mappings[mapping_name] = override
+            if mapping_name in mappings:
+                mappings[mapping_name] = override
+            elif override != original_mappings[mapping_name]:
+                raise RuntimeError(
+                    f"'{mapping_name}_override' cannot change a GLB variant. "
+                    "Select arm_type or use model:=stl for custom STL mappings."
+                )
 
     if spec.dual_arm:
         mappings.update(
@@ -110,7 +119,9 @@ def _launch_setup(context):
         )
 
     robot_state_parameters = {
-        "robot_description": _xacro_command(model_path, mappings)
+        "robot_description": ParameterValue(
+            _xacro_command(model_path, mappings), value_type=str
+        )
     }
     if use_sim_time:
         robot_state_parameters["use_sim_time"] = True
@@ -196,11 +207,14 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "arm_type",
                 description=(
-                    "Robot family: 63, 63_iii, 65, 75, eco62, eco63, "
-                    "eco65, gen72, gen72_ii, or rx75"
+                    "Robot model including end-link version, e.g. 65, "
+                    "65-6f, eco63-6fb, or rx75-6fb-v"
                 ),
             ),
-            DeclareLaunchArgument("arm_variant", default_value="standard"),
+            DeclareLaunchArgument(
+                "model", default_value="auto", choices=MODEL_FORMATS,
+                description="auto prefers available GLB visuals; stl selects the original model",
+            ),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
             DeclareLaunchArgument(
                 "joint_states_topic", default_value="/joint_states"

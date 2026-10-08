@@ -6,6 +6,8 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
+from rm_description.variant_catalog import format_arm_type, normalize_selection
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from gz_demo_common import (  # noqa: E402
@@ -214,35 +216,20 @@ def normalize_arm_type(value):
     return normalized
 
 
-def normalize_arm_variant(value):
-    raw_value = value.strip() if isinstance(value, str) else ""
-    normalized = {
-        "standard": "standard",
-        "6f": "6f",
-        "6fb": "6fb",
-        "6fbv": "6fb_v",
-    }.get(_compact_token(raw_value))
-    if normalized is None:
-        raise ValueError(
-            f"Unsupported arm_variant: {raw_value or value}. "
-            f"Valid arm variants: {', '.join(ARM_VARIANTS)}."
-        )
-    return normalized
-
-
-def resolve_variant(arm_type, arm_variant="standard"):
-    canonical_arm_type = normalize_arm_type(arm_type)
-    canonical_arm_variant = normalize_arm_variant(arm_variant)
+def resolve_variant(arm_type):
+    family, canonical_arm_variant = normalize_selection(arm_type)
+    canonical_arm_type = normalize_arm_type(family)
     specification = VARIANT_CATALOG.get(
         (canonical_arm_type, canonical_arm_variant)
     )
     if specification is None:
-        valid_variants = ", ".join(VARIANTS_BY_ARM_TYPE[canonical_arm_type])
+        valid_selections = ", ".join(
+            format_arm_type(canonical_arm_type, variant)
+            for variant in VARIANTS_BY_ARM_TYPE[canonical_arm_type]
+        )
         raise ValueError(
-            "Unsupported combination: "
-            f"arm_type={canonical_arm_type}, "
-            f"arm_variant={canonical_arm_variant}. "
-            f"Valid variants for {canonical_arm_type}: {valid_variants}."
+            f"Unsupported arm_type: {arm_type}. "
+            f"Valid arm_type values for {canonical_arm_type}: {valid_selections}."
         )
     return specification
 
@@ -250,7 +237,6 @@ def resolve_variant(arm_type, arm_variant="standard"):
 def _launch_setup(context):
     specification = resolve_variant(
         LaunchConfiguration("arm_type").perform(context),
-        LaunchConfiguration("arm_variant").perform(context),
     )
     requested_joint_states_topic = LaunchConfiguration(
         "joint_states_topic"
@@ -282,14 +268,9 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "arm_type",
                 description=(
-                    "Robot model: 63, 63_iii, 65, 75, eco62, eco63, "
-                    "eco65, gen72, gen72_ii, or rx75"
+                    "Robot model including end-link version, e.g. 65, "
+                    "65-6f, eco63-6fb, or rx75-6fb-v"
                 ),
-            ),
-            DeclareLaunchArgument(
-                "arm_variant",
-                default_value="standard",
-                description="End-link variant: standard, 6f, 6fb, or 6fb_v",
             ),
             DeclareLaunchArgument(
                 "start_gazebo",

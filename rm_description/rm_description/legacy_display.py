@@ -9,6 +9,8 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
+from rm_description.variant_catalog import MODEL_FORMATS, format_arm_type
+
 
 LegacyArgument = Tuple[str, str]
 
@@ -22,10 +24,10 @@ def generate_legacy_display_launch(
 ) -> LaunchDescription:
     """Include the generic launch file while retaining a legacy entry's defaults."""
 
-    actions = []
+    actions = [DeclareLaunchArgument("model", default_value="auto", choices=MODEL_FORMATS)]
     launch_arguments = {
-        "arm_type": arm_type,
-        "arm_variant": arm_variant,
+        "arm_type": format_arm_type(arm_type, arm_variant),
+        "model": LaunchConfiguration("model"),
         # Pin values that the old launch files did not expose.  This prevents a
         # same-named argument in an including launch file from changing legacy
         # behavior through the shared launch context.

@@ -50,14 +50,14 @@ The recommended entry point is `rm_bringup.launch.py`. Select the robot model, e
 
 ```bash
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 arm_variant:=6f mode:=gazebo
+  arm_type:=65-6f mode:=gazebo
 ```
 
 | Argument | Default | Description |
 | :--- | :--- | :--- |
-| `arm_type` | Required | `63/63_iii/65/75/eco62/eco63/eco65/gen72/gen72_ii/rx75` |
-| `arm_variant` | `standard` | `standard/6f/6fb/6fb_v`; it must be supported by the selected model |
+| `arm_type` | Required | Model including end-link version, e.g. `65`, `65-6f`, `eco63-6fb`; see the supported values below |
 | `mode` | `real` | `real` or `gazebo` |
+| `model` | `auto` | `auto/stl/glb`; in real mode, `auto` prefers matching GLB assets and otherwise uses STL |
 | `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; `false` keeps planning enabled without execution |
 | `use_moveit` | `true` | Start MoveIt; when false, set `use_rviz:=false` as well |
 | `use_rviz` | `true` | Start the MoveIt RViz process |
@@ -68,20 +68,20 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | `joint_states_topic` | `auto` | Only `auto` is currently supported; it selects the model/mode default |
 | `start_gazebo` | `true` | Start Gazebo processes in gazebo mode |
 
-Supported model and variant combinations:
+Supported arm_type values (bare families select the standard version):
 
-| Model | Supported variants |
+| Model | Supported arm_type values |
 | :--- | :--- |
-| `63` | `standard`, `6f`, `6fb` |
-| `63_iii` | `standard`, `6fb` |
-| `65` | `standard`, `6f`, `6fb` |
-| `75` | `standard`, `6f`, `6fb` |
-| `eco62` | `standard` |
-| `eco63` | `standard`, `6fb` |
-| `eco65` | `standard`, `6f`, `6fb` |
-| `gen72` | `standard` |
-| `gen72_ii` | `standard` |
-| `rx75` | `6fb`, `6fb_v` |
+| `63` | `63`, `63-6f`, `63-6fb` |
+| `63_iii` | `63_iii`, `63_iii-6fb` |
+| `65` | `65`, `65-6f`, `65-6fb` |
+| `75` | `75`, `75-6f`, `75-6fb` |
+| `eco62` | `eco62` |
+| `eco63` | `eco63`, `eco63-6fb` |
+| `eco65` | `eco65`, `eco65-6f`, `eco65-6fb` |
+| `gen72` | `gen72` |
+| `gen72_ii` | `gen72_ii` |
+| `rx75` | `rx75-6fb`, `rx75-6fb-v` |
 
 Unsupported combinations fail before any node starts. For example, the unified entry does not expose ECO62 with `6fb`. During real-robot checks, `allow_trajectory_execution:=false` can be passed temporarily without changing its default.
 
@@ -91,6 +91,25 @@ model-specific entries are thin compatibility wrappers; existing commands and
 the RX75 `use_moveit_rviz` argument remain available. Gazebo intentionally
 keeps the historical eight-second MoveIt delay in this structural migration;
 controller-readiness sequencing will be implemented separately.
+
+### Model selection and offline planning
+
+In `mode:=real`, the default `model:=auto` selects colored GLB for the 14 variants with
+matching assets. TF and MoveIt use the same robot description. Select `model:=stl` for
+the original STL model, or `model:=glb` to require GLB; a missing GLB variant fails
+before nodes start.
+
+The common offline planning entry `rm_moveit.launch.py` also accepts `model:=auto/stl/glb`.
+Trajectory execution is disabled by default, and it does not start hardware driver or
+control nodes:
+
+```bash
+ros2 launch rm_bringup rm_moveit.launch.py \
+  arm_type:=eco62 use_joint_state_publisher_gui:=true
+```
+
+In `mode:=gazebo`, `model:=auto` and `model:=stl` use the original STL simulation
+configuration; explicit `model:=glb` fails.
 
 ### moveit2_Controlling_Real_Robotic_Arm
 First, after configuring the environment and completing the connection, we can directly launch the node and run the launch.py file in the rm_bringup package through the following command.
@@ -155,6 +174,7 @@ The current rm_bringup package is composed of the following files.
 │   └── rm_bringup3.png                # pictures3
 ├── launch
 │   ├── rm_bringup.launch.py            # unified entry for every supported model, variant, and runtime mode
+│   ├── rm_moveit.launch.py             # common GLB/STL offline planning entry
 │   ├── rm_63_6f_bringup.launch.py     # 63 arm six-axis force moveit2 launch file
 │   ├── rm_63_6f_gazebo.launch.py      # 63 arm six-axis force gazebo launch file
 │   ├── rm_63_6fb_bringup.launch.py    # 63 arm integrated six-axis force moveit2 launch file

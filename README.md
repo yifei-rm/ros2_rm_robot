@@ -134,24 +134,23 @@ The above are the current major packages. Each package has its own role. For mor
 ### 2.0 Unified launch entry
 
 The recommended entry point is `rm_bringup.launch.py`. `arm_type` is required
-and selects the robot model; `arm_variant` selects the end-link version and
-defaults to `standard`; `mode` selects a real robot or Gazebo and defaults to
+and selects the robot model including its end-link version, e.g. `65`,
+`65-6f`, or `eco63-6fb`; `mode` selects a real robot or Gazebo and defaults to
 `real`. For example:
 
 ```bash
 # Real robot
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 arm_variant:=standard mode:=real
+  arm_type:=65 mode:=real
 
 # Gazebo
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 arm_variant:=standard mode:=gazebo
+  arm_type:=65 mode:=gazebo
 ```
 
-Unsupported model and variant combinations fail before any node starts. The
-available variants depend on the model; RX75 requires `6fb` or `6fb_v` to be
-specified explicitly. The model-specific commands below are compatibility
-wrappers that forward to the unified entry, so their existing filenames and
+Unsupported model and variant combinations fail before any node starts.
+The model-specific commands below are compatibility wrappers that forward to
+the unified entry, so their existing filenames and
 commands remain supported. See the [rm_bringup README](rm_bringup/README.md)
 for the complete support matrix and advanced arguments.
 

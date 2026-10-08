@@ -20,6 +20,8 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 import xacro
 
+from rm_description.variant_catalog import format_arm_type
+
 
 def resolve_auto_joint_states_topic(value, default_topic):
     """Resolve the only supported public selector to an internal topic."""
@@ -299,8 +301,7 @@ def generate_legacy_gz_demo_launch(
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(generic_launch_path),
                 launch_arguments={
-                    "arm_type": arm_type,
-                    "arm_variant": arm_variant,
+                    "arm_type": format_arm_type(arm_type, arm_variant),
                     "start_gazebo": LaunchConfiguration("start_gazebo"),
                     "joint_states_topic": LaunchConfiguration(
                         "joint_states_topic"
