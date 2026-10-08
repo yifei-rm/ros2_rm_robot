@@ -14,6 +14,10 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
 from rm_bringup.variant_catalog import LaunchReference, resolve_variant
+from rm_description.variant_catalog import (
+    GLB_VARIANTS, MODEL_FORMATS, format_arm_type,
+    resolve_variant as resolve_description,
+)
 
 
 _TRUE_VALUES = {'1', 'true', 'yes', 'on'}
@@ -63,20 +67,34 @@ def _resolved_joint_states_topic(context, plan):
     return plan.arm_profile.joint_states_topic(plan.mode)
 
 
-def _moveit_action(context, plan, joint_states_topic):
+def _moveit_action(context, plan, joint_states_topic, model):
     moveit_arguments = {
-        'allow_trajectory_execution': _value(
-            context, 'allow_trajectory_execution'
-        ),
-        'use_rviz': _value(context, 'use_rviz'),
+        'allow_trajectory_execution': str(_boolean_value(
+            'allow_trajectory_execution',
+            _value(context, 'allow_trajectory_execution'),
+        )).lower(),
+        'use_rviz': str(_boolean_value(
+            'use_rviz', _value(context, 'use_rviz')
+        )).lower(),
     }
+    if model == 'glb':
+        moveit_arguments.update({
+            'arm_type': format_arm_type(plan.arm_type, plan.arm_variant),
+            'model': model,
+            'joint_states_topic': joint_states_topic,
+            'use_robot_state_publisher': 'false',
+        })
+        return _include(
+            LaunchReference('rm_bringup', 'rm_moveit.launch.py'),
+            moveit_arguments,
+        )
     if plan.arm_type == 'rx75' and plan.mode == 'gazebo':
         moveit_arguments['joint_states_topic'] = joint_states_topic
 
     return _include(plan.moveit, moveit_arguments)
 
 
-def _build_real_actions(context, plan, joint_states_topic, use_moveit):
+def _build_real_actions(context, plan, joint_states_topic, use_moveit, model):
     actions = [
         _include(
             plan.driver,
@@ -94,8 +112,8 @@ def _build_real_actions(context, plan, joint_states_topic, use_moveit):
         _include(
             plan.description,
             {
-                'arm_type': plan.arm_type,
-                'arm_variant': plan.arm_variant,
+                'arm_type': format_arm_type(plan.arm_type, plan.arm_variant),
+                'model': model,
                 'use_sim_time': 'false',
                 'joint_states_topic': joint_states_topic,
                 'use_joint_state_bridge': (
@@ -116,7 +134,7 @@ def _build_real_actions(context, plan, joint_states_topic, use_moveit):
         ),
     ]
     if use_moveit:
-        actions.append(_moveit_action(context, plan, joint_states_topic))
+        actions.append(_moveit_action(context, plan, joint_states_topic, model))
     return actions
 
 
@@ -136,8 +154,7 @@ def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
         _include(
             plan.gazebo,
             {
-                'arm_type': plan.arm_type,
-                'arm_variant': plan.arm_variant,
+                'arm_type': format_arm_type(plan.arm_type, plan.arm_variant),
                 'start_gazebo': _value(context, 'start_gazebo'),
                 'joint_states_topic': 'auto',
             },
@@ -148,7 +165,7 @@ def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
             TimerAction(
                 period=8.0,
                 actions=[
-                    _moveit_action(context, plan, joint_states_topic)
+                    _moveit_action(context, plan, joint_states_topic, 'stl')
                 ],
             )
         )
@@ -159,11 +176,27 @@ def _compose_bringup(context):
     try:
         plan = resolve_variant(
             _value(context, 'arm_type'),
-            _value(context, 'arm_variant'),
             _value(context, 'mode'),
         )
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
+
+    requested_model = _value(context, 'model').strip().casefold()
+    try:
+        resolve_description(
+            format_arm_type(plan.arm_type, plan.arm_variant), requested_model
+        )
+    except ValueError as exc:
+        raise RuntimeError(str(exc)) from exc
+    if requested_model == 'glb' and plan.mode == 'gazebo':
+        raise RuntimeError(
+            "GLB models support mode='real' and rm_moveit.launch.py. "
+            "Gazebo requires model='auto' or model='stl'."
+        )
+    model = (
+        'glb' if plan.mode == 'real' and requested_model != 'stl'
+        and (plan.arm_type, plan.arm_variant) in GLB_VARIANTS else 'stl'
+    )
 
     use_moveit = _boolean_value(
         'use_moveit', _value(context, 'use_moveit')
@@ -185,7 +218,7 @@ def _compose_bringup(context):
     joint_states_topic = _resolved_joint_states_topic(context, plan)
     if plan.mode == 'real':
         return _build_real_actions(
-            context, plan, joint_states_topic, use_moveit
+            context, plan, joint_states_topic, use_moveit, model
         )
     return _build_gazebo_actions(
         context, plan, joint_states_topic, use_moveit
@@ -198,22 +231,18 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 'arm_type',
                 description=(
-                    'Robot model: 63, 63_iii, 65, 75, eco62, eco63, eco65, '
-                    'gen72, gen72_ii, or rx75'
-                ),
-            ),
-            DeclareLaunchArgument(
-                'arm_variant',
-                default_value='auto',
-                description=(
-                    'End-link variant: auto, standard, 6f, 6fb, or 6fb_v; '
-                    'auto selects 6fb for RX75 and standard otherwise'
+                    'Robot model including end-link version, e.g. 65, '
+                    '65-6f, eco63-6fb, or rx75-6fb-v'
                 ),
             ),
             DeclareLaunchArgument(
                 'mode',
                 default_value='real',
                 description='Bringup mode: real or gazebo',
+            ),
+            DeclareLaunchArgument(
+                'model', default_value='auto', choices=list(MODEL_FORMATS),
+                description='auto selects GLB when available; stl selects the original model',
             ),
             DeclareLaunchArgument(
                 'allow_trajectory_execution',

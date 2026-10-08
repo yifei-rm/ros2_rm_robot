@@ -92,6 +92,19 @@ DESCRIPTION_VARIANTS: Dict[Tuple[str, str], DescriptionVariant] = {
 }
 
 
+GLB_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75")
+MODEL_FORMATS = ("auto", "glb", "stl")
+GLB_VARIANTS = {
+    key: DescriptionVariant(
+        f"imported/{key[0]}_{key[1]}.urdf.xacro",
+        spec.rviz_file,
+        dual_arm=spec.dual_arm,
+    )
+    for key, spec in DESCRIPTION_VARIANTS.items()
+    if key[0] in GLB_ARM_TYPES
+}
+
+
 # The complete compatibility surface.  Tests keep this list synchronized with
 # the catalog and with the actual wrapper files.
 LEGACY_DISPLAY_LAUNCHES: Dict[str, Tuple[str, str]] = {
@@ -119,33 +132,46 @@ LEGACY_DISPLAY_LAUNCHES: Dict[str, Tuple[str, str]] = {
 }
 
 
-def normalize_selection(arm_type: str, arm_variant: str) -> Tuple[str, str]:
-    """Normalize spelling and resolve the model-aware default variant."""
-    normalized_arm_type = arm_type.strip().casefold()
-    normalized_variant = arm_variant.strip().casefold()
-    if normalized_variant == "auto":
-        normalized_variant = "6fb" if normalized_arm_type == "rx75" else "standard"
-    return normalized_arm_type, normalized_variant
+def format_arm_type(arm_type: str, arm_variant: str) -> str:
+    """Format an internal catalog pair as one public arm_type selector."""
+
+    if arm_variant == "standard":
+        return arm_type
+    return f"{arm_type}-{arm_variant.replace('_', '-')}"
 
 
-def resolve_variant(arm_type: str, arm_variant: str) -> DescriptionVariant:
-    """Resolve one legal pair or raise an error suitable for launch output."""
-    key = normalize_selection(arm_type, arm_variant)
-    try:
-        return DESCRIPTION_VARIANTS[key]
-    except KeyError as exc:
-        known_arm_types = sorted({item[0] for item in DESCRIPTION_VARIANTS})
-        valid_variants = sorted(
-            variant for candidate, variant in DESCRIPTION_VARIANTS if candidate == key[0]
+def normalize_selection(arm_type: str) -> Tuple[str, str]:
+    """Split a public selector without aliasing unsupported model variants."""
+
+    if not isinstance(arm_type, str) or not arm_type.strip():
+        raise ValueError("arm_type must be a non-empty string.")
+    normalized = arm_type.strip().casefold()
+    for suffix in ("6fb-v", "6fb_v", "6fb", "6f"):
+        if normalized.endswith(f"-{suffix}"):
+            return normalized[:-(len(suffix) + 1)], suffix.replace("-", "_")
+    return normalized, "standard"
+
+
+def resolve_variant(arm_type: str, model: str = "auto") -> DescriptionVariant:
+    """Resolve one selector or raise an error suitable for launch output."""
+
+    key = normalize_selection(arm_type)
+    model = model.strip().casefold()
+    if model not in MODEL_FORMATS:
+        raise ValueError(
+            f"Unsupported model='{model}'. "
+            f"Valid values: {', '.join(MODEL_FORMATS)}."
         )
-        if valid_variants:
-            detail = (
-                f"Valid variants for arm_type '{key[0]}': "
-                + ", ".join(valid_variants)
-            )
-        else:
-            detail = "Valid arm_type values: " + ", ".join(known_arm_types)
+    use_glb = model == "glb" or (model == "auto" and key in GLB_VARIANTS)
+    catalog = GLB_VARIANTS if use_glb else DESCRIPTION_VARIANTS
+    try:
+        return catalog[key]
+    except KeyError as exc:
+        valid_selections = sorted(
+            format_arm_type(*item) for item in catalog if item[0] == key[0]
+        ) or sorted(format_arm_type(*item) for item in catalog)
+        detail = "Valid arm_type values: " + ", ".join(valid_selections)
         raise ValueError(
             "Unsupported rm_description selection "
-            f"arm_type='{arm_type}', arm_variant='{arm_variant}'. {detail}"
+            f"arm_type='{arm_type}', model='{model}'. {detail}"
         ) from exc

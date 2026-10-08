@@ -43,40 +43,36 @@ Through the introduction of the three parts, it can help you:
 * 3.Familiar with the topic related to the package for easy development and use.
 Source code address:https://github.com/RealManRobot/ros2_rm_robot.git.
 ## rm_description_Package_Use
+Model selection defaults to `model:=auto`: variants with matching assets use colored GLB,
+while other variants use STL. Select `model:=stl` for the original appearance, or
+`model:=glb` to require GLB. See the [supported arm_type values](../rm_bringup/README.md#unified-launch-entry)
+and [offline MoveIt usage](../rm_bringup/README.md#model-selection-and-offline-planning).
+
 The generic entry is recommended:
 
 ```bash
 ros2 launch rm_description rm_description.launch.py \
-  arm_type:=65 arm_variant:=6f
+  arm_type:=65-6f
 ```
 
-It explicitly supports the 21 catalogued model/variant combinations. Common
-arguments include `use_sim_time`, `joint_states_topic`,
+It explicitly supports the 21 catalogued model/variant combinations. `model` accepts
+`auto/stl/glb` and defaults to `auto`; forcing `glb` for a variant without matching assets
+fails before nodes start. Other common arguments include `use_sim_time`, `joint_states_topic`,
 `use_joint_state_bridge`, `use_joint_state_publisher_gui`, and `use_rviz`.
 RX75 also accepts `left_xyz/left_rpy/right_xyz/right_rpy`. Invalid
 combinations fail before nodes are started. The historical
-`*_display.launch.py` commands below are compatibility wrappers and keep their
-original arguments and defaults.
+`*_display.launch.py` commands below are compatibility wrappers and also default to
+`model:=auto`. Other original arguments and defaults are retained. Append `model:=stl`
+to display the original STL appearance.
 
-The default `arm_variant:=auto` resolves to `6fb` for RX75 and `standard` for
-all other models. Select `arm_variant:=6fb_v` explicitly for RX75-6FB-V. For
-example, this command uses the default RX75-6FB model:
-
-```bash
-ros2 launch rm_description rm_description.launch.py \
-  arm_type:=rx75
-```
-
-For the generic RX75 entry, `use_joint_state_bridge:=auto` resolves to `true`,
-while the joint-state publisher GUI and RViz default to `false`. The legacy
-`rm_rx75_6fb_display.launch.py` and `rm_rx75_6fb_v_display.launch.py` wrappers
-retain their historical defaults: bridge `false`, GUI `true`, and RViz `true`.
+Select the model and end-link version directly with `arm_type`; there is no separate
+`arm_variant` argument. A bare family selects its standard version.
 
 First, after configuring the environment and completing the connection, we can directly start the node and run the rm_description package.
 ```
 rm@rm-desktop:~$ ros2 launch rm_description rm_<arm_type>_display.launch.py
 ```
-The `rm_<arm_type>_display.launch.py` pattern applies to 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, and gen72_II. There is no `rm_rx75_display.launch.py`; use `rm_rx75_6fb_display.launch.py` for RX75-6FB or `rm_rx75_6fb_v_display.launch.py` for RX75-6FB-V.
+The `rm_<arm_type>_display.launch.py` pattern applies to 65, 63, 63_III, 75, eco62, eco63, eco65, gen72, and gen72_II.
 
 The command to start the six-axis force version is currently available for 63, 65, 75, and eco65:
 ```
@@ -147,6 +143,7 @@ The current rm_description package is composed of the following files.
 │   ├── rm_rx75_6fb_display.launch.py   # RX75-6FB dual-arm launch file
 │   └── rm_rx75_6fb_v_display.launch.py # RX75-6FB-V dual-arm launch file
 ├── meshes                       # model file storage folder
+│   ├── glb                      # matching colored assets preferred by model:=auto
 │   ├── rm_63_arm                 #63 robotic arm model file storage folder
 │   │   ├── base_link.STL
 │   │   ├── link1.STL

@@ -47,12 +47,11 @@ After the installation of the environment and the package, we can run the rm_gaz
 
 The unified entry is the recommended way to launch the Gazebo world and robot:
 ```
-rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=rx75
+rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=65-6fb
 ```
 The unified entry accepts:
 
-* `arm_type`: required; one of `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`.
-* `arm_variant`: end-link variant, default `auto`; it resolves to `6fb` for RX75 and `standard` for other models. The catalog contains supported combinations of `standard`, `6f`, `6fb`, and `6fb_v`.
+* `arm_type`: required; selects the model and end-link version, e.g. `65`, `65-6fb`, or `rx75-6fb-v`. Bare families select the standard version. See the [supported selections](../rm_bringup/README.md#unified-launch-entry).
 * `start_gazebo`: default `true`. Set it to `false` only to reuse an already running Gazebo world named `empty`. This skips the Gazebo process itself, but robot spawning, the `/world/empty/clock` bridge, and controller spawning still run. If the external world is absent or entity creation times out, launch returns a non-zero status and does not attempt to start the controllers.
 * `joint_states_topic`: only `auto` is currently supported. It resolves to `/joint_states` for normal arms and `/joint_state_broadcaster/joint_states` for RX75.
 * `use_sim_time`: controls simulation time for `robot_state_publisher`, default `true`.

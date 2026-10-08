@@ -134,10 +134,9 @@ The above are the current major packages. Each package has its own role. For mor
 ### 2.0 Unified launch entry
 
 The recommended entry point is `rm_bringup.launch.py`. `arm_type` is required
-and selects the robot model; `arm_variant` selects the end-link version and
-defaults to `auto`, which resolves to `6fb` for RX75 and `standard` for every
-other model. `mode` selects a real robot or Gazebo and defaults to `real`. For
-example:
+and selects the robot model including its end-link version, e.g. `65`,
+`65-6f`, or `eco63-6fb`; `mode` selects a real robot or Gazebo and defaults to
+`real`. For example:
 
 ```bash
 # Real robot
@@ -146,14 +145,12 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 
 # Gazebo
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=rx75 mode:=gazebo
+  arm_type:=65 mode:=gazebo
 ```
 
-Unsupported model and variant combinations fail before any node starts. The
-available variants depend on the model; RX75 uses `6fb` by default and accepts
-`arm_variant:=6fb_v` when the vision-enabled variant is required. The
-model-specific commands below are compatibility
-wrappers that forward to the unified entry, so their existing filenames and
+Unsupported model and variant combinations fail before any node starts.
+The model-specific commands below are compatibility wrappers that forward to
+the unified entry, so their existing filenames and
 commands remain supported. See the [rm_bringup README](rm_bringup/README.md)
 for the complete support matrix and advanced arguments.
 
@@ -205,5 +202,3 @@ Please refer to the following operation specifications when using the robotic ar
 * During the running of the robotic arm, no person shall be in the falling or working range of the robotic arm, nor shall any other object be placed in the robot arm's safety range.
 * Place the robotic arm in a safe location when not in use to avoid it from falling down and damaging or injuring other objects during vibration.
 * Disconnect the robotic arm from the power supply in time when not in use.
-
-<!-- v1.7.0 -->

@@ -44,12 +44,11 @@ rm_gazebo的主要作用为帮助我们实现机械臂Moveit2规划的仿真功�
 
 推荐通过统一入口启动Gazebo虚拟空间和虚拟机械臂：
 ```
-rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=rx75
+rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=65-6fb
 ```
 统一入口支持以下参数：
 
-* `arm_type`：必填，可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii`、`rx75`。
-* `arm_variant`：末端版本，默认 `auto`；RX75自动解析为 `6fb`，其他型号自动解析为 `standard`。可显式选择 `standard`、`6f`、`6fb`、`6fb_v`，实际可用值由机械臂型号决定。
+* `arm_type`：必填，直接选择型号和末端版本，如 `65`、`65-6fb`、`rx75-6fb-v`；不带末端后缀时选择标准版。完整可选值见 [统一入口支持表](../rm_bringup/README_CN.md#统一启动入口)。
 * `start_gazebo`：是否启动Gazebo，默认 `true`。仅当需要复用已经运行且 world 名为 `empty` 的 Gazebo 时设置为 `false`；此时只跳过 Gazebo 进程，模型创建、`/world/empty/clock` bridge 和控制器启动仍会执行。若外部 world 不存在或实体创建超时，launch 会返回非零状态，且不会尝试启动控制器。
 * `joint_states_topic`：当前仅支持 `auto`；普通机械臂解析为 `/joint_states`，RX75解析为 `/joint_state_broadcaster/joint_states`。
 * `use_sim_time`：`robot_state_publisher`是否使用仿真时间，默认 `true`。
