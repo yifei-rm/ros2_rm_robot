@@ -1,4 +1,5 @@
 import os
+import runpy
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -49,8 +50,10 @@ def generate_gazebo_classic_demo_actions(
     spawn_entity_timeout="120",
     use_sim_time=True,
     post_spawn_actions=None,
+    arm_type=None,
+    model="auto",
 ):
-    """Build shared Gazebo Classic actions for one resolved robot variant."""
+    """Build shared Gazebo Classic actions for one selected robot model."""
     package_name = "rm_gazebo"
     pkg_share = get_package_share_directory(package_name)
     gazebo_ros_share = get_package_share_directory("gazebo_ros")
@@ -63,6 +66,11 @@ def generate_gazebo_classic_demo_actions(
         urdf_model_path,
         mappings=xacro_mappings or {},
     ).toxml()
+    if arm_type is not None:
+        description = runpy.run_path(os.path.join(
+            get_package_share_directory("rm_description"), "launch", "rm_description.launch.py",
+        ))
+        robot_description = description["_apply_visual_model"](robot_description, arm_type, model)
     params = {"robot_description": robot_description}
 
     gzserver = IncludeLaunchDescription(

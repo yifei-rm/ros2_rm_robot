@@ -50,13 +50,13 @@ Gazebo Classic和MoveIt launch。原有42个按型号拆分的文件保留为兼
 
 ```bash
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 arm_variant:=6f mode:=gazebo
+  arm_type:=65-6f mode:=gazebo
 ```
 
 | 参数 | 默认值 | 说明 |
 | :--- | :--- | :--- |
-| `arm_type` | 无，必须指定 | `63/63_iii/65/75/eco62/eco63/eco65/gen72/gen72_ii/rx75` |
-| `arm_variant` | `auto` | RX75解析为 `6fb`，其他型号解析为 `standard`；也可显式选择型号支持的 `standard/6f/6fb/6fb_v` |
+| `arm_type` | 无，必须指定 | 直接使用下表的值，例如 `65-6f`、`eco63-6fb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
 | `mode` | `real` | `real` 或 `gazebo` |
 | `allow_trajectory_execution` | `true` | 是否允许MoveIt执行轨迹；首次真机验证应使用 `false` |
 | `use_moveit` | `true` | 是否启动MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
@@ -70,22 +70,43 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 
 支持的型号与末端版本：
 
-| 型号 | 支持版本 |
+| 型号 | arm_type 可选值 |
 | :--- | :--- |
-| `63` | `standard`, `6f`, `6fb` |
-| `63_iii` | `standard`, `6fb` |
-| `65` | `standard`, `6f`, `6fb` |
-| `75` | `standard`, `6f`, `6fb` |
-| `eco62` | `standard` |
-| `eco63` | `standard`, `6fb` |
-| `eco65` | `standard`, `6f`, `6fb` |
-| `gen72` | `standard` |
-| `gen72_ii` | `standard` |
-| `rx75` | `6fb`, `6fb_v` |
+| `63` | `63`, `63-6f`, `63-6fb` |
+| `63_iii` | `63_iii`, `63_iii-6fb` |
+| `65` | `65`, `65-6f`, `65-6fb` |
+| `75` | `75`, `75-6f`, `75-6fb` |
+| `eco62` | `eco62` |
+| `eco63` | `eco63`, `eco63-6fb` |
+| `eco65` | `eco65`, `eco65-6f`, `eco65-6fb` |
+| `gen72` | `gen72` |
+| `gen72_ii` | `gen72_ii` |
+| `rx75` | `rx75-6fb`, `rx75-6fb-v` |
 
-不支持的组合会在启动任何节点前报错，Gazebo模式会拒绝真机专用参数。
-RX75默认选择 `6fb`；需要视觉版本时必须显式使用 `arm_variant:=6fb_v`。
-Gazebo模式保留历史行为，延时8秒后启动MoveIt。
+不支持的选择会在启动节点前报错。有 DAE 资源的 14 个型号/末端组合在 Gazebo Classic 和 RViz2 中使用相同彩色外观；添加 `model:=stl` 切回原网格，碰撞和物理参数保持不变。
+
+离线规划不启动驱动或控制节点，默认禁止轨迹执行：
+
+```bash
+ros2 launch rm_bringup rm_moveit.launch.py \
+  arm_type:=eco62 use_joint_state_publisher_gui:=true
+```
+
+**`rm_moveit.launch.py` 离线规划参数：**
+
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | 型号与末端版本，例如 `eco62`、`65-6f`、`rx75-6fb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
+| `allow_trajectory_execution` | `false` | 是否允许 MoveIt 执行轨迹；离线规划默认禁止执行 |
+| `use_rviz` | `true` | 是否启动 MoveIt RViz |
+| `use_robot_state_publisher` | `true` | 是否启动模型 TF 发布节点 |
+| `use_joint_state_publisher_gui` | `false` | 是否启动关节滑块 GUI，提供离线关节状态 |
+| `joint_states_topic` | `/joint_states` | MoveIt 和模型使用的关节状态话题 |
+| `left_xyz` | `0 -0.075 0.5` | 仅 RX75：左臂安装位置 `x y z`，单位 m |
+| `left_rpy` | `3.14 1.57 1.5707963267949` | 仅 RX75：左臂安装姿态 `roll pitch yaw`，单位 rad |
+| `right_xyz` | `0 0.075 0.5` | 仅 RX75：右臂安装位置 `x y z`，单位 m |
+| `right_rpy` | `3.14 1.57 -1.5707963267949` | 仅 RX75：右臂安装姿态 `roll pitch yaw`，单位 rad |
 
 ### moveit2控制真实机械臂
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_bringup功能包中的launch.py文件。

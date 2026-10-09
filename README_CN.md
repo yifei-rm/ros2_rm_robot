@@ -133,19 +133,33 @@ colcon build
 
 ### 2.0 统一启动入口
 
-推荐使用 `rm_bringup.launch.py`。`arm_type` 必须指定；
-`arm_variant:=auto` 对RX75自动选择 `6fb`，对其他型号选择
-`standard`。`mode` 默认为 `real`，也可选 `gazebo`。
+使用 `arm_type` 直接选择型号和末端版本，例如 `65-6f`。
+`mode` 默认为 `real`，也可选 `gazebo`。
 
 ```bash
 # 真实机械臂：首次验证只规划、不执行
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 mode:=real allow_trajectory_execution:=false
+  arm_type:=65  allow_trajectory_execution:=false
 
 # Foxy Gazebo Classic
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=rx75 mode:=gazebo
+  arm_type:=65-6f mode:=gazebo
 ```
+
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | 型号与末端版本，例如 `65-6f`、`eco63-6fb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
+| `mode` | `real` | `real` 或 `gazebo` |
+| `allow_trajectory_execution` | `true` | 是否允许MoveIt执行轨迹；首次真机验证应使用 `false` |
+| `use_moveit` | `true` | 是否启动MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
+| `use_rviz` | `true` | 是否启动MoveIt RViz |
+| `driver_config` | `auto` | 真机模式下的单臂driver YAML |
+| `left_driver_config` / `right_driver_config` | `auto` | 真机模式下的RX75左/右臂driver YAML |
+| `follow` | `auto` | 真机控制策略：`auto/true/false` |
+| `joint_states_topic` | `auto` | 公开入口当前仅支持 `auto`，按型号和模式选择默认Topic |
+| `start_gazebo` | `true` | Gazebo模式下是否启动Gazebo Classic |
+| `use_gazebo_gui` | `true` | 是否启动Gazebo Classic图形界面 |
 
 不支持的型号/末端组合会在启动任何节点前报错。原有按型号
 拆分的 launch 文件保留为兼容 wrapper。完整能力表和参数说明见

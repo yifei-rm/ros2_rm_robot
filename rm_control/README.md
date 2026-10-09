@@ -46,11 +46,18 @@ Source code address: https://github.com/RealManRobot/ros2_rm_robot.git。
 The unified entry point is recommended:
 
 ```bash
-ros2 launch rm_control rm_control.launch.py arm_type:=65 follow:=auto
+ros2 launch rm_control rm_control.launch.py arm_type:=65-6fb follow:=auto
 ```
 
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | Model with an optional end-link suffix, e.g. `65`, `65-6fb` or `rx75` |
+| `follow` | `auto` | Trajectory following mode: `true` for high following, `false` for low following; `auto` uses the model defaults described below |
+
 `arm_type` is required and accepts `63`, `63_iii`, `65`, `75`, `eco62`,
-`eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`. `follow` accepts exactly
+`eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`. Supported suffixes such as
+`65-6fb` also work; see the [model table](../rm_bringup/README.md).
+The control model code and follow defaults remain those of the base model. `follow` accepts exactly
 `auto`, `true`, or `false`. `auto` preserves the historical model default:
 high-following is enabled for RM75, GEN72, GEN72-II, and RX75, and disabled for
 the other families. RX75 starts left and right namespaced control nodes. The

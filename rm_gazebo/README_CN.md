@@ -46,14 +46,22 @@ rm_gazebo的主要作用为帮助我们实现机械臂Moveit2规划的仿真功�
 
 ```bash
 ros2 launch rm_gazebo rm_gazebo.launch.py \
-  arm_type:=65 arm_variant:=6f
+  arm_type:=65-6f
 ```
 
-本Foxy分支明确使用Gazebo Classic（`gazebo_ros` 和 `gazebo_ros2_control`），
-不使用新版 `ros_gz` 技术栈。`arm_type` 必须指定；`arm_variant:=auto`
-对RX75解析为 `6fb`，对其他型号解析为 `standard`。其他公开参数为
-`start_gazebo`、`use_gazebo_gui`、`clock_topic`、
-`joint_states_topic:=auto`、`use_sim_time` 和 `spawn_entity_timeout`（默认120秒）。
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | 型号与末端版本，例如 `65-6f`、`rx75-6fb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
+| `start_gazebo` | `true` | 是否启动 Gazebo Classic；`false` 时连接已运行的 Gazebo 世界 |
+| `use_gazebo_gui` | `true` | 启动 Gazebo 时是否打开图形界面 |
+| `clock_topic` | `auto` | ROS 仿真时钟话题；`auto` 使用 `/clock` |
+| `joint_states_topic` | `auto` | 当前仅支持 `auto`，按型号选择默认关节状态话题 |
+| `use_sim_time` | `true` | 模型状态发布节点是否使用 Gazebo 仿真时钟 |
+| `spawn_entity_timeout` | `120` | 等待 Gazebo 实体生成服务的超时时间，单位 s |
+
+有 DAE 资源的 14 个型号/末端组合默认在 Gazebo Classic 和 RViz2 中使用彩色 DAE，其余型号保留 STL。只替换外观，保留原碰撞和物理参数。
+
 实体生成成功后才会启动controller；实体或controller进程失败会请求关闭整套
 launch。原有21个Gazebo入口保留为兼容wrapper。
 
@@ -75,7 +83,8 @@ rm@rm-desktop:~$ ros2 launch rm_gazebo gazebo_<arm_type>_6fb_demo.launch.py
 ```
 rm@rm-desktop:~$ ros2 launch rm_gazebo gazebo_<arm_type>_6fb_v_demo.launch.py
 ```
-在实际使用时需要将以上的<arm_type>更换为实际的机械臂型号，可选择的机械臂型号有65、63、63_III、75、eco62、eco63、eco65、gen72、gen72_II、rx75。对于 RX75，请使用 `gazebo_rx75_6fb_demo.launch.py` 启动 RX75-6FB，使用 `gazebo_rx75_6fb_v_demo.launch.py` 启动 RX75-6FB-V，运行成功后将弹出如下界面。  
+在实际使用时需要将以上的<arm_type>更换为实际的机械臂型号，可选择的机械臂型号有65、63、63_III、75、eco62、eco63、eco65、gen72、gen72_II、rx75。运行成功后将弹出如下界面。  
+
 ![image](doc/rm_gazebo1.png)
 之后我们使用如下指令启动moveit2控制gazebo中的仿真机械臂。
 ```
@@ -89,7 +98,8 @@ rm@rm-desktop:~$ ros2 launch rm_<arm_type>_config gazebo_moveit_demo_6f.launch.p
 ```
 rm@rm-desktop:~$ ros2 launch rm_<arm_type>_config gazebo_moveit_demo_6fb.launch.py
 ```
-在实际使用时需要将以上的<arm_type>更换为实际的机械臂型号，可选择的机械臂型号有65、63、63_III、75、eco62、eco63、eco65、gen72、gen72_II。RX75 使用独立 MoveIt 配置包 `rm_rx75_config`：RX75-6FB-V 请执行 `ros2 launch rm_rx75_config gazebo_moveit_demo_6fb_v.launch.py`，RX75-6FB 请执行 `ros2 launch rm_rx75_config gazebo_moveit_demo_6fb.launch.py`，运行成功后弹出rviz2的控制界面后就可以进行moveit2和gazebo的仿真控制了。
+在实际使用时需要将以上的<arm_type>更换为实际的机械臂型号，可选择的机械臂型号有65、63、63_III、75、eco62、eco63、eco65、gen72、gen72_II。运行成功后弹出rviz2的控制界面后就可以进行moveit2和gazebo的仿真控制了。
+
 ![image](doc/rm_gazebo2.png)
 ## rm_gazebo功能包架构说明
 ### 功能包文件总览

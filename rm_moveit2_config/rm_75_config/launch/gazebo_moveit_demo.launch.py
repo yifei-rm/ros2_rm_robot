@@ -1,3 +1,5 @@
+import runpy
+from launch.actions import OpaqueFunction
 import os
 import yaml
 from launch import LaunchDescription
@@ -35,7 +37,7 @@ def load_yaml(package_name, file_path):
         return None
 
 
-def generate_launch_description():
+def _launch_setup(context):
 
     # Command-line arguments
     tutorial_arg = DeclareLaunchArgument(
@@ -57,6 +59,13 @@ def generate_launch_description():
     )
 
     robot_description = {"robot_description": robot_description_config.toxml()}
+    description = runpy.run_path(os.path.join(
+        get_package_share_directory("rm_description"), "launch", "rm_description.launch.py",
+    ))
+    robot_description["robot_description"] = description["_apply_visual_model"](
+        robot_description["robot_description"], '75', LaunchConfiguration("model").perform(context),
+    )
+
 
     robot_description_semantic_config = load_file(
         "rm_75_config", "config/rm_75_description.srdf"
@@ -246,3 +255,10 @@ def generate_launch_description():
         ]
         # + load_controllers
     )
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "dae"]),
+        OpaqueFunction(function=lambda context: list(_launch_setup(context).entities)),
+    ])

@@ -59,21 +59,23 @@ rm@rm-desktop:~$ ros2 launch rm_rx75_config demo_6fb.launch.py
 Use `demo_6fb_v.launch.py` only when running the RX75-6FB-V variant.
 
 ### Advanced_Package_Use
-The common parameters of rm_moveit2 are configured in the launch files.
-Parameter planning_group: the planning group used by MoveIt. The default value is rm_group for ECO63 and RM75, and right_arm for RX75.
-Parameter current_state_wait_sec: the waiting time for reading the current state.
-Parameter velocity_scaling: the motion velocity scaling factor.
-Parameter acceleration_scaling: the motion acceleration scaling factor.
-Parameter planning_time: the planning time of MoveIt.
-Parameter home_named_target: the named target used when moving to the initial posture.
-Parameter enable_pose_target: whether to directly plan to the pose target given by pose_target_csv.
-Parameter pose_target_csv: the pose target in x,y,z,rx,ry,rz format.
-Parameter pose_target_position_in_mm: whether the x,y,z values in pose_target_csv use millimetres; the default is true.
-Parameter pose_target_rpy_in_degrees: whether the rx,ry,rz values in pose_target_csv use degrees; the default is false.
-Parameter pose_reference_frame: the reference frame used for the pose target.
-Parameter prefer_named_start: this parameter is only used by the RX75 dual-arm launch file to prefer the named start posture.
-Parameter enable_cartesian_demo: this parameter is only used by the RX75 dual-arm launch file to control whether the Cartesian demo is executed.
-For the RX75 dual-arm example, planning_group can be set to left_arm or right_arm according to the selected arm side.
+Launch arguments for `moveit_eco63.launch.py`, `moveit_rm75.launch.py` and `moveit_rx75.launch.py`:
+
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `planning_group` | `rm_group` (ECO63/RM75); `right_arm` (RX75) | MoveIt planning group: `rm_group` for ECO63/RM75; RX75 defaults to `right_arm` and also supports `left_arm` |
+| `current_state_wait_sec` | `10.0` | Time to wait for the current robot state, in seconds |
+| `velocity_scaling` | `0.3` | Motion velocity scaling factor, in `(0, 1]` |
+| `acceleration_scaling` | `0.3` | Motion acceleration scaling factor, in `(0, 1]` |
+| `planning_time` | `5.0` | MoveIt planning time, in seconds |
+| `home_named_target` | `forward` | Named target for the initial pose, defined in the planning group SRDF |
+| `enable_pose_target` | `false` | Plan and execute the target pose supplied by `pose_target_csv` |
+| `pose_target_csv` | Empty string | Target pose as six values: `x,y,z,rx,ry,rz` |
+| `pose_target_position_in_mm` | `true` | Interpret target position in millimetres; `false` uses metres |
+| `pose_target_rpy_in_degrees` | `false` | Interpret target orientation in degrees; `false` uses radians |
+| `pose_reference_frame` | Empty string | Target pose reference frame; an empty string uses the MoveIt planning frame |
+| `prefer_named_start` | `true` | RX75 launch only: prefer the named initial pose |
+| `enable_cartesian_demo` | `false` | RX75 launch only: execute the arc and straight-line examples |
 
 ## rm_moveit2_Package_Architecture_Description
 ### Overview_of_Package_Files

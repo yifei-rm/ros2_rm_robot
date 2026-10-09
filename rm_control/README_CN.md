@@ -44,11 +44,17 @@ rm_control功能包为实现moveit2控制真实机械臂时所必须的一个功
 推荐使用统一入口：
 
 ```bash
-ros2 launch rm_control rm_control.launch.py arm_type:=65 follow:=auto
+ros2 launch rm_control rm_control.launch.py arm_type:=65-6fb follow:=auto
 ```
 
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | 型号或带末端后缀的型号，例如 `65`、`65-6fb`、`rx75` |
+| `follow` | `auto` | 透传跟随模式：`true` 为高跟随，`false` 为低跟随；`auto` 使用下方所述型号默认值 |
+
 `arm_type` 必须指定，可选 `63`、`63_iii`、`65`、`75`、`eco62`、
-`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。`follow` 仅接受
+`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。也支持 `65-6fb` 等后缀写法，
+支持值见[型号表](../rm_bringup/README_CN.md)；控制型号编号和默认 follow 使用基础型号的配置。`follow` 仅接受
 `auto`、`true` 或 `false`。`auto` 保留历史型号默认值：RM75、GEN72、
 GEN72-II和RX75默认高跟随，其他型号默认低跟随。RX75会启动左右两个
 带namespace的control节点。原有8个型号入口保留为兼容wrapper，无效

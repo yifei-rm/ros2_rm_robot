@@ -23,8 +23,7 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(unified_launch),
                 launch_arguments={
-                    "arm_type": "rx75",
-                    "arm_variant": "6fb",
+                    "arm_type": "rx75-6fb",
                     "mode": "real",
                     "use_rviz": LaunchConfiguration("use_moveit_rviz"),
                 }.items(),

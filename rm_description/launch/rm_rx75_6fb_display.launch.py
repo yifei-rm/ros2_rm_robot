@@ -9,6 +9,7 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     actions = [
+        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "dae"]),
         DeclareLaunchArgument("left_xyz", default_value="0 -0.075 0.5"),
         DeclareLaunchArgument("left_rpy", default_value="3.14 1.57 1.5707963267949"),
         DeclareLaunchArgument("right_xyz", default_value="0 0.075 0.5"),
@@ -17,8 +18,8 @@ def generate_launch_description():
         DeclareLaunchArgument("use_joint_state_publisher_gui", default_value="true"),
     ]
     launch_arguments = {
-        "arm_type": "rx75",
-        "arm_variant": "6fb",
+        "model": LaunchConfiguration("model"),
+        "arm_type": "rx75-6fb",
         "use_sim_time": "false",
         "joint_states_topic": "/joint_states",
         "left_joint_states_topic": "/left_arm/joint_states",

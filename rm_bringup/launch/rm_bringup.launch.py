@@ -1,6 +1,7 @@
 """Unified component-level bringup for all supported RealMan arms."""
 
 import os
+import runpy
 import re
 
 from ament_index_python.packages import get_package_share_directory
@@ -42,95 +43,102 @@ _ARM_TYPE_ALIASES = {
 }
 
 # package, real MoveIt launch, Gazebo MoveIt launch
-_VARIANTS = {
-    ("63", "standard"): (
+_MODELS = {
+    "63": (
         "rm_63_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("63", "6f"): (
+    "63-6f": (
         "rm_63_config", "real_moveit_demo_6f.launch.py",
         "gazebo_moveit_demo_6f.launch.py"
     ),
-    ("63", "6fb"): (
+    "63-6fb": (
         "rm_63_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
-    ("63_iii", "standard"): (
+    "63_iii": (
         "rm_63_config", "real_moveit_demo_III.launch.py",
         "gazebo_moveit_demo_III.launch.py"
     ),
-    ("63_iii", "6fb"): (
+    "63_iii-6fb": (
         "rm_63_config", "real_moveit_demo_III_6fb.launch.py",
         "gazebo_moveit_demo_III_6fb.launch.py"
     ),
-    ("65", "standard"): (
+    "65": (
         "rm_65_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("65", "6f"): (
+    "65-6f": (
         "rm_65_config", "real_moveit_demo_6f.launch.py",
         "gazebo_moveit_demo_6f.launch.py"
     ),
-    ("65", "6fb"): (
+    "65-6fb": (
         "rm_65_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
-    ("75", "standard"): (
+    "75": (
         "rm_75_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("75", "6f"): (
+    "75-6f": (
         "rm_75_config", "real_moveit_demo_6f.launch.py",
         "gazebo_moveit_demo_6f.launch.py"
     ),
-    ("75", "6fb"): (
+    "75-6fb": (
         "rm_75_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
-    ("eco62", "standard"): (
+    "eco62": (
         "rm_eco62_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("eco63", "standard"): (
+    "eco63": (
         "rm_eco63_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("eco63", "6fb"): (
+    "eco63-6fb": (
         "rm_eco63_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
-    ("eco65", "standard"): (
+    "eco65": (
         "rm_eco65_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("eco65", "6f"): (
+    "eco65-6f": (
         "rm_eco65_config", "real_moveit_demo_6f.launch.py",
         "gazebo_moveit_demo_6f.launch.py"
     ),
-    ("eco65", "6fb"): (
+    "eco65-6fb": (
         "rm_eco65_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
-    ("gen72", "standard"): (
+    "gen72": (
         "rm_gen72_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
     ),
-    ("gen72_ii", "standard"): (
+    "gen72_ii": (
         "rm_gen72_config", "real_moveit_demo_II.launch.py",
         "gazebo_moveit_demo_II.launch.py"
     ),
-    ("rx75", "6fb"): (
+    "rx75-6fb": (
         "rm_rx75_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
-    ("rx75", "6fb_v"): (
+    "rx75-6fb-v": (
         "rm_rx75_config", "real_moveit_demo_6fb_v.launch.py",
         "gazebo_moveit_demo_6fb_v.launch.py"
     ),
 }
 
-if len(_VARIANTS) != 21:
-    raise RuntimeError("Bringup variant catalog must contain 21 combinations.")
+if len(_MODELS) != 21:
+    raise RuntimeError("Bringup model catalog must contain 21 arm types.")
+
+_ARM_TYPE_ALIASES.update({
+    alias + arm_type[len(family):].replace("-", ""): arm_type
+    for alias, family in _ARM_TYPE_ALIASES.items()
+    for arm_type in _MODELS
+    if arm_type == family or arm_type.startswith(family + "-")
+})
 
 
 def _value(context, name):
@@ -146,15 +154,15 @@ def _compact_token(value):
 def _normalize_arm_type(value):
     raw_value = value.strip() if isinstance(value, str) else ""
     arm_type = _ARM_TYPE_ALIASES.get(_compact_token(raw_value))
-    if arm_type is None:
-        valid = ", ".join(sorted({key[0] for key in _VARIANTS}))
+    if arm_type not in _MODELS:
+        valid = ", ".join(_MODELS)
         raise RuntimeError(
             f"Unsupported arm_type: {raw_value or value}. Valid arm types: {valid}."
         )
     return arm_type
 
 
-def _resolve_selection(arm_type, arm_variant, mode):
+def _resolve_selection(arm_type, mode):
     canonical_type = _normalize_arm_type(arm_type)
     canonical_mode = mode.strip().casefold()
     if canonical_mode not in ("real", "gazebo"):
@@ -162,34 +170,7 @@ def _resolve_selection(arm_type, arm_variant, mode):
             f"Unsupported mode: {mode}. Valid modes: real, gazebo."
         )
 
-    compact_variant = _compact_token(arm_variant.strip())
-    if compact_variant == "auto":
-        canonical_variant = "6fb" if canonical_type == "rx75" else "standard"
-    else:
-        canonical_variant = {
-            "standard": "standard",
-            "6f": "6f",
-            "6fb": "6fb",
-            "6fbv": "6fb_v",
-        }.get(compact_variant)
-    if canonical_variant is None:
-        raise RuntimeError(
-            f"Unsupported arm_variant: {arm_variant}. "
-            "Valid values: auto, standard, 6f, 6fb, 6fb_v."
-        )
-
-    key = (canonical_type, canonical_variant)
-    if key not in _VARIANTS:
-        valid = ", ".join(
-            variant for candidate, variant in _VARIANTS
-            if candidate == canonical_type
-        )
-        raise RuntimeError(
-            "Unsupported combination: "
-            f"arm_type={canonical_type}, arm_variant={canonical_variant}. "
-            f"Valid variants for {canonical_type}: {valid}."
-        )
-    return canonical_type, canonical_variant, canonical_mode, _VARIANTS[key]
+    return canonical_type, canonical_mode, _MODELS[canonical_type]
 
 
 def _boolean_value(name, value):
@@ -227,13 +208,25 @@ def _moveit_action(
 ):
     package, real_launch, gazebo_launch = moveit_spec
     arguments = {
-        "allow_trajectory_execution": _value(
-            context, "allow_trajectory_execution"
-        ),
-        "use_rviz": _value(context, "use_rviz"),
+        "allow_trajectory_execution": str(_boolean_value(
+            "allow_trajectory_execution", _value(context, "allow_trajectory_execution")
+        )).lower(),
+        "use_rviz": str(_boolean_value("use_rviz", _value(context, "use_rviz"))).lower(),
     }
-    if arm_type == "rx75":
+    if mode == "real" and _value(context, "model").strip().casefold() != "stl" and package in (
+        "rm_65_config", "rm_75_config", "rm_eco62_config", "rm_eco63_config", "rm_eco65_config", "rm_rx75_config"
+    ):
+        arguments.update({
+            "arm_type": arm_type,
+            "model": _value(context, "model"),
+            "use_robot_state_publisher": "false",
+            "joint_states_topic": joint_states_topic,
+        })
+        return _include("rm_bringup", "rm_moveit.launch.py", arguments)
+    if arm_type.startswith("rx75-"):
         arguments["joint_states_topic"] = joint_states_topic
+    if mode == "gazebo":
+        arguments["model"] = _value(context, "model")
     return _include(
         package,
         real_launch if mode == "real" else gazebo_launch,
@@ -244,7 +237,6 @@ def _moveit_action(
 def _build_real_actions(
     context,
     arm_type,
-    arm_variant,
     moveit_spec,
     use_moveit,
 ):
@@ -264,11 +256,11 @@ def _build_real_actions(
             "rm_description.launch.py",
             {
                 "arm_type": arm_type,
-                "arm_variant": arm_variant,
+                "model": _value(context, "model"),
                 "use_sim_time": "false",
                 "joint_states_topic": "/joint_states",
                 "use_joint_state_bridge": (
-                    "true" if arm_type == "rx75" else "false"
+                    "true" if arm_type.startswith("rx75-") else "false"
                 ),
                 "use_joint_state_publisher_gui": "false",
                 "use_rviz": "false",
@@ -295,7 +287,6 @@ def _build_real_actions(
 def _build_gazebo_actions(
     context,
     arm_type,
-    arm_variant,
     moveit_spec,
     use_moveit,
 ):
@@ -312,7 +303,7 @@ def _build_gazebo_actions(
 
     joint_states_topic = (
         "/joint_state_broadcaster/joint_states"
-        if arm_type == "rx75"
+        if arm_type.startswith("rx75-")
         else "/joint_states"
     )
     actions = [
@@ -321,8 +312,8 @@ def _build_gazebo_actions(
             "rm_gazebo.launch.py",
             {
                 "arm_type": arm_type,
-                "arm_variant": arm_variant,
                 "start_gazebo": _value(context, "start_gazebo"),
+                "model": _value(context, "model"),
                 "use_gazebo_gui": _value(context, "use_gazebo_gui"),
                 "joint_states_topic": "auto",
                 "use_sim_time": "true",
@@ -348,11 +339,15 @@ def _build_gazebo_actions(
 
 
 def _compose_bringup(context):
-    arm_type, arm_variant, mode, moveit_spec = _resolve_selection(
+    arm_type, mode, moveit_spec = _resolve_selection(
         _value(context, "arm_type"),
-        _value(context, "arm_variant"),
         _value(context, "mode"),
     )
+    model = _value(context, "model").strip().casefold()
+    description = runpy.run_path(os.path.join(
+        get_package_share_directory("rm_description"), "launch", "rm_description.launch.py",
+    ))
+    description["_resolve_model"](arm_type, model)
 
     use_moveit = _boolean_value("use_moveit", _value(context, "use_moveit"))
     use_rviz = _boolean_value("use_rviz", _value(context, "use_rviz"))
@@ -380,14 +375,12 @@ def _compose_bringup(context):
         return _build_real_actions(
             context,
             arm_type,
-            arm_variant,
             moveit_spec,
             use_moveit,
         )
     return _build_gazebo_actions(
         context,
         arm_type,
-        arm_variant,
         moveit_spec,
         use_moveit,
     )
@@ -399,14 +392,11 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "arm_type",
                 description=(
-                    "Robot model: 63, 63_iii, 65, 75, eco62, eco63, "
-                    "eco65, gen72, gen72_ii, or rx75"
+                    "Robot model including end-link version, e.g. 65-6f or eco63-6fb"
                 ),
             ),
             DeclareLaunchArgument(
-                "arm_variant",
-                default_value="auto",
-                description="End-link variant: auto, standard, 6f, 6fb, or 6fb_v",
+                "model", default_value="auto", choices=["auto", "stl", "dae"],
             ),
             DeclareLaunchArgument("mode", default_value="real"),
             DeclareLaunchArgument(

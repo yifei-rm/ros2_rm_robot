@@ -57,16 +57,15 @@ Source code address:https://github.com/RealManRobot/ros2_rm_robot.git.
 The unified entry point is recommended:
 
 ```bash
-ros2 launch rm_driver rm_driver.launch.py arm_type:=65
+ros2 launch rm_driver rm_driver.launch.py arm_type:=65-6fb
 ```
 
-Launch arguments:
-
-- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`,
-  `eco65`, `gen72`, `gen72_ii`, or `rx75`.
-- `driver_config` (default `auto`): YAML path for a single-arm model.
-- `left_driver_config` / `right_driver_config` (default `auto`): RX75
-  left/right YAML paths.
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | Model with an optional end-link suffix, e.g. `65`, `65-6fb` or `rx75`; see the [model table](../rm_bringup/README.md). Driver configuration is selected by the base model |
+| `driver_config` | `auto` | Single-arm driver YAML path; `auto` selects the model default |
+| `left_driver_config` | `auto` | RX75 only: left-arm driver YAML path; `auto` selects the default left-arm configuration |
+| `right_driver_config` | `auto` | RX75 only: right-arm driver YAML path; `auto` selects the default right-arm configuration |
 
 Invalid model/config combinations and missing YAML files fail before a driver
 node starts. RX75 launches two namespaced driver nodes. The eight historical

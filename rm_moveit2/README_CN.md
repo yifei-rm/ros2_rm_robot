@@ -73,21 +73,23 @@ rm@rm-desktop:~$ ros2 launch rm_rx75_config demo_6fb.launch.py
 
 ### 高级功能包使用
 
-rm_moveit2的通用参数在launch文件中配置。
-参数planning_group：MoveIt使用的规划组，ECO63和RM75默认值为rm_group，RX75默认值为right_arm。
-参数current_state_wait_sec：读取当前状态的等待时间。
-参数velocity_scaling：运动速度缩放系数。
-参数acceleration_scaling：运动加速度缩放系数。
-参数planning_time：MoveIt规划时间。
-参数home_named_target：运动到初始姿态时使用的命名目标。
-参数enable_pose_target：是否直接规划到pose_target_csv给定的位姿目标。
-参数pose_target_csv：x,y,z,rx,ry,rz格式的位姿目标。
-参数pose_target_position_in_mm：pose_target_csv中的x、y、z是否使用毫米，默认值为true。
-参数pose_target_rpy_in_degrees：pose_target_csv中的rx、ry、rz是否使用角度，默认值为false。
-参数pose_reference_frame：位姿目标使用的参考坐标系。
-参数prefer_named_start：该参数仅用于RX75双臂launch文件，用于优先采用命名起始姿态。
-参数enable_cartesian_demo：该参数仅用于RX75双臂launch文件，用于控制是否执行笛卡尔示例。
-对于RX75双臂示例，可根据选择的臂侧将planning_group设置为left_arm或right_arm。
+以下为 `moveit_eco63.launch.py`、`moveit_rm75.launch.py` 和 `moveit_rx75.launch.py` 的启动参数：
+
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `planning_group` | `rm_group`（ECO63/RM75）；`right_arm`（RX75） | MoveIt 规划组；ECO63/RM75 使用 `rm_group`，RX75 默认 `right_arm`，可改为 `left_arm` |
+| `current_state_wait_sec` | `10.0` | 等待当前机器人状态的时间，单位 s |
+| `velocity_scaling` | `0.3` | 运动速度缩放系数，范围 `(0, 1]` |
+| `acceleration_scaling` | `0.3` | 运动加速度缩放系数，范围 `(0, 1]` |
+| `planning_time` | `5.0` | MoveIt 规划时间，单位 s |
+| `home_named_target` | `forward` | 初始姿态的命名目标，需在对应规划组的 SRDF 中定义 |
+| `enable_pose_target` | `false` | 是否直接规划并执行 `pose_target_csv` 给定的目标位姿 |
+| `pose_target_csv` | 空字符串 | 目标位姿，按 `x,y,z,rx,ry,rz` 填写六个值 |
+| `pose_target_position_in_mm` | `true` | 目标位置是否以 mm 输入；`false` 时使用 m |
+| `pose_target_rpy_in_degrees` | `false` | 目标姿态是否以度输入；`false` 时使用 rad |
+| `pose_reference_frame` | 空字符串 | 目标位姿参考坐标系；空字符串使用 MoveIt 规划坐标系 |
+| `prefer_named_start` | `true` | 仅 RX75 launch：是否优先采用命名起始姿态 |
+| `enable_cartesian_demo` | `false` | 仅 RX75 launch：是否执行圆弧与直线示例 |
 
 ## rm_moveit2功能包架构说明
 

@@ -133,9 +133,8 @@ The above are the current major packages. Each package has its own role. For mor
 
 ### 2.0 Unified launch entry
 
-The recommended entry point is `rm_bringup.launch.py`. `arm_type` is required;
-`arm_variant:=auto` selects `6fb` for RX75 and `standard` for every other
-model. `mode` defaults to `real` and also accepts `gazebo`.
+Use `arm_type` to select the model and end-link version, for example `65-6f`.
+`mode` defaults to `real` and also accepts `gazebo`.
 
 ```bash
 # Real robot: plan without executing during the first validation
@@ -144,10 +143,25 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 
 # Foxy Gazebo Classic
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=rx75 mode:=gazebo
+  arm_type:=65-6f mode:=gazebo
 ```
 
-Unsupported model/variant combinations fail before nodes start. The historical
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | Model and end-link version, e.g. `65-6f`, `eco63-6fb` |
+| `model` | `auto` | `auto` prefers matching DAE and falls back to STL; `stl` selects the original meshes, `dae` requires matching DAE |
+| `mode` | `real` | `real` or `gazebo` |
+| `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; use `false` for the first real-robot validation |
+| `use_moveit` | `true` | Start MoveIt; when false, also set `use_rviz:=false` |
+| `use_rviz` | `true` | Start MoveIt RViz |
+| `driver_config` | `auto` | Single-arm driver YAML in real mode |
+| `left_driver_config` / `right_driver_config` | `auto` | RX75 left/right driver YAML in real mode |
+| `follow` | `auto` | Real-mode control policy: `auto/true/false` |
+| `joint_states_topic` | `auto` | Only `auto` is public; it selects the model/mode default |
+| `start_gazebo` | `true` | Start Gazebo Classic in gazebo mode |
+| `use_gazebo_gui` | `true` | Start the Gazebo Classic GUI |
+
+Unsupported model selections fail before nodes start. The historical
 model-specific launch files remain supported as compatibility wrappers. See
 the [rm_bringup manual](rm_bringup/README.md) for the complete matrix and all
 arguments.

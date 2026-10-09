@@ -18,7 +18,6 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource(unified_launch),
                 launch_arguments={
                     "arm_type": "65",
-                    "arm_variant": "standard",
                     "mode": "real",
                 }.items(),
             ),

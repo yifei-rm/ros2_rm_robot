@@ -63,7 +63,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link1.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_1.STL" />
       </geometry>
       <material
         name="">
@@ -77,7 +77,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link1.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_1.STL" />
       </geometry>
     </collision>
   </link>
@@ -121,7 +121,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link2.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_2.STL" />
       </geometry>
       <material
         name="">
@@ -135,7 +135,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link2.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_2.STL" />
       </geometry>
     </collision>
   </link>
@@ -179,7 +179,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link3.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_3.STL" />
       </geometry>
       <material
         name="">
@@ -193,7 +193,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link3.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_3.STL" />
       </geometry>
     </collision>
   </link>
@@ -237,7 +237,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link4.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_4.STL" />
       </geometry>
       <material
         name="">
@@ -251,7 +251,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link4.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_4.STL" />
       </geometry>
     </collision>
   </link>
@@ -295,7 +295,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link5.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_5.STL" />
       </geometry>
       <material
         name="">
@@ -309,7 +309,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://rm_description/meshes/rm_eco65_arm/Link5.STL" />
+          filename="package://rm_description/meshes/rm_eco65_arm/Link_5.STL" />
       </geometry>
     </collision>
   </link>

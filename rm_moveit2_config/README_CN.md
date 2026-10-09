@@ -43,6 +43,18 @@ rm_moveit2_config文件夹为实现moveit2控制真实机械臂的功能包，�
 * 2.熟悉功能包中的文件构成及作用。
 * 3.熟悉功能包相关的话题，方便开发和使用。
 ## rm_moveit2_config使用
+### 通用启动参数
+
+所有 44 个 `real_moveit_demo*` 和 `gazebo_moveit_demo*` 入口均支持：
+
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `use_rviz` | `true` | 是否启动 MoveIt RViz |
+| `allow_trajectory_execution` | `true` | 是否允许 MoveIt 执行轨迹；首次真机验证使用 `false`，仅检查规划 |
+
+整套系统启动推荐使用 [`rm_bringup.launch.py`](../rm_bringup/README_CN.md)，该入口会转发上述参数。
+`move_group` 进程退出时会请求关闭所属 launch。
+
 ### moveit2控制虚拟机械臂
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点。  
 ```

@@ -15,6 +15,7 @@ def generate_launch_description():
     )
     return LaunchDescription(
         [
+            DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "dae"]),
             DeclareLaunchArgument("start_gazebo", default_value="true"),
             DeclareLaunchArgument("use_gazebo_gui", default_value="true"),
             DeclareLaunchArgument(
@@ -31,8 +32,8 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(unified_launch),
                 launch_arguments={
-                    "arm_type": "75",
-                    "arm_variant": "6fb",
+                    "arm_type": "75-6fb",
+                    "model": LaunchConfiguration("model"),
                     "start_gazebo": LaunchConfiguration("start_gazebo"),
                     "use_gazebo_gui": LaunchConfiguration("use_gazebo_gui"),
                     "clock_topic": LaunchConfiguration("clock_topic"),

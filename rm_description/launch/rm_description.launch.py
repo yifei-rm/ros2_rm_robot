@@ -8,95 +8,153 @@ from launch.actions import DeclareLaunchArgument, EmitEvent, OpaqueFunction
 from launch.events import Shutdown
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 _TRUE_VALUES = {"1", "true", "yes", "on"}
 _FALSE_VALUES = {"0", "false", "no", "off"}
 
 # Keep the supported matrix in this public entry point.  This deliberately
 # avoids another helper/catalog file while preserving the legacy model files.
-_VARIANTS = {
-    ("63", "standard"): ("rml_63.urdf", "rm_63.rviz", {}, False),
-    ("63", "6f"): (
+_MODELS = {
+    "63": ("rml_63.urdf", "rm_63.rviz", {}, False),
+    "63-6f": (
         "rml_63.urdf.xacro", "rm_63.rviz", {"link6_type": "Link6_6f"}, False
     ),
-    ("63", "6fb"): (
+    "63-6fb": (
         "rml_63.urdf.xacro", "rm_63.rviz", {"link6_type": "Link6_6fb"}, False
     ),
-    ("63_iii", "standard"): (
+    "63_iii": (
         "rml_63.urdf.xacro", "rm_63.rviz",
         {"link6_type": "Link6", "base_type": "base_link_III"}, False
     ),
-    ("63_iii", "6fb"): (
+    "63_iii-6fb": (
         "rml_63.urdf.xacro", "rm_63.rviz",
         {"link6_type": "Link6_6fb", "base_type": "base_link_III"}, False
     ),
-    ("65", "standard"): ("rm_65.urdf", "rm_65.rviz", {}, False),
-    ("65", "6f"): (
+    "65": ("rm_65.urdf", "rm_65.rviz", {}, False),
+    "65-6f": (
         "rm_65.urdf.xacro", "rm_65.rviz", {"link6_type": "Link6_6f"}, False
     ),
-    ("65", "6fb"): (
+    "65-6fb": (
         "rm_65.urdf.xacro", "rm_65.rviz", {"link6_type": "Link6_6fb"}, False
     ),
-    ("75", "standard"): ("rm_75.urdf", "rm_75.rviz", {}, False),
-    ("75", "6f"): (
+    "75": ("rm_75.urdf", "rm_75.rviz", {}, False),
+    "75-6f": (
         "rm_75.urdf.xacro", "rm_75.rviz", {"link7_type": "Link7_6f"}, False
     ),
-    ("75", "6fb"): (
+    "75-6fb": (
         "rm_75.urdf.xacro", "rm_75.rviz", {"link7_type": "Link7_6fb"}, False
     ),
-    ("eco62", "standard"): (
+    "eco62": (
         "rm_eco62.urdf.xacro", "rm_eco62.rviz", {}, False
     ),
-    ("eco63", "standard"): ("rm_eco63.urdf", "rm_eco63.rviz", {}, False),
-    ("eco63", "6fb"): (
+    "eco63": ("rm_eco63.urdf", "rm_eco63.rviz", {}, False),
+    "eco63-6fb": (
         "rm_eco63.urdf.xacro", "rm_eco63.rviz",
         {"link6_type": "Link6_6fb"}, False
     ),
-    ("eco65", "standard"): ("rm_eco65.urdf", "rm_eco65.rviz", {}, False),
-    ("eco65", "6f"): (
+    "eco65": ("rm_eco65.urdf", "rm_eco65.rviz", {}, False),
+    "eco65-6f": (
         "rm_eco65.urdf.xacro", "rm_eco65.rviz",
         {"link6_type": "Link6_6f"}, False
     ),
-    ("eco65", "6fb"): (
+    "eco65-6fb": (
         "rm_eco65.urdf.xacro", "rm_eco65.rviz",
         {"link6_type": "Link6_6fb"}, False
     ),
-    ("gen72", "standard"): ("rm_gen72.urdf", "rm_gen72.rviz", {}, False),
-    ("gen72_ii", "standard"): (
+    "gen72": ("rm_gen72.urdf", "rm_gen72.rviz", {}, False),
+    "gen72_ii": (
         "rm_gen72_II.urdf", "rm_gen72.rviz", {}, False
     ),
-    ("rx75", "6fb"): (
+    "rx75-6fb": (
         "rm_rx75-6fb.urdf.xacro", "rm_rx75.rviz", {}, True
     ),
-    ("rx75", "6fb_v"): (
+    "rx75-6fb-v": (
         "rm_rx75-6fb_v.urdf.xacro", "rm_rx75.rviz", {}, True
     ),
 }
 
 
-def _resolve_variant(arm_type, arm_variant):
-    normalized_type = arm_type.strip().casefold()
-    normalized_variant = arm_variant.strip().casefold()
-    if normalized_variant == "auto":
-        normalized_variant = "6fb" if normalized_type == "rx75" else "standard"
-    key = (normalized_type, normalized_variant)
-    try:
-        return key, _VARIANTS[key]
-    except KeyError as exc:
-        valid_types = sorted({item[0] for item in _VARIANTS})
-        valid_variants = sorted(
-            variant for candidate, variant in _VARIANTS
-            if candidate == normalized_type
-        )
-        if valid_variants:
-            detail = "Valid variants: " + ", ".join(valid_variants)
-        else:
-            detail = "Valid arm_type values: " + ", ".join(valid_types)
-        raise RuntimeError(
-            "Unsupported rm_description selection "
-            f"arm_type='{arm_type}', arm_variant='{arm_variant}'. {detail}"
-        ) from exc
+MODEL_FORMATS = ("auto", "stl", "dae")
+_DAE_MODELS = {
+    arm_type: ("imported/" + filename + ".urdf.xacro", _MODELS[arm_type][1], {}, _MODELS[arm_type][3])
+    for arm_type, filename in {
+        "65": "65_standard",
+        "65-6f": "65_6f",
+        "65-6fb": "65_6fb",
+        "75": "75_standard",
+        "75-6f": "75_6f",
+        "75-6fb": "75_6fb",
+        "eco62": "eco62_standard",
+        "eco63": "eco63_standard",
+        "eco63-6fb": "eco63_6fb",
+        "eco65": "eco65_standard",
+        "eco65-6f": "eco65_6f",
+        "eco65-6fb": "eco65_6fb",
+        "rx75-6fb": "rx75_6fb",
+        "rx75-6fb-v": "rx75_6fb_v",
+    }.items()
+}
 
+
+def _resolve_model(arm_type, model="auto"):
+    normalized = arm_type.strip().casefold().replace("_6", "-6")
+    normalized = normalized.replace("-6fb_v", "-6fb-v")
+    if normalized not in _MODELS:
+        raise RuntimeError(
+            f"Unsupported arm_type='{arm_type}'. Valid values: "
+            + ", ".join(_MODELS)
+        )
+    model = model.strip().casefold()
+    if model not in MODEL_FORMATS:
+        raise RuntimeError(f"Unsupported model='{model}'; use auto, stl or dae.")
+    if model == "dae" and normalized not in _DAE_MODELS:
+        raise RuntimeError(f"No DAE model for arm_type='{arm_type}'.")
+    catalog = _DAE_MODELS if model != "stl" and normalized in _DAE_MODELS else _MODELS
+    return normalized, catalog[normalized]
+
+
+
+def _apply_visual_model(robot_description, arm_type, model="auto"):
+    """Apply DAE visuals without changing the caller's physical model."""
+    _, spec = _resolve_model(arm_type, model)
+    if not spec[0].startswith("imported/"):
+        return robot_description
+
+    from copy import deepcopy
+    from pathlib import Path
+    import xml.etree.ElementTree as ET
+    import xacro
+
+    source = Path(get_package_share_directory("rm_description")) / "urdf" / spec[0]
+    visuals = ET.fromstring(xacro.process_file(str(source)).toxml())
+    robot = ET.fromstring(robot_description)
+    links = {link.get("name"): link for link in robot.findall("link")}
+    replaced = set()
+    for source_link in visuals.findall("link"):
+        if not source_link.findall("visual"):
+            continue
+        name = source_link.get("name")
+        if name not in links:
+            raise ValueError("DAE visual link '{}' is missing from arm_type='{}'.".format(name, arm_type))
+        target = links[name]
+        for visual in target.findall("visual"):
+            target.remove(visual)
+        for visual in source_link.findall("visual"):
+            visual = deepcopy(visual)
+            for mesh in visual.findall("geometry/mesh"):
+                filename = mesh.get("filename", "")
+                if filename.startswith("package://"):
+                    package, relative = filename[len("package://"):].split("/", 1)
+                    mesh.set("filename", (Path(get_package_share_directory(package)) / relative).as_uri())
+            target.append(visual)
+        replaced.add(name)
+    # Gazebo solid colors override the colors stored in DAE materials.
+    for gazebo in robot.findall("gazebo"):
+        if gazebo.get("reference") in replaced:
+            for material in gazebo.findall("material"):
+                gazebo.remove(material)
+    return ET.tostring(robot, encoding="unicode")
 
 def _launch_value(context, name):
     return LaunchConfiguration(name).perform(context)
@@ -125,9 +183,22 @@ def _xacro_command(model_path, mappings):
 
 def _launch_setup(context):
     requested_arm_type = _launch_value(context, "arm_type")
-    requested_variant = _launch_value(context, "arm_variant")
-    (arm_type, arm_variant), spec = _resolve_variant(
-        requested_arm_type, requested_variant
+    requested_model = _launch_value(context, "model")
+    arm_type, legacy = _resolve_model(requested_arm_type, "stl")
+    mappings = dict(legacy[2])
+    for mapping_name in ("link6_type", "link7_type", "base_type"):
+        override = _launch_value(context, f"{mapping_name}_override").strip()
+        if override:
+            if mapping_name not in mappings:
+                raise RuntimeError(f"'{mapping_name}_override' is not valid for '{requested_arm_type}'.")
+            mappings[mapping_name] = override
+    if mappings != legacy[2]:
+        if requested_model.strip().casefold() == "dae":
+            raise RuntimeError("Custom STL mesh overrides cannot be used with model='dae'.")
+        if requested_model.strip().casefold() == "auto":
+            requested_model = "stl"
+    _, spec = _resolve_model(
+        requested_arm_type, requested_model
     )
     model_file, rviz_file, fixed_mappings, dual_arm = spec
     description_share = get_package_share_directory("rm_description")
@@ -135,19 +206,11 @@ def _launch_setup(context):
     rviz_path = os.path.join(description_share, "rviz", rviz_file)
     if not os.path.isfile(model_path):
         raise RuntimeError(
-            f"Model file for {arm_type}/{arm_variant} does not exist: {model_path}"
+            f"Model file for {arm_type} does not exist: {model_path}"
         )
 
-    mappings = dict(fixed_mappings)
-    for mapping_name in ("link6_type", "link7_type", "base_type"):
-        override = _launch_value(context, f"{mapping_name}_override").strip()
-        if override:
-            if mapping_name not in mappings:
-                raise RuntimeError(
-                    f"'{mapping_name}_override' is not valid for "
-                    f"arm_type='{arm_type}', arm_variant='{arm_variant}'."
-                )
-            mappings[mapping_name] = override
+    if model_file.startswith("imported/"):
+        mappings = dict(fixed_mappings)
 
     if dual_arm:
         mappings.update(
@@ -189,7 +252,7 @@ def _launch_setup(context):
         )
 
     robot_state_parameters = {
-        "robot_description": _xacro_command(model_path, mappings)
+        "robot_description": ParameterValue(_xacro_command(model_path, mappings), value_type=str)
     }
     if use_sim_time:
         robot_state_parameters["use_sim_time"] = True
@@ -259,9 +322,7 @@ def _launch_setup(context):
         )
 
     if use_rviz:
-        rviz_kwargs = {}
-        if use_sim_time:
-            rviz_kwargs["parameters"] = [{"use_sim_time": True}]
+        rviz_kwargs = {"parameters": [robot_state_parameters]}
         actions.append(
             Node(
                 package="rviz2",
@@ -282,14 +343,11 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "arm_type",
                 description=(
-                    "Robot family: 63, 63_iii, 65, 75, eco62, eco63, "
-                    "eco65, gen72, gen72_ii, or rx75"
+                    "Robot model including end-link version, e.g. 65-6f or eco63-6fb"
                 ),
             ),
             DeclareLaunchArgument(
-                "arm_variant",
-                default_value="auto",
-                description="auto selects standard, or RX75 6fb",
+                "model", default_value="auto", choices=MODEL_FORMATS,
             ),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
             DeclareLaunchArgument(

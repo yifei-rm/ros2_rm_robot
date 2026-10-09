@@ -46,15 +46,27 @@ The unified entry point is recommended:
 
 ```bash
 ros2 launch rm_gazebo rm_gazebo.launch.py \
-  arm_type:=65 arm_variant:=6f
+  arm_type:=65-6f
 ```
 
 This Foxy branch deliberately uses Gazebo Classic (`gazebo_ros` and
 `gazebo_ros2_control`), not the newer `ros_gz` stack. `arm_type` is required;
-`arm_variant:=auto` resolves to `6fb` for RX75 and `standard` for other models.
-Other public arguments are `start_gazebo`, `use_gazebo_gui`, `clock_topic`,
-`joint_states_topic:=auto`, `use_sim_time`, and `spawn_entity_timeout` (default
-120 seconds). Controller startup is sequenced after successful entity spawn,
+Select the model directly with `arm_type`, such as `65-6f`.
+
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | Model and end-link version, e.g. `65-6f` or `rx75-6fb` |
+| `model` | `auto` | `auto` prefers matching DAE and falls back to STL; `stl` selects the original meshes, `dae` requires matching DAE |
+| `start_gazebo` | `true` | Start Gazebo Classic; `false` connects to an existing Gazebo world |
+| `use_gazebo_gui` | `true` | Open the graphical interface when starting Gazebo |
+| `clock_topic` | `auto` | ROS simulation clock topic; `auto` uses `/clock` |
+| `joint_states_topic` | `auto` | Currently accepts only `auto`, selecting the default joint-state topic for the model |
+| `use_sim_time` | `true` | Use the Gazebo simulation clock in robot_state_publisher |
+| `spawn_entity_timeout` | `120` | Timeout for waiting for the Gazebo spawn service, in seconds |
+
+The 14 model/end-link combinations with DAE assets default to colored DAE in Gazebo Classic and RViz2; other models keep STL. Only visuals change; collision and physics stay unchanged.
+
+Controller startup is sequenced after successful entity spawn,
 and a failed entity/controller process requests launch shutdown. The 21 old
 Gazebo files remain compatibility wrappers.
 

@@ -32,21 +32,25 @@ _ARM_TYPE_ALIASES = {
 
 _CONTROL_PROFILES = {
     '63': {
+        'suffixes': ('6f', '6fb'),
         'arm_type_code': 632,
         'default_follow': False,
         'namespaces': (None,),
     },
     '63_iii': {
+        'suffixes': ('6fb',),
         'arm_type_code': 632,
         'default_follow': False,
         'namespaces': (None,),
     },
     '65': {
+        'suffixes': ('6f', '6fb'),
         'arm_type_code': 65,
         'default_follow': False,
         'namespaces': (None,),
     },
     '75': {
+        'suffixes': ('6f', '6fb'),
         'arm_type_code': 75,
         'default_follow': True,
         'namespaces': (None,),
@@ -57,11 +61,13 @@ _CONTROL_PROFILES = {
         'namespaces': (None,),
     },
     'eco63': {
+        'suffixes': ('6fb',),
         'arm_type_code': 634,
         'default_follow': False,
         'namespaces': (None,),
     },
     'eco65': {
+        'suffixes': ('6f', '6fb'),
         'arm_type_code': 651,
         'default_follow': False,
         'namespaces': (None,),
@@ -77,11 +83,19 @@ _CONTROL_PROFILES = {
         'namespaces': (None,),
     },
     'rx75': {
+        'suffixes': ('6fb', '6fb-v'),
         'arm_type_code': 75,
         'default_follow': True,
         'namespaces': ('left_arm', 'right_arm'),
     },
 }
+
+
+_ARM_TYPE_ALIASES.update({
+    alias + suffix.replace('-', ''): family
+    for alias, family in _ARM_TYPE_ALIASES.items()
+    for suffix in _CONTROL_PROFILES[family].get('suffixes', ())
+})
 
 
 def _compact_token(value):
@@ -96,7 +110,11 @@ def normalize_arm_type(value):
 
     normalized = _ARM_TYPE_ALIASES.get(_compact_token(value.strip()))
     if normalized is None:
-        valid_types = ', '.join(_CONTROL_PROFILES)
+        valid_types = ', '.join(
+            family + ('-' + suffix if suffix else '')
+            for family, profile in _CONTROL_PROFILES.items()
+            for suffix in ('',) + profile.get('suffixes', ())
+        )
         raise ValueError(
             f'Unsupported arm_type: {value.strip()}. '
             f'Valid arm types: {valid_types}.'
@@ -168,8 +186,8 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 'arm_type',
                 description=(
-                    'Robot model: 63, 63_iii, 65, 75, eco62, eco63, '
-                    'eco65, gen72, gen72_ii, or rx75'
+                    'Robot model including supported end-link suffixes, '
+                    'e.g. 65, 65-6fb or eco63-6fb'
                 ),
             ),
             DeclareLaunchArgument(
