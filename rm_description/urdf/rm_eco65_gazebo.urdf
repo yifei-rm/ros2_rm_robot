@@ -5,25 +5,17 @@
     name="baselink">
     <inertial>
       <origin
-        xyz="0.00059982 -9.2932E-05 0.043301"
+        xyz="0.0004101 -8.4575E-05 0.050471"
         rpy="0 0 0" />
       <mass
-        value="0.61127" />
-      <!-- <inertia
-        ixx="0.0017261110801622"
-        ixy="2.52746264980217E-06"
-        ixz="-3.67690303614961E-05"
-        iyy="0.00170987405835604"
-        iyz="1.67996364994424E-06"
-        izz="0.000904023422915791" />
-    </inertial> -->
+        value="2" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+        ixx="0.0011075"
+        ixy="-3.3776E-06"
+        ixz="2.5165E-05"
+        iyy="0.001109"
+        iyz="-1.7082E-06"
+        izz="0.00075402" />
     </inertial>
     <visual>
       <origin
@@ -53,25 +45,17 @@
     name="Link1">
     <inertial>
       <origin
-        xyz="-0.022858 -2.0784E-06 -0.013658"
+        xyz="-1.105E-02 2.736E-05 -3.347E-02"
         rpy="0 0 0" />
       <mass
-        value="0.74247" />
-      <!-- <inertia
-        ixx="0.00081398"
-        ixy="-1.9024E-05"
-        ixz="0.00022746"
-        iyy="0.001848"
-        iyz="2.0444E-06"
-        izz="0.0015286" />
-    </inertial> -->
+        value="1.507" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+        ixx="1.958E-03"
+        ixy="-2.333E-05"
+        ixz="5.324E-04"
+        iyy="3.101E-03"
+        iyz="9.135E-06"
+        izz="2.427E-03" />
     </inertial>
     <visual>
       <origin
@@ -79,7 +63,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link1.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_1.STL" />
       </geometry>
       <material
         name="">
@@ -93,7 +77,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link1.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_1.STL" />
       </geometry>
     </collision>
   </link>
@@ -119,25 +103,17 @@
     name="Link2">
     <inertial>
       <origin
-        xyz="-1.6049E-06 0.10336 0.067332"
+        xyz="5.818E-02 -1.163E-05 -5.236E-02"
         rpy="0 0 0" />
       <mass
-        value="1.3502" />
-      <!-- <inertia
-        ixx="0.012821"
-        ixy="-7.2979E-08"
-        ixz="1.1499E-08"
-        iyy="0.0011237"
-        iyz="-0.00033755"
-        izz="0.012933" />
-    </inertial> -->
+        value="2.0227" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+        ixx="2.274E-03"
+        ixy="-6.214E-06"
+        ixz="1.441559E-03"
+        iyy="1.731147E-02"
+        iyz="-2.9598E-06"
+        izz="1.7225523E-02" />
     </inertial>
     <visual>
       <origin
@@ -145,7 +121,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link2.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_2.STL" />
       </geometry>
       <material
         name="">
@@ -159,7 +135,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link2.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_2.STL" />
       </geometry>
     </collision>
   </link>
@@ -185,25 +161,17 @@
     name="Link3">
     <inertial>
       <origin
-        xyz="0.10374 7.0495E-07 0.018599"
+        xyz="9.2768E-02 -9.3866E-05 1.81E-03"
         rpy="0 0 0" />
       <mass
-        value="1.0422" />
-      <!-- <inertia
-        ixx="0.00084115"
-        ixy="-2.2514E-08"
-        ixz="-0.00068613"
-        iyy="0.0094046"
-        iyz="-3.3287E-09"
-        izz="0.0092482" />
-    </inertial> -->
+        value="1.8858" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+        ixx="1.9164989E-03"
+        ixy="-3.27E-06"
+        ixz="-1.6941203E-03"
+        iyy="2.2483104E-02"
+        iyz="4.50616E-06"
+        izz="2.1892837E-02" />
     </inertial>
     <visual>
       <origin
@@ -211,7 +179,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link3.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_3.STL" />
       </geometry>
       <material
         name="">
@@ -225,7 +193,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link3.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_3.STL" />
       </geometry>
     </collision>
   </link>
@@ -251,25 +219,17 @@
     name="Link4">
     <inertial>
       <origin
-        xyz="-0.0069819 -0.016328 0.0067416"
+        xyz="-4.028E-05 -3.496E-02 3.8015E-03"
         rpy="0 0 0" />
       <mass
-        value="0.27383" />
-      <!-- <inertia
-        ixx="0.00024751"
-        ixy="-5.6849E-09"
-        ixz="5.4838E-10"
-        iyy="0.00017648"
-        iyz="-2.8552E-05"
-        izz="0.00019295"/>
-    </inertial> -->
+        value="0.57" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
+        ixx="4.97615E-04"
+        ixy="5.3887E-07"
+        ixz="7.046E-07"
+        iyy="3.2497E-04"
         iyz="0"
-        izz="0" />
+        izz="1.1634E-03" />
     </inertial>
     <visual>
       <origin
@@ -277,7 +237,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link4.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_4.STL" />
       </geometry>
       <material
         name="">
@@ -291,7 +251,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link4.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_4.STL" />
       </geometry>
     </collision>
   </link>
@@ -317,25 +277,17 @@
     name="Link5">
     <inertial>
       <origin
-        xyz="-0.00040425 0.0066328 -0.012475"
+        xyz="-3.97E-05 2.2647E-02 -7.365E-03"
         rpy="0 0 0" />
       <mass
-        value="0.27794" />
-      <!-- <inertia
-        ixx="0.00024751"
-        ixy="-5.6849E-09"
-        ixz="5.4838E-10"
-        iyy="0.00017648"
-        iyz="-2.8552E-05"
-        izz="0.00019295" />
-    </inertial> -->
+        value="0.641" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+        ixx="6.2339218E-04"
+        ixy="-5.31226E-07"
+        ixz="-5.61849E-07"
+        iyy="3.9337546E-04"
+        iyz="-1.1339817E-04"
+        izz="5.5741485E-04" />
     </inertial>
     <visual>
       <origin
@@ -343,7 +295,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link5.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_5.STL" />
       </geometry>
       <material
         name="">
@@ -357,7 +309,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link5.STL" />
+          filename="file://$(find rm_description)/meshes/rm_eco65_arm/Link_5.STL" />
       </geometry>
     </collision>
   </link>
@@ -383,25 +335,17 @@
     name="Link6">
     <inertial>
       <origin
-        xyz="0.00095587 -0.0013555 -0.010297"
+        xyz="4.478E-04 -2.134E-04 -1.033579E-02"
         rpy="0 0 0" />
       <mass
-        value="0.033025" />
-      <!-- <inertia
-        ixx="1.2968E-05"
-        ixy="-7.8692E-07"
-        ixz="8.451E-08"
-        iyy="1.1583E-05"
-        iyz="-1.2002E-07"
-        izz="2.0405E-05" />
-    </inertial> -->
+        value="0.0857" />
       <inertia
-        ixx="0"
-        ixy="0"
-        ixz="0"
-        iyy="0"
-        iyz="0"
-        izz="0" />
+        ixx="3.302707E-05"
+        ixy="-2.5421576E-06"
+        ixz="1.0241783E-07"
+        iyy="3.0206675E-05"
+        iyz="-8.4126596E-08"
+        izz="5.1459675E-05" />
     </inertial>
     <visual>
       <origin
