@@ -9,16 +9,15 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     actions = [
+        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "glb"]),
         DeclareLaunchArgument("link6_type", default_value="Link6_6fb"),
         DeclareLaunchArgument("base_type", default_value="base_link_III"),
     ]
     launch_arguments = {
-        "arm_type": "63_iii",
-        "arm_variant": "6fb",
+        "model": LaunchConfiguration("model"),
+        "arm_type": "63_iii-6fb",
         "use_sim_time": "false",
         "joint_states_topic": "/joint_states",
-        "left_joint_states_topic": "/left_arm/joint_states",
-        "right_joint_states_topic": "/right_arm/joint_states",
         "link6_type_override": LaunchConfiguration("link6_type"),
         "base_type_override": LaunchConfiguration("base_type"),
         "use_joint_state_bridge": "false",

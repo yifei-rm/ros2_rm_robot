@@ -32,7 +32,6 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource(unified_launch),
                 launch_arguments={
                     "arm_type": "63_iii",
-                    "arm_variant": "standard",
                     "start_gazebo": LaunchConfiguration("start_gazebo"),
                     "use_gazebo_gui": LaunchConfiguration("use_gazebo_gui"),
                     "clock_topic": LaunchConfiguration("clock_topic"),

@@ -17,8 +17,7 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(unified_launch),
                 launch_arguments={
-                    "arm_type": "63",
-                    "arm_variant": "6f",
+                    "arm_type": "63-6f",
                     "mode": "gazebo",
                 }.items(),
             ),

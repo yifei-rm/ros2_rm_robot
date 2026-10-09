@@ -50,7 +50,7 @@ def generate_gazebo_classic_demo_actions(
     use_sim_time=True,
     post_spawn_actions=None,
 ):
-    """Build shared Gazebo Classic actions for one resolved robot variant."""
+    """Build shared Gazebo Classic actions for one selected robot model."""
     package_name = "rm_gazebo"
     pkg_share = get_package_share_directory(package_name)
     gazebo_ros_share = get_package_share_directory("gazebo_ros")

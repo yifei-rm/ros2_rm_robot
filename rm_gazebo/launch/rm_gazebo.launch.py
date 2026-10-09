@@ -43,25 +43,25 @@ _FALSE_VALUES = {"0", "false", "no", "off"}
 
 # Each entry is a compatibility contract with one of the 21 historical
 # gazebo_*_demo.launch.py entry points.
-VARIANT_CATALOG = {
-    ("63", "standard"): {
+MODEL_CATALOG = {
+    "63": {
         "urdf_filename": "gazebo_63_description.urdf.xacro",
         "robot_name_in_model": "rml_63_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("63", "6f"): {
+    "63-6f": {
         "urdf_filename": "gazebo_63_6fb_description.urdf.xacro",
         "robot_name_in_model": "rml_63_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6f"},
     },
-    ("63", "6fb"): {
+    "63-6fb": {
         "urdf_filename": "gazebo_63_6fb_description.urdf.xacro",
         "robot_name_in_model": "rml_63_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6fb"},
     },
-    ("63_iii", "standard"): {
+    "63_iii": {
         "urdf_filename": "gazebo_63_III_description.urdf.xacro",
         "robot_name_in_model": "rml_63_description",
         "controller_names": NORMAL_CONTROLLERS,
@@ -70,7 +70,7 @@ VARIANT_CATALOG = {
             "base_type": "base_link_III",
         },
     },
-    ("63_iii", "6fb"): {
+    "63_iii-6fb": {
         "urdf_filename": "gazebo_63_III_description.urdf.xacro",
         "robot_name_in_model": "rml_63_description",
         "controller_names": NORMAL_CONTROLLERS,
@@ -79,93 +79,93 @@ VARIANT_CATALOG = {
             "base_type": "base_link_III",
         },
     },
-    ("65", "standard"): {
+    "65": {
         "urdf_filename": "gazebo_65_description.urdf.xacro",
         "robot_name_in_model": "rm_65_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("65", "6f"): {
+    "65-6f": {
         "urdf_filename": "gazebo_65_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_65_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6f"},
     },
-    ("65", "6fb"): {
+    "65-6fb": {
         "urdf_filename": "gazebo_65_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_65_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6fb"},
     },
-    ("75", "standard"): {
+    "75": {
         "urdf_filename": "gazebo_75_description.urdf.xacro",
         "robot_name_in_model": "rm_75_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("75", "6f"): {
+    "75-6f": {
         "urdf_filename": "gazebo_75_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_75_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link7_type": "Link7_6f"},
     },
-    ("75", "6fb"): {
+    "75-6fb": {
         "urdf_filename": "gazebo_75_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_75_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link7_type": "Link7_6fb"},
     },
-    ("eco62", "standard"): {
+    "eco62": {
         "urdf_filename": "gazebo_eco62_description.urdf.xacro",
         "robot_name_in_model": "rm_eco62_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("eco63", "standard"): {
+    "eco63": {
         "urdf_filename": "gazebo_eco63_description.urdf.xacro",
         "robot_name_in_model": "rm_eco63_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6"},
         "static_transforms": ECO63_STATIC_TRANSFORMS,
     },
-    ("eco63", "6fb"): {
+    "eco63-6fb": {
         "urdf_filename": "gazebo_eco63_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_eco63_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6fb"},
         "static_transforms": ECO63_STATIC_TRANSFORMS,
     },
-    ("eco65", "standard"): {
+    "eco65": {
         "urdf_filename": "gazebo_eco65_description.urdf.xacro",
         "robot_name_in_model": "rm_eco65_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("eco65", "6f"): {
+    "eco65-6f": {
         "urdf_filename": "gazebo_eco65_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_eco65_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6f"},
     },
-    ("eco65", "6fb"): {
+    "eco65-6fb": {
         "urdf_filename": "gazebo_eco65_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_eco65_description",
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6fb"},
     },
-    ("gen72", "standard"): {
+    "gen72": {
         "urdf_filename": "gazebo_gen72_description.urdf.xacro",
         "robot_name_in_model": "rm_gen72_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("gen72_ii", "standard"): {
+    "gen72_ii": {
         "urdf_filename": "gazebo_gen72_II_description.urdf.xacro",
         "robot_name_in_model": "rm_gen72_description",
         "controller_names": NORMAL_CONTROLLERS,
     },
-    ("rx75", "6fb"): {
+    "rx75-6fb": {
         "urdf_filename": "gazebo_rx75_6fb_description.urdf.xacro",
         "robot_name_in_model": "rm_rx75_dual",
         "controller_names": RX75_CONTROLLERS,
         "joint_states_topic_default": RX75_JOINT_STATES_TOPIC,
     },
-    ("rx75", "6fb_v"): {
+    "rx75-6fb-v": {
         "urdf_filename": "gazebo_rx75_6fb_v_description.urdf.xacro",
         "robot_name_in_model": "rm_rx75_dual",
         "controller_names": RX75_CONTROLLERS,
@@ -173,19 +173,10 @@ VARIANT_CATALOG = {
     },
 }
 
-if len(VARIANT_CATALOG) != 21:
-    raise RuntimeError("Gazebo variant catalog must contain 21 combinations.")
+if len(MODEL_CATALOG) != 21:
+    raise RuntimeError("Gazebo model catalog must contain 21 arm types.")
 
-ARM_TYPES = tuple(dict.fromkeys(key[0] for key in VARIANT_CATALOG))
-ARM_VARIANTS = ("standard", "6f", "6fb", "6fb_v")
-VARIANTS_BY_ARM_TYPE = {
-    arm_type: tuple(
-        arm_variant
-        for arm_variant in ARM_VARIANTS
-        if (arm_type, arm_variant) in VARIANT_CATALOG
-    )
-    for arm_type in ARM_TYPES
-}
+ARM_TYPES = tuple(MODEL_CATALOG)
 
 
 ARM_TYPE_ALIASES = {
@@ -213,6 +204,13 @@ ARM_TYPE_ALIASES = {
     "rmrx75": "rx75",
 }
 
+ARM_TYPE_ALIASES.update({
+    alias + arm_type[len(family):].replace("-", ""): arm_type
+    for alias, family in ARM_TYPE_ALIASES.items()
+    for arm_type in MODEL_CATALOG
+    if arm_type == family or arm_type.startswith(family + "-")
+})
+
 
 def _compact_token(value):
     normalized = re.sub(r"[\s-]+", "_", value.lower())
@@ -223,7 +221,7 @@ def _compact_token(value):
 def normalize_arm_type(value):
     raw_value = value.strip() if isinstance(value, str) else ""
     normalized = ARM_TYPE_ALIASES.get(_compact_token(raw_value))
-    if normalized is None:
+    if normalized not in MODEL_CATALOG:
         raise ValueError(
             f"Unsupported arm_type: {raw_value or value}. "
             f"Valid arm types: {', '.join(ARM_TYPES)}."
@@ -231,42 +229,8 @@ def normalize_arm_type(value):
     return normalized
 
 
-def normalize_arm_variant(value):
-    raw_value = value.strip() if isinstance(value, str) else ""
-    normalized = {
-        "standard": "standard",
-        "6f": "6f",
-        "6fb": "6fb",
-        "6fbv": "6fb_v",
-    }.get(_compact_token(raw_value))
-    if normalized is None:
-        raise ValueError(
-            f"Unsupported arm_variant: {raw_value or value}. "
-            f"Valid arm variants: {', '.join(ARM_VARIANTS)}."
-        )
-    return normalized
-
-
-def resolve_variant(arm_type, arm_variant="auto"):
-    canonical_arm_type = normalize_arm_type(arm_type)
-    if _compact_token(arm_variant.strip()) == "auto":
-        canonical_arm_variant = (
-            "6fb" if canonical_arm_type == "rx75" else "standard"
-        )
-    else:
-        canonical_arm_variant = normalize_arm_variant(arm_variant)
-    specification = VARIANT_CATALOG.get(
-        (canonical_arm_type, canonical_arm_variant)
-    )
-    if specification is None:
-        valid_variants = ", ".join(VARIANTS_BY_ARM_TYPE[canonical_arm_type])
-        raise ValueError(
-            "Unsupported combination: "
-            f"arm_type={canonical_arm_type}, "
-            f"arm_variant={canonical_arm_variant}. "
-            f"Valid variants for {canonical_arm_type}: {valid_variants}."
-        )
-    return specification
+def resolve_model(arm_type):
+    return MODEL_CATALOG[normalize_arm_type(arm_type)]
 
 
 def _boolean_value(name, value):
@@ -281,9 +245,8 @@ def _boolean_value(name, value):
 
 
 def _launch_setup(context):
-    specification = resolve_variant(
+    specification = resolve_model(
         LaunchConfiguration("arm_type").perform(context),
-        LaunchConfiguration("arm_variant").perform(context),
     )
     requested_joint_states_topic = LaunchConfiguration(
         "joint_states_topic"
@@ -348,14 +311,8 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "arm_type",
                 description=(
-                    "Robot model: 63, 63_iii, 65, 75, eco62, eco63, "
-                    "eco65, gen72, gen72_ii, or rx75"
+                    "Robot model including end-link version, e.g. 65-6f or eco63-6fb"
                 ),
-            ),
-            DeclareLaunchArgument(
-                "arm_variant",
-                default_value="auto",
-                description="End-link variant: auto, standard, 6f, 6fb, or 6fb_v",
             ),
             DeclareLaunchArgument(
                 "start_gazebo",
@@ -376,7 +333,7 @@ def generate_launch_description():
                 choices=["auto"],
                 description=(
                     "Only auto is currently supported; it selects the legacy "
-                    "default for the chosen variant"
+                    "default for the chosen model"
                 ),
             ),
             DeclareLaunchArgument(
