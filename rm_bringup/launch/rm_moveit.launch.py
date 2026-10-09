@@ -9,15 +9,15 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
-from rm_bringup.variant_catalog import resolve_variant
+from rm_bringup.variant_catalog import resolve_model
 from rm_description.variant_catalog import (
-    MODEL_FORMATS, format_arm_type, resolve_variant as resolve_description,
+    MODEL_FORMATS, resolve_model as resolve_description,
 )
 
 
 def build_moveit_config(arm_type, model="auto", mount_mappings=None):
-    plan = resolve_variant(arm_type, "real")
-    spec = resolve_description(format_arm_type(plan.arm_type, plan.arm_variant), model)
+    plan = resolve_model(arm_type, "real")
+    spec = resolve_description(plan.arm_type, model)
     description = Path(get_package_share_directory("rm_description"))
     model_file = description / "urdf" / spec.model_file
     if not model_file.is_file():
@@ -27,8 +27,8 @@ def build_moveit_config(arm_type, model="auto", mount_mappings=None):
         else f"{plan.moveit.package.removesuffix('_config')}_description"
     )
     semantic = f"config/{stem}.srdf"
-    if plan.arm_type == "rx75":
-        semantic = f"config/rm_rx75_{plan.arm_variant}_description.srdf"
+    if plan.arm_profile.topology == "dual":
+        semantic = f"config/rm_{plan.arm_type.replace('-', '_')}_description.srdf"
     mappings = dict(spec.xacro_mappings)
     if spec.dual_arm:
         mappings.update(mount_mappings or {})

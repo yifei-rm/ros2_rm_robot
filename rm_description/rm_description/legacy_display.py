@@ -9,7 +9,7 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
-from rm_description.variant_catalog import MODEL_FORMATS, format_arm_type
+from rm_description.variant_catalog import MODEL_FORMATS
 
 
 LegacyArgument = Tuple[str, str]
@@ -17,7 +17,6 @@ LegacyArgument = Tuple[str, str]
 
 def generate_legacy_display_launch(
     arm_type: str,
-    arm_variant: str,
     *,
     xacro_arguments: Sequence[LegacyArgument] = (),
     rx_display: bool = False,
@@ -26,7 +25,7 @@ def generate_legacy_display_launch(
 
     actions = [DeclareLaunchArgument("model", default_value="auto", choices=MODEL_FORMATS)]
     launch_arguments = {
-        "arm_type": format_arm_type(arm_type, arm_variant),
+        "arm_type": arm_type,
         "model": LaunchConfiguration("model"),
         # Pin values that the old launch files did not expose.  This prevents a
         # same-named argument in an including launch file from changing legacy

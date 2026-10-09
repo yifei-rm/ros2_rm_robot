@@ -3,5 +3,5 @@ from rm_bringup.legacy_bringup import generate_legacy_bringup
 
 def generate_launch_description():
     return generate_legacy_bringup(
-        'gen72', 'standard', 'gazebo'
+        'gen72', 'gazebo'
     )

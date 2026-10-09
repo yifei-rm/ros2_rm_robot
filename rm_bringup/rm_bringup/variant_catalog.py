@@ -1,5 +1,5 @@
 """
-Canonical component plans for every supported robot variant.
+Canonical component plans for every supported robot model.
 
 The catalog is deliberately explicit. Launch filenames, hardware profile
 reuse, dual-arm topology, and joint-state defaults are product capabilities;
@@ -9,26 +9,11 @@ they must not be inferred from string concatenation.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import re
-
-from rm_description.variant_catalog import format_arm_type, normalize_selection
+from rm_description.variant_catalog import normalize_arm_type
 
 
 PACKAGE_NAME = 'rm_bringup'
 
-ARM_TYPES = (
-    '63',
-    '63_iii',
-    '65',
-    '75',
-    'eco62',
-    'eco63',
-    'eco65',
-    'gen72',
-    'gen72_ii',
-    'rx75',
-)
-ARM_VARIANTS = ('standard', '6f', '6fb', '6fb_v')
 MODES = ('real', 'gazebo')
 
 
@@ -103,11 +88,11 @@ ARM_PROFILES = {
 
 
 @dataclass(frozen=True)
-class VariantEntry:
-    """The two legacy launch files for one supported arm/variant pair."""
+class ModelEntry:
+    """The two legacy launch files for one complete arm_type."""
 
     arm_type: str
-    arm_variant: str
+    family: str
     real_launch: str
     gazebo_launch: str
 
@@ -127,7 +112,6 @@ class ResolvedBringupPlan:
     """A normalized, component-level plan for the unified launch."""
 
     arm_type: str
-    arm_variant: str
     mode: str
     arm_profile: ArmProfile
     driver: LaunchReference
@@ -144,144 +128,139 @@ class ResolvedBringupPlan:
         return (self.gazebo, self.moveit)
 
 
-_VARIANT_ENTRIES = (
-    VariantEntry(
+_MODEL_ENTRIES = (
+    ModelEntry(
         '63',
-        'standard',
+        '63',
         'rm_63_bringup.launch.py',
         'rm_63_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '63-6f',
         '63',
-        '6f',
         'rm_63_6f_bringup.launch.py',
         'rm_63_6f_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '63-6fb',
         '63',
-        '6fb',
         'rm_63_6fb_bringup.launch.py',
         'rm_63_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         '63_iii',
-        'standard',
+        '63_iii',
         'rm_63_III_bringup.launch.py',
         'rm_63_III_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '63_iii-6fb',
         '63_iii',
-        '6fb',
         'rm_63_III_6fb_bringup.launch.py',
         'rm_63_III_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         '65',
-        'standard',
+        '65',
         'rm_65_bringup.launch.py',
         'rm_65_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '65-6f',
         '65',
-        '6f',
         'rm_65_6f_bringup.launch.py',
         'rm_65_6f_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '65-6fb',
         '65',
-        '6fb',
         'rm_65_6fb_bringup.launch.py',
         'rm_65_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         '75',
-        'standard',
+        '75',
         'rm_75_bringup.launch.py',
         'rm_75_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '75-6f',
         '75',
-        '6f',
         'rm_75_6f_bringup.launch.py',
         'rm_75_6f_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        '75-6fb',
         '75',
-        '6fb',
         'rm_75_6fb_bringup.launch.py',
         'rm_75_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         'eco62',
-        'standard',
+        'eco62',
         'rm_eco62_bringup.launch.py',
         'rm_eco62_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         'eco63',
-        'standard',
+        'eco63',
         'rm_eco63_bringup.launch.py',
         'rm_eco63_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        'eco63-6fb',
         'eco63',
-        '6fb',
         'rm_eco63_6fb_bringup.launch.py',
         'rm_eco63_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         'eco65',
-        'standard',
+        'eco65',
         'rm_eco65_bringup.launch.py',
         'rm_eco65_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        'eco65-6f',
         'eco65',
-        '6f',
         'rm_eco65_6f_bringup.launch.py',
         'rm_eco65_6f_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        'eco65-6fb',
         'eco65',
-        '6fb',
         'rm_eco65_6fb_bringup.launch.py',
         'rm_eco65_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         'gen72',
-        'standard',
+        'gen72',
         'rm_gen72_bringup.launch.py',
         'rm_gen72_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
         'gen72_ii',
-        'standard',
+        'gen72_ii',
         'rm_gen72_II_bringup.launch.py',
         'rm_gen72_II_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        'rx75-6fb',
         'rx75',
-        '6fb',
         'rm_rx75_6fb_bringup.launch.py',
         'rm_rx75_6fb_gazebo.launch.py',
     ),
-    VariantEntry(
+    ModelEntry(
+        'rx75-6fb-v',
         'rx75',
-        '6fb_v',
         'rm_rx75_6fb_v_bringup.launch.py',
         'rm_rx75_6fb_v_gazebo.launch.py',
     ),
 )
 
-_variant_keys = tuple(
-    (entry.arm_type, entry.arm_variant) for entry in _VARIANT_ENTRIES
-)
-if len(_variant_keys) != len(set(_variant_keys)):
-    raise RuntimeError('Duplicate arm_type/arm_variant entries in variant catalog.')
-
-VARIANT_CATALOG = {
-    (entry.arm_type, entry.arm_variant): entry for entry in _VARIANT_ENTRIES
-}
+MODEL_CATALOG = {entry.arm_type: entry for entry in _MODEL_ENTRIES}
+if len(MODEL_CATALOG) != len(_MODEL_ENTRIES):
+    raise RuntimeError('Duplicate arm_type entries in model catalog.')
+ARM_TYPES = tuple(MODEL_CATALOG)
 
 _GENERIC_DRIVER = LaunchReference('rm_driver', 'rm_driver.launch.py')
 _GENERIC_DESCRIPTION = LaunchReference(
@@ -291,149 +270,115 @@ _GENERIC_CONTROL = LaunchReference('rm_control', 'rm_control.launch.py')
 _GENERIC_GAZEBO = LaunchReference('rm_gazebo', 'rm_gazebo.launch.py')
 
 _MOVEIT_LAUNCHES = {
-    ('63', 'standard'): (
+    '63': (
         'rm_63_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('63', '6f'): (
+    '63-6f': (
         'rm_63_config',
         'real_moveit_demo_6f.launch.py',
         'gazebo_moveit_demo_6f.launch.py',
     ),
-    ('63', '6fb'): (
+    '63-6fb': (
         'rm_63_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
     ),
-    ('63_iii', 'standard'): (
+    '63_iii': (
         'rm_63_config',
         'real_moveit_demo_III.launch.py',
         'gazebo_moveit_demo_III.launch.py',
     ),
-    ('63_iii', '6fb'): (
+    '63_iii-6fb': (
         'rm_63_config',
         'real_moveit_demo_III_6fb.launch.py',
         'gazebo_moveit_demo_III_6fb.launch.py',
     ),
-    ('65', 'standard'): (
+    '65': (
         'rm_65_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('65', '6f'): (
+    '65-6f': (
         'rm_65_config',
         'real_moveit_demo_6f.launch.py',
         'gazebo_moveit_demo_6f.launch.py',
     ),
-    ('65', '6fb'): (
+    '65-6fb': (
         'rm_65_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
     ),
-    ('75', 'standard'): (
+    '75': (
         'rm_75_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('75', '6f'): (
+    '75-6f': (
         'rm_75_config',
         'real_moveit_demo_6f.launch.py',
         'gazebo_moveit_demo_6f.launch.py',
     ),
-    ('75', '6fb'): (
+    '75-6fb': (
         'rm_75_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
     ),
-    ('eco62', 'standard'): (
+    'eco62': (
         'rm_eco62_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('eco63', 'standard'): (
+    'eco63': (
         'rm_eco63_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('eco63', '6fb'): (
+    'eco63-6fb': (
         'rm_eco63_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
     ),
-    ('eco65', 'standard'): (
+    'eco65': (
         'rm_eco65_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('eco65', '6f'): (
+    'eco65-6f': (
         'rm_eco65_config',
         'real_moveit_demo_6f.launch.py',
         'gazebo_moveit_demo_6f.launch.py',
     ),
-    ('eco65', '6fb'): (
+    'eco65-6fb': (
         'rm_eco65_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
     ),
-    ('gen72', 'standard'): (
+    'gen72': (
         'rm_gen72_config',
         'real_moveit_demo.launch.py',
         'gazebo_moveit_demo.launch.py',
     ),
-    ('gen72_ii', 'standard'): (
+    'gen72_ii': (
         'rm_gen72_config',
         'real_moveit_demo_II.launch.py',
         'gazebo_moveit_demo_II.launch.py',
     ),
-    ('rx75', '6fb'): (
+    'rx75-6fb': (
         'rm_rx75_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
     ),
-    ('rx75', '6fb_v'): (
+    'rx75-6fb-v': (
         'rm_rx75_config',
         'real_moveit_demo_6fb_v.launch.py',
         'gazebo_moveit_demo_6fb_v.launch.py',
     ),
 }
 
-if set(_MOVEIT_LAUNCHES) != set(VARIANT_CATALOG):
-    raise RuntimeError('MoveIt launch map and variant catalog are out of sync.')
-
-VARIANTS_BY_ARM_TYPE = {
-    arm_type: tuple(
-        arm_variant
-        for arm_variant in ARM_VARIANTS
-        if (arm_type, arm_variant) in VARIANT_CATALOG
-    )
-    for arm_type in ARM_TYPES
-}
-
-
-_ARM_TYPE_ALIASES = {
-    '63': '63',
-    'rm63': '63',
-    '63iii': '63_iii',
-    'rm63iii': '63_iii',
-    '65': '65',
-    'rm65': '65',
-    '75': '75',
-    'rm75': '75',
-    'eco62': 'eco62',
-    'rmeco62': 'eco62',
-    'eco63': 'eco63',
-    'rmeco63': 'eco63',
-    'eco65': 'eco65',
-    'rmeco65': 'eco65',
-    'gen72': 'gen72',
-    'rmgen72': 'gen72',
-    'gen72ii': 'gen72_ii',
-    'rmgen72ii': 'gen72_ii',
-    'rx75': 'rx75',
-    'rmrx75': 'rx75',
-}
-
+if set(_MOVEIT_LAUNCHES) != set(MODEL_CATALOG):
+    raise RuntimeError('MoveIt launch map and model catalog are out of sync.')
 
 def _require_token(value: str | None, parameter: str) -> str:
     if value is None or not isinstance(value, str) or not value.strip():
@@ -443,24 +388,6 @@ def _require_token(value: str | None, parameter: str) -> str:
             )
         raise ValueError(f'{parameter} must be a non-empty string.')
     return value.strip()
-
-
-def _compact_token(value: str) -> str:
-    normalized = re.sub(r'[\s-]+', '_', value.lower())
-    normalized = re.sub(r'_+', '_', normalized).strip('_')
-    return normalized.replace('_', '')
-
-
-def normalize_arm_type(value: str | None) -> str:
-    """Normalize a supported arm name, including common ``RM_*`` aliases."""
-    raw_value = _require_token(value, 'arm_type')
-    normalized = _ARM_TYPE_ALIASES.get(_compact_token(raw_value))
-    if normalized is None:
-        raise ValueError(
-            f'Unsupported arm_type: {raw_value}. '
-            f"Valid arm types: {', '.join(ARM_TYPES)}."
-        )
-    return normalized
 
 
 def normalize_mode(value: str | None) -> str:
@@ -474,47 +401,28 @@ def normalize_mode(value: str | None) -> str:
     return normalized
 
 
-def resolve_variant(
+def resolve_model(
     arm_type: str | None,
     mode: str | None = 'real',
 ) -> ResolvedBringupPlan:
     """Resolve public selector values to a component-level bringup plan."""
-    family, canonical_arm_variant = normalize_selection(arm_type)
-    canonical_arm_type = normalize_arm_type(family)
+    canonical_arm_type = normalize_arm_type(arm_type)
     canonical_mode = normalize_mode(mode)
-
-    entry = VARIANT_CATALOG.get((canonical_arm_type, canonical_arm_variant))
-    if entry is None:
-        valid_selections = ', '.join(
-            format_arm_type(canonical_arm_type, variant)
-            for variant in VARIANTS_BY_ARM_TYPE[canonical_arm_type]
-        )
-        raise ValueError(
-            f'Unsupported arm_type: {arm_type}. '
-            f'Valid arm_type values for {canonical_arm_type}: {valid_selections}.'
-        )
-
+    entry = MODEL_CATALOG[canonical_arm_type]
     moveit_package, real_moveit_launch, gazebo_moveit_launch = (
-        _MOVEIT_LAUNCHES[(canonical_arm_type, canonical_arm_variant)]
+        _MOVEIT_LAUNCHES[canonical_arm_type]
     )
     moveit_launch = (
-        real_moveit_launch
-        if canonical_mode == 'real'
-        else gazebo_moveit_launch
+        real_moveit_launch if canonical_mode == 'real' else gazebo_moveit_launch
     )
-
     return ResolvedBringupPlan(
         arm_type=canonical_arm_type,
-        arm_variant=canonical_arm_variant,
         mode=canonical_mode,
-        arm_profile=ARM_PROFILES[canonical_arm_type],
+        arm_profile=ARM_PROFILES[entry.family],
         driver=_GENERIC_DRIVER,
         description=_GENERIC_DESCRIPTION,
         control=_GENERIC_CONTROL,
         gazebo=_GENERIC_GAZEBO,
         moveit=LaunchReference(moveit_package, moveit_launch),
-        legacy=LaunchReference(
-            PACKAGE_NAME,
-            entry.launch_file(canonical_mode),
-        ),
+        legacy=LaunchReference(PACKAGE_NAME, entry.launch_file(canonical_mode)),
     )

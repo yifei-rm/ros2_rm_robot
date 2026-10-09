@@ -8,7 +8,6 @@ from gz_demo_common import generate_legacy_gz_demo_launch  # noqa: E402
 
 def generate_launch_description():
     return generate_legacy_gz_demo_launch(
-        arm_type="rx75",
-        arm_variant="6fb",
+        arm_type="rx75-6fb",
         joint_states_topic_default="/joint_state_broadcaster/joint_states",
     )

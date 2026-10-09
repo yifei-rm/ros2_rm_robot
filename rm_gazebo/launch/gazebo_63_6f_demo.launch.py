@@ -8,6 +8,5 @@ from gz_demo_common import generate_legacy_gz_demo_launch  # noqa: E402
 
 def generate_launch_description():
     return generate_legacy_gz_demo_launch(
-        arm_type="63",
-        arm_variant="6f",
+        arm_type="63-6f",
     )
