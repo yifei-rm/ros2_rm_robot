@@ -23,7 +23,6 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 import xacro
 
-from rm_description.variant_catalog import format_arm_type
 
 
 _CREATE_SUCCESS_MARKER = "OK creation of entity."
@@ -330,7 +329,6 @@ def generate_gz_demo_actions(
 def generate_legacy_gz_demo_launch(
     *,
     arm_type,
-    arm_variant="standard",
     joint_states_topic_default="/joint_states",
 ):
     """Include the unified entry while preserving a legacy launch interface."""
@@ -355,7 +353,7 @@ def generate_legacy_gz_demo_launch(
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(generic_launch_path),
                 launch_arguments={
-                    "arm_type": format_arm_type(arm_type, arm_variant),
+                    "arm_type": arm_type,
                     "start_gazebo": LaunchConfiguration("start_gazebo"),
                     "joint_states_topic": LaunchConfiguration(
                         "joint_states_topic"

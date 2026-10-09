@@ -13,10 +13,10 @@ from launch.actions import (
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
-from rm_bringup.variant_catalog import LaunchReference, resolve_variant
+from rm_bringup.variant_catalog import LaunchReference, resolve_model
 from rm_description.variant_catalog import (
-    GLB_VARIANTS, MODEL_FORMATS, format_arm_type,
-    resolve_variant as resolve_description,
+    GLB_MODELS, MODEL_FORMATS,
+    resolve_model as resolve_description,
 )
 
 
@@ -79,7 +79,7 @@ def _moveit_action(context, plan, joint_states_topic, model):
     }
     if model == 'glb':
         moveit_arguments.update({
-            'arm_type': format_arm_type(plan.arm_type, plan.arm_variant),
+            'arm_type': plan.arm_type,
             'model': model,
             'joint_states_topic': joint_states_topic,
             'use_robot_state_publisher': 'false',
@@ -88,7 +88,7 @@ def _moveit_action(context, plan, joint_states_topic, model):
             LaunchReference('rm_bringup', 'rm_moveit.launch.py'),
             moveit_arguments,
         )
-    if plan.arm_type == 'rx75' and plan.mode == 'gazebo':
+    if plan.arm_profile.topology == 'dual' and plan.mode == 'gazebo':
         moveit_arguments['joint_states_topic'] = joint_states_topic
 
     return _include(plan.moveit, moveit_arguments)
@@ -99,7 +99,7 @@ def _build_real_actions(context, plan, joint_states_topic, use_moveit, model):
         _include(
             plan.driver,
             {
-                'arm_type': plan.arm_profile.driver_profile,
+                'arm_type': plan.arm_type,
                 'driver_config': _value(context, 'driver_config'),
                 'left_driver_config': _value(
                     context, 'left_driver_config'
@@ -112,7 +112,7 @@ def _build_real_actions(context, plan, joint_states_topic, use_moveit, model):
         _include(
             plan.description,
             {
-                'arm_type': format_arm_type(plan.arm_type, plan.arm_variant),
+                'arm_type': plan.arm_type,
                 'model': model,
                 'use_sim_time': 'false',
                 'joint_states_topic': joint_states_topic,
@@ -128,7 +128,7 @@ def _build_real_actions(context, plan, joint_states_topic, use_moveit, model):
         _include(
             plan.control,
             {
-                'arm_type': plan.arm_profile.control_profile,
+                'arm_type': plan.arm_type,
                 'follow': _value(context, 'follow'),
             },
         ),
@@ -154,7 +154,7 @@ def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
         _include(
             plan.gazebo,
             {
-                'arm_type': format_arm_type(plan.arm_type, plan.arm_variant),
+                'arm_type': plan.arm_type,
                 'start_gazebo': _value(context, 'start_gazebo'),
                 'joint_states_topic': 'auto',
             },
@@ -174,7 +174,7 @@ def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
 
 def _compose_bringup(context):
     try:
-        plan = resolve_variant(
+        plan = resolve_model(
             _value(context, 'arm_type'),
             _value(context, 'mode'),
         )
@@ -184,7 +184,7 @@ def _compose_bringup(context):
     requested_model = _value(context, 'model').strip().casefold()
     try:
         resolve_description(
-            format_arm_type(plan.arm_type, plan.arm_variant), requested_model
+            plan.arm_type, requested_model
         )
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
@@ -195,7 +195,7 @@ def _compose_bringup(context):
         )
     model = (
         'glb' if plan.mode == 'real' and requested_model != 'stl'
-        and (plan.arm_type, plan.arm_variant) in GLB_VARIANTS else 'stl'
+        and plan.arm_type in GLB_MODELS else 'stl'
     )
 
     use_moveit = _boolean_value(

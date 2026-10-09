@@ -24,7 +24,7 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 from rm_description.variant_catalog import (
-    DESCRIPTION_VARIANTS, MODEL_FORMATS, normalize_selection, resolve_variant,
+    DESCRIPTION_MODELS, MODEL_FORMATS, normalize_arm_type, resolve_model,
 )
 
 
@@ -60,23 +60,23 @@ def _xacro_command(model_path, mappings):
 def _launch_setup(context):
     requested_arm_type = _launch_value(context, "arm_type")
     try:
-        spec = resolve_variant(
+        spec = resolve_model(
             requested_arm_type, _launch_value(context, "model"),
         )
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
 
-    arm_type, arm_variant = normalize_selection(requested_arm_type)
+    arm_type = normalize_arm_type(requested_arm_type)
     description_share = get_package_share_directory("rm_description")
     model_path = os.path.join(description_share, "urdf", spec.model_file)
     rviz_path = os.path.join(description_share, "rviz", spec.rviz_file)
     if not os.path.isfile(model_path):
         raise RuntimeError(
-            f"Model file for {arm_type}/{arm_variant} does not exist: {model_path}"
+            f"Model file for {arm_type} does not exist: {model_path}"
         )
 
     mappings = dict(spec.xacro_mappings)
-    original_mappings = dict(DESCRIPTION_VARIANTS[(arm_type, arm_variant)].xacro_mappings)
+    original_mappings = dict(DESCRIPTION_MODELS[arm_type].xacro_mappings)
     for mapping_name in ("link6_type", "link7_type", "base_type"):
         override = _launch_value(context, f"{mapping_name}_override").strip()
         if override:

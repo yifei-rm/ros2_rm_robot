@@ -3,5 +3,5 @@ from rm_bringup.legacy_bringup import generate_legacy_bringup
 
 def generate_launch_description():
     return generate_legacy_bringup(
-        'eco63', 'standard', 'real'
+        'eco63', 'real'
     )
