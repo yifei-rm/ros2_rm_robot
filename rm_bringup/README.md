@@ -233,8 +233,6 @@ The current rm_bringup package is composed of the following files.
 │   ├── __init__.py                      # Python package marker
 │   ├── legacy_bringup.py                # compatibility-wrapper factory for the 42 legacy entries
 │   └── variant_catalog.py               # complete arm_type catalog, hardware profiles, and component mapping
-├── test
-│   └── test_model_selection.py           # offline checks for selectors, 84 wrappers, and ECO65 models
 ├── package.xml
 ├── README_CN.md                  
 └── README.md                           

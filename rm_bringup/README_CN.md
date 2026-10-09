@@ -228,8 +228,6 @@ rm@rm-desktop:~$ ros2 launch rm_bringup rm_65_gazebo.launch.py
 │   ├── __init__.py                      #Python包标记文件
 │   ├── legacy_bringup.py                #42个旧入口的兼容wrapper工厂
 │   └── variant_catalog.py               #完整arm_type能力表、硬件profile和组件映射
-├── test
-│   └── test_model_selection.py           #完整型号、84个旧入口和ECO65模型的离线回归检查
 ├── package.xml                         #依赖说明文件
 ├── README_CN.md                        #中文说明文档
 └── README.md                           #英文说明文档
