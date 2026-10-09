@@ -148,7 +148,10 @@ ros2 launch rm_bringup rm_bringup.launch.py \
   arm_type:=65 mode:=gazebo
 ```
 
-Unsupported model and variant combinations fail before any node starts.
+`arm_type` selects the complete model, such as `65-6fb` or `eco63-6fb`; Driver/Control also accept these values.
+RViz2 and Gazebo prefer matching DAE assets and otherwise use STL. Add `model:=stl` to select the original model.
+
+Unsupported model and end-link combinations fail before any node starts.
 The model-specific commands below are compatibility wrappers that forward to
 the unified entry, so their existing filenames and
 commands remain supported. See the [rm_bringup README](rm_bringup/README.md)

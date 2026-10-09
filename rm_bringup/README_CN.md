@@ -55,7 +55,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 型号及末端版本，如 `65`、`65-6f`、`eco63-6fb`；完整可选值见下表 |
 | `mode` | `real` | `real` 或 `gazebo` |
-| `model` | `auto` | `auto/stl/glb`；真机模式下 `auto` 优先使用配套 GLB，其余变体使用 STL |
+| `model` | `auto` | `auto/stl/dae`；真机与 Gazebo 均优先使用配套 DAE，其余型号使用 STL |
 | `allow_trajectory_execution` | `true` | 是否允许 MoveIt 执行轨迹；设为 `false` 时仅规划，不执行 |
 | `use_moveit` | `true` | 是否启动 MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
 | `use_rviz` | `true` | 是否启动 MoveIt RViz |
@@ -92,11 +92,11 @@ MoveIt；controller readiness 时序优化将在后续独立实施。
 
 ### 模型选择和离线规划
 
-`mode:=real` 默认 `model:=auto`，有配套 GLB 的 14 个变体使用彩色模型，TF 与 MoveIt
-读取相同的机器人描述。`model:=stl` 显式选择原 STL，`model:=glb` 强制使用 GLB；
-缺少该变体的 GLB 时会在启动节点前报错。
+`mode:=real` 默认 `model:=auto`，有配套 DAE 的 14 个变体使用彩色模型，TF 与 MoveIt
+读取相同的机器人描述。`model:=stl` 显式选择原 STL，`model:=dae` 使用 DAE；
+缺少该变体的 DAE 时会在启动节点前报错。
 
-离线规划使用统一入口 `rm_moveit.launch.py`，同样支持 `model:=auto/stl/glb`。
+离线规划使用统一入口 `rm_moveit.launch.py`，同样支持 `model:=auto/stl/dae`。
 默认关闭轨迹执行，不启动真实驱动或控制节点：
 
 ```bash
@@ -104,8 +104,8 @@ ros2 launch rm_bringup rm_moveit.launch.py \
   arm_type:=eco62 use_joint_state_publisher_gui:=true
 ```
 
-`mode:=gazebo` 下，`model:=auto` 和 `model:=stl` 使用原 STL 仿真配置，显式
-`model:=glb` 会报错。
+`mode:=gazebo` 使用 Humble 原有的 Gazebo Fortress。`model:=auto` 优先使用配套 DAE，
+Gazebo 与 RViz2 使用相同外观；添加 `model:=stl` 切换原 STL。原关节、碰撞和控制参数保留。
 
 ### moveit2控制真实机械臂
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_bringup功能包中的launch.py文件。
@@ -171,7 +171,7 @@ rm@rm-desktop:~$ ros2 launch rm_bringup rm_65_gazebo.launch.py
 │   └── rm_bringup3.png                 #图片3
 ├── launch                              #启动文件
 │   ├── rm_bringup.launch.py             #所有支持型号、末端版本和运行模式的统一启动入口
-│   ├── rm_moveit.launch.py              #GLB/STL 共用的离线规划入口
+│   ├── rm_moveit.launch.py              #DAE/STL 共用的离线规划入口
 │   ├── rm_63_6f_bringup.launch.py      #63臂六维力moveit2启动文件
 │   ├── rm_63_6f_gazebo.launch.py       #63臂六维力gazebo启动文件
 │   ├── rm_63_6fb_bringup.launch.py     #63臂一体化六维力moveit2启动文件

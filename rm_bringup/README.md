@@ -57,7 +57,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | :--- | :--- | :--- |
 | `arm_type` | Required | Model including end-link version, e.g. `65`, `65-6f`, `eco63-6fb`; see the supported values below |
 | `mode` | `real` | `real` or `gazebo` |
-| `model` | `auto` | `auto/stl/glb`; in real mode, `auto` prefers matching GLB assets and otherwise uses STL |
+| `model` | `auto` | `auto/stl/dae`; real and Gazebo modes prefer matching DAE assets and otherwise use STL |
 | `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; `false` keeps planning enabled without execution |
 | `use_moveit` | `true` | Start MoveIt; when false, set `use_rviz:=false` as well |
 | `use_rviz` | `true` | Start the MoveIt RViz process |
@@ -95,12 +95,12 @@ controller-readiness sequencing will be implemented separately.
 
 ### Model selection and offline planning
 
-In `mode:=real`, the default `model:=auto` selects colored GLB for the 14 variants with
+In `mode:=real`, the default `model:=auto` selects colored DAE for the 14 variants with
 matching assets. TF and MoveIt use the same robot description. Select `model:=stl` for
-the original STL model, or `model:=glb` to require GLB; a missing GLB variant fails
+the original STL model, or `model:=dae` to require DAE; a missing DAE variant fails
 before nodes start.
 
-The common offline planning entry `rm_moveit.launch.py` also accepts `model:=auto/stl/glb`.
+The common offline planning entry `rm_moveit.launch.py` also accepts `model:=auto/stl/dae`.
 Trajectory execution is disabled by default, and it does not start hardware driver or
 control nodes:
 
@@ -109,8 +109,9 @@ ros2 launch rm_bringup rm_moveit.launch.py \
   arm_type:=eco62 use_joint_state_publisher_gui:=true
 ```
 
-In `mode:=gazebo`, `model:=auto` and `model:=stl` use the original STL simulation
-configuration; explicit `model:=glb` fails.
+`mode:=gazebo` retains Humble's Gazebo Fortress. `model:=auto` prefers matching DAE
+assets, and Gazebo and RViz2 use the same visuals. Add `model:=stl` for the original
+STL. Existing joints, collisions and control settings are retained.
 
 ### moveit2_Controlling_Real_Robotic_Arm
 First, after configuring the environment and completing the connection, we can directly launch the node and run the launch.py file in the rm_bringup package through the following command.
@@ -175,7 +176,7 @@ The current rm_bringup package is composed of the following files.
 │   └── rm_bringup3.png                # pictures3
 ├── launch
 │   ├── rm_bringup.launch.py            # unified entry for every supported model, variant, and runtime mode
-│   ├── rm_moveit.launch.py             # common GLB/STL offline planning entry
+│   ├── rm_moveit.launch.py             # common DAE/STL offline planning entry
 │   ├── rm_63_6f_bringup.launch.py     # 63 arm six-axis force moveit2 launch file
 │   ├── rm_63_6f_gazebo.launch.py      # 63 arm six-axis force gazebo launch file
 │   ├── rm_63_6fb_bringup.launch.py    # 63 arm integrated six-axis force moveit2 launch file

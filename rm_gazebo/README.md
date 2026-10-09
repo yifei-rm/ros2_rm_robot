@@ -52,6 +52,9 @@ rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=65-6fb
 The unified entry accepts:
 
 * `arm_type`: required; selects the model and end-link version, e.g. `65`, `65-6fb`, or `rx75-6fb-v`. Bare families select the standard version. See the [supported selections](../rm_bringup/README.md#unified-launch-entry).
+* `model`: defaults to `auto`, preferring colored DAE when available and otherwise using STL. `model:=stl` selects original STL; `model:=dae` requires DAE. Legacy entries also accept this argument.
+
+This branch retains Gazebo Fortress. Gazebo and the accompanying MoveIt RViz2 use the same visuals; existing joint, collision and control settings are retained.
 * `start_gazebo`: default `true`. Set it to `false` only to reuse an already running Gazebo world named `empty`. This skips the Gazebo process itself, but robot spawning, the `/world/empty/clock` bridge, and controller spawning still run. If the external world is absent or entity creation times out, launch returns a non-zero status and does not attempt to start the controllers.
 * `joint_states_topic`: only `auto` is currently supported. It resolves to `/joint_states` for normal arms and `/joint_state_broadcaster/joint_states` for RX75.
 * `use_sim_time`: controls simulation time for `robot_state_publisher`, default `true`.

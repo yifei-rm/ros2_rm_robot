@@ -49,8 +49,9 @@ ros2 launch rm_description rm_description.launch.py \
   arm_type:=65-6f
 ```
 
-统一入口显式支持能力表中的 21 个型号/末端组合。`model` 可设为 `auto/stl/glb`，
-默认 `auto`；强制 `glb` 但该变体没有配套资源时，会在启动节点前报错。常用参数还包括
+统一入口显式支持能力表中的 21 个型号/末端组合。`model` 可设为 `auto/stl/dae`，
+默认 `auto`，有配套资源时使用彩色 DAE，其余使用 STL。`arm_type` 直接选择完整型号，
+如 `65-6fb`、`eco63-6fb`。使用 `dae` 但该型号没有配套资源时，会在启动节点前报错。常用参数还包括
 `use_sim_time`、`joint_states_topic`、`use_joint_state_bridge`、
 `use_joint_state_publisher_gui` 和 `use_rviz`；RX75 还支持左右臂的
 `left_xyz/left_rpy/right_xyz/right_rpy`。非法组合会在启动节点前报错。
@@ -131,7 +132,7 @@ rm@rm-desktop:~$ rviz2
 │   ├── rm_rx75_6fb_display.launch.py   #RX75-6FB双臂启动文件
 │   └── rm_rx75_6fb_v_display.launch.py #RX75-6FB-V双臂启动文件
 ├── meshes                       #模型文件存放文件夹
-│   ├── glb                      #配套彩色模型，model:=auto 优先使用
+│   ├── dae                      #配套彩色模型，model:=auto 优先使用
 │   ├── rm_63_arm                 #63机械臂模型文件存放文件夹
 │   │   ├── base_link.STL
 │   │   ├── link1.STL

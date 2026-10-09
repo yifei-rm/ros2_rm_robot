@@ -43,9 +43,9 @@ Through the introduction of the three parts, it can help you:
 * 3.Familiar with the topic related to the package for easy development and use.
 Source code address:https://github.com/RealManRobot/ros2_rm_robot.git.
 ## rm_description_Package_Use
-Model selection defaults to `model:=auto`: variants with matching assets use colored GLB,
+Model selection defaults to `model:=auto`: variants with matching assets use colored DAE,
 while other variants use STL. Select `model:=stl` for the original appearance, or
-`model:=glb` to require GLB. See the [supported arm_type values](../rm_bringup/README.md#unified-launch-entry)
+`model:=dae` to require DAE. See the [supported arm_type values](../rm_bringup/README.md#unified-launch-entry)
 and [offline MoveIt usage](../rm_bringup/README.md#model-selection-and-offline-planning).
 
 The generic entry is recommended:
@@ -56,7 +56,7 @@ ros2 launch rm_description rm_description.launch.py \
 ```
 
 It explicitly supports the 21 catalogued model/variant combinations. `model` accepts
-`auto/stl/glb` and defaults to `auto`; forcing `glb` for a variant without matching assets
+`auto/stl/dae` and defaults to `auto`; forcing `dae` for a variant without matching assets
 fails before nodes start. Other common arguments include `use_sim_time`, `joint_states_topic`,
 `use_joint_state_bridge`, `use_joint_state_publisher_gui`, and `use_rviz`.
 RX75 also accepts `left_xyz/left_rpy/right_xyz/right_rpy`. Invalid
@@ -65,8 +65,8 @@ combinations fail before nodes are started. The historical
 `model:=auto`. Other original arguments and defaults are retained. Append `model:=stl`
 to display the original STL appearance.
 
-Select the model and end-link version directly with `arm_type`; there is no separate
-`arm_variant` argument. A bare family selects its standard version.
+Select the model and end-link version directly with `arm_type`, for example
+`65-6fb` or `eco63-6fb`. A bare family selects its standard version.
 
 First, after configuring the environment and completing the connection, we can directly start the node and run the rm_description package.
 ```
@@ -143,7 +143,7 @@ The current rm_description package is composed of the following files.
 │   ├── rm_rx75_6fb_display.launch.py   # RX75-6FB dual-arm launch file
 │   └── rm_rx75_6fb_v_display.launch.py # RX75-6FB-V dual-arm launch file
 ├── meshes                       # model file storage folder
-│   ├── glb                      # matching colored assets preferred by model:=auto
+│   ├── dae                      # matching colored assets preferred by model:=auto
 │   ├── rm_63_arm                 #63 robotic arm model file storage folder
 │   │   ├── base_link.STL
 │   │   ├── link1.STL

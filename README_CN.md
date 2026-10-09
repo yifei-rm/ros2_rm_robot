@@ -147,6 +147,9 @@ ros2 launch rm_bringup rm_bringup.launch.py \
   arm_type:=65 mode:=gazebo
 ```
 
+`arm_type` 直接选择完整型号，如 `65-6fb`、`eco63-6fb`，Driver/Control 也支持这些值。
+RViz2 和 Gazebo 默认使用配套 DAE，无配套资源时使用 STL；添加 `model:=stl` 可切换原模型。
+
 不支持的型号与末端组合会在启动任何节点前直接报错。下面按型号拆分的
 旧 launch 文件会作为兼容 wrapper 转发到统一入口，原文件名和命令继续
 可用。完整支持矩阵和高级参数见
