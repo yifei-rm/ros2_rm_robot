@@ -47,16 +47,31 @@ The unified entry point is recommended:
 
 ```bash
 ros2 launch rm_description rm_description.launch.py \
-  arm_type:=65 arm_variant:=6f use_rviz:=true
+  arm_type:=65-6f use_joint_state_publisher_gui:=true use_rviz:=true
 ```
 
-`arm_type` accepts the ten model families listed in the
-[rm_bringup support matrix](../rm_bringup/README.md). `arm_variant:=auto`
-selects `6fb` for RX75 and `standard` for other models. The entry also exposes
-`use_sim_time`, `joint_states_topic`, `use_joint_state_bridge`,
-`use_joint_state_publisher_gui`, and `use_rviz`. RX75 enables its dual-arm
-joint-state bridge automatically. Unsupported combinations fail before nodes
-start; all 21 historical display files remain compatibility wrappers.
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | Model and end-link version, e.g. `65-6f` or `eco63-6fb`; see the model table linked below |
+| `model` | `auto` | `auto` prefers matching GLB and falls back to STL; also accepts `stl` or `glb` |
+| `use_sim_time` | `false` | Use the ROS simulation clock |
+| `joint_states_topic` | `/joint_states` | Joint-state topic consumed by the model; also the merged output topic when the dual-arm bridge is enabled |
+| `use_joint_state_bridge` | `auto` | Merge dual-arm joint states; `auto` enables it for RX75, or set `true` or `false` |
+| `left_joint_states_topic` | `/left_arm/joint_states` | Left-arm input topic, used only when the dual-arm bridge is enabled |
+| `right_joint_states_topic` | `/right_arm/joint_states` | Right-arm input topic, used only when the dual-arm bridge is enabled |
+| `use_joint_state_publisher_gui` | `false` | Start the joint slider GUI to adjust the displayed pose |
+| `use_rviz` | `false` | Start RViz for model display |
+| `left_xyz` | `0 -0.075 0.5` | RX75 only: left-arm mounting position `x y z`, in metres |
+| `left_rpy` | `3.14 1.57 1.5707963267949` | RX75 only: left-arm mounting orientation `roll pitch yaw`, in radians |
+| `right_xyz` | `0 0.075 0.5` | RX75 only: right-arm mounting position `x y z`, in metres |
+| `right_rpy` | `3.14 1.57 -1.5707963267949` | RX75 only: right-arm mounting orientation `roll pitch yaw`, in radians |
+
+`arm_type` directly selects the model and end-link version; see the
+[rm_bringup support matrix](../rm_bringup/README.md).
+Models with GLB use it by default; `model:=stl` selects the original STL.
+`model:=glb` requires matching GLB resources. Legacy display entries also accept `model`.
+Foxy uses uncompressed GLB with the same colors, materials and geometry.
+Only visuals change; original joints, inertia and STL collisions are retained.
 
 The Foxy URDF values were synchronized field by field from `rm_models` commit
 `bdb12ca3db532cb677ae33fa94795ac9c1b01f98` while preserving Foxy package URIs,

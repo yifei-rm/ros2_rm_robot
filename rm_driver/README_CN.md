@@ -50,16 +50,15 @@ rm_driver功能包在机械臂ROS2功能包中是十分重要的，该功能包�
 推荐使用统一入口：
 
 ```bash
-ros2 launch rm_driver rm_driver.launch.py arm_type:=65
+ros2 launch rm_driver rm_driver.launch.py arm_type:=65-6fb
 ```
 
-启动参数：
-
-- `arm_type`（必填）：`63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、
-  `eco65`、`gen72`、`gen72_ii` 或 `rx75`。
-- `driver_config`（默认 `auto`）：单臂型号的YAML路径。
-- `left_driver_config` / `right_driver_config`（默认 `auto`）：
-  RX75左/右臂YAML路径。
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | 型号或带末端后缀的型号，例如 `65`、`65-6fb`、`rx75`；支持值见[型号表](../rm_bringup/README_CN.md)，按基础型号选择驱动配置 |
+| `driver_config` | `auto` | 单臂 driver YAML 路径；`auto` 使用型号默认配置 |
+| `left_driver_config` | `auto` | 仅 RX75：左臂 driver YAML 路径；`auto` 使用默认左臂配置 |
+| `right_driver_config` | `auto` | 仅 RX75：右臂 driver YAML 路径；`auto` 使用默认右臂配置 |
 
 无效的型号/配置组合或不存在的YAML会在driver节点启动前报错。
 RX75会启动两个带namespace的driver节点。原有8个按型号启动的文件

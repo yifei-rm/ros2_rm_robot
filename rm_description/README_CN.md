@@ -45,23 +45,31 @@ rm_description功能包为显示机器人模型和TF变换的功能包，通过�
 
 ```bash
 ros2 launch rm_description rm_description.launch.py \
-  arm_type:=65 arm_variant:=6f use_rviz:=true
+  arm_type:=65-6f use_joint_state_publisher_gui:=true use_rviz:=true
 ```
 
-`arm_type` 支持的十个型号族见
-[rm_bringup能力表](../rm_bringup/README_CN.md)。`arm_variant:=auto`对RX75选择
-`6fb`，对其他型号选择 `standard`。入口还提供 `use_sim_time`、
-`joint_states_topic`、`use_joint_state_bridge`、
-`use_joint_state_publisher_gui` 和 `use_rviz`。RX75默认自动启用双臂
-joint-state bridge。不支持的组合会在启动节点前报错；原有21个
-display入口保留为兼容wrapper。
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 无，必须指定 | 型号与末端版本，例如 `65-6f`、`eco63-6fb`；支持值见下方型号表链接 |
+| `model` | `auto` | `auto` 优先使用配套 GLB，没有则使用 STL；也可指定 `stl` 或 `glb` |
+| `use_sim_time` | `false` | 是否使用 ROS 仿真时钟 |
+| `joint_states_topic` | `/joint_states` | 模型读取的关节状态话题；启用双臂桥接时也作为合并后的输出话题 |
+| `use_joint_state_bridge` | `auto` | 是否合并双臂关节状态；`auto` 仅对 RX75 启用，也可指定 `true` 或 `false` |
+| `left_joint_states_topic` | `/left_arm/joint_states` | 双臂桥接读取的左臂关节状态话题，仅启用桥接时使用 |
+| `right_joint_states_topic` | `/right_arm/joint_states` | 双臂桥接读取的右臂关节状态话题，仅启用桥接时使用 |
+| `use_joint_state_publisher_gui` | `false` | 是否启动关节滑块 GUI，用于手动调整模型姿态 |
+| `use_rviz` | `false` | 是否启动模型显示用 RViz |
+| `left_xyz` | `0 -0.075 0.5` | 仅 RX75：左臂安装位置 `x y z`，单位 m |
+| `left_rpy` | `3.14 1.57 1.5707963267949` | 仅 RX75：左臂安装姿态 `roll pitch yaw`，单位 rad |
+| `right_xyz` | `0 0.075 0.5` | 仅 RX75：右臂安装位置 `x y z`，单位 m |
+| `right_rpy` | `3.14 1.57 -1.5707963267949` | 仅 RX75：右臂安装姿态 `roll pitch yaw`，单位 rad |
 
-Foxy URDF数值按字段从 `rm_models` 提交
-`bdb12ca3db532cb677ae33fa94795ac9c1b01f98` 同步，同时保留Foxy的package URI、
-命名、transmission和Gazebo集成。该来源不包含独立GEN72-II模型，因此
-GEN72-II保留Foxy现有模型，不声称已完成来源同步。RX75-6FB的J8为
-左 `-0.0962 m`、右 `+0.0962 m`；RX75-6FB-V保持左 `-0.119 m`、右
-`+0.119 m`。
+`arm_type` 直接选择型号和末端版本，支持值见
+[rm_bringup能力表](../rm_bringup/README_CN.md)。
+有 GLB 的型号默认使用 GLB（带材质和颜色的模型）；添加 `model:=stl` 使用原 STL（不带颜色与材质的模型），
+`model:=glb` 使用 GLB。旧 display 入口也支持 `model`。
+Foxy 使用不压缩 GLB，保留颜色、材质和几何。
+
 
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_description功能包。  
 ```

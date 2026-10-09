@@ -51,11 +51,10 @@ Source code address: https://github.com/RealManRobot/ros2_rm_robot.git。
 
 All 44 `real_moveit_demo*` and `gazebo_moveit_demo*` launch entries accept:
 
-- `use_rviz` (default `true`): start or suppress MoveIt RViz.
-- `allow_trajectory_execution` (default `true`): permit MoveIt trajectory
-  execution. For the first real-robot validation, pass
-  `allow_trajectory_execution:=false` so planning can be inspected without
-  sending trajectories.
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `use_rviz` | `true` | Start MoveIt RViz |
+| `allow_trajectory_execution` | `true` | Allow MoveIt trajectory execution; use `false` for the first real-robot validation to inspect planning |
 
 For complete system startup, prefer the unified
 [`rm_bringup.launch.py`](../rm_bringup/README.md). It forwards both arguments.
