@@ -21,7 +21,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/base_link.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/base_link.dae" />
       </geometry>
     </visual>
   </link>
@@ -40,7 +40,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/link_1.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/link_1.dae" />
       </geometry>
     </visual>
   </link>
@@ -66,7 +66,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/link_2.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/link_2.dae" />
       </geometry>
     </visual>
   </link>
@@ -92,7 +92,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/link_3.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/link_3.dae" />
       </geometry>
     </visual>
   </link>
@@ -118,7 +118,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/link_4.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/link_4.dae" />
       </geometry>
     </visual>
   </link>
@@ -144,7 +144,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/link_5.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/link_5.dae" />
       </geometry>
     </visual>
   </link>
@@ -170,7 +170,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco62/link_6.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco62/link_6.dae" />
       </geometry>
     </visual>
   </link>

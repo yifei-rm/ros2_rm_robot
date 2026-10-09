@@ -52,12 +52,15 @@ ros2 launch rm_gazebo rm_gazebo.launch.py \
 | 参数 | 默认值 | 说明 |
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 型号与末端版本，例如 `65-6f`、`rx75-6fb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
 | `start_gazebo` | `true` | 是否启动 Gazebo Classic；`false` 时连接已运行的 Gazebo 世界 |
 | `use_gazebo_gui` | `true` | 启动 Gazebo 时是否打开图形界面 |
 | `clock_topic` | `auto` | ROS 仿真时钟话题；`auto` 使用 `/clock` |
 | `joint_states_topic` | `auto` | 当前仅支持 `auto`，按型号选择默认关节状态话题 |
 | `use_sim_time` | `true` | 模型状态发布节点是否使用 Gazebo 仿真时钟 |
 | `spawn_entity_timeout` | `120` | 等待 Gazebo 实体生成服务的超时时间，单位 s |
+
+有 DAE 资源的 14 个型号/末端组合默认在 Gazebo Classic 和 RViz2 中使用彩色 DAE，其余型号保留 STL。只替换外观，保留原碰撞和物理参数。
 
 实体生成成功后才会启动controller；实体或controller进程失败会请求关闭整套
 launch。原有21个Gazebo入口保留为兼容wrapper。

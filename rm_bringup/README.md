@@ -59,7 +59,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | Argument | Default | Description |
 | :--- | :--- | :--- |
 | `arm_type` | Required | Use a value from the table below, e.g. `65-6f`, `eco63-6fb` |
-| `model` | `auto` | `auto` prefers matching GLB in real mode; `stl` selects original STL, `glb` requires matching GLB; Gazebo mode uses STL |
+| `model` | `auto` | `auto` prefers matching DAE and falls back to STL; `stl` selects the original meshes, `dae` requires matching DAE |
 | `mode` | `real` | `real` or `gazebo` |
 | `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; use `false` for the first real-robot validation |
 | `use_moveit` | `true` | Start MoveIt; when false, also set `use_rviz:=false` |
@@ -86,8 +86,7 @@ Supported combinations:
 | `gen72_ii` | `gen72_ii` |
 | `rx75` | `rx75-6fb`, `rx75-6fb-v` |
 
-Unsupported selections fail before nodes start. Gazebo Classic keeps STL;
-`model:=glb` is rejected in Gazebo mode.
+Unsupported selections fail before nodes start. The 14 model/end-link combinations with DAE assets use the same colored visuals in Gazebo Classic and RViz2. Use `model:=stl` for the original meshes; collision and physics stay unchanged.
 
 Offline planning starts no driver or control nodes and disables trajectory execution by default:
 
@@ -101,7 +100,7 @@ ros2 launch rm_bringup rm_moveit.launch.py \
 | Argument | Default | Description |
 | :--- | :--- | :--- |
 | `arm_type` | Required | Model and end-link version, e.g. `eco62`, `65-6f` or `rx75-6fb` |
-| `model` | `auto` | `auto` prefers matching GLB and falls back to STL; also accepts `stl` or `glb` |
+| `model` | `auto` | `auto` prefers matching DAE and falls back to STL; `stl` selects the original meshes, `dae` requires matching DAE |
 | `allow_trajectory_execution` | `false` | Allow MoveIt trajectory execution; disabled by default for offline planning |
 | `use_rviz` | `true` | Start MoveIt RViz |
 | `use_robot_state_publisher` | `true` | Start robot_state_publisher to publish model transforms |

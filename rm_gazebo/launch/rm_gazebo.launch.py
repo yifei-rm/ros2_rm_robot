@@ -1,4 +1,7 @@
 import re
+import runpy
+
+from ament_index_python.packages import get_package_share_directory
 import sys
 from pathlib import Path
 
@@ -229,8 +232,12 @@ def normalize_arm_type(value):
     return normalized
 
 
-def resolve_model(arm_type):
-    return MODEL_CATALOG[normalize_arm_type(arm_type)]
+def resolve_model(arm_type, model="auto"):
+    arm_type = normalize_arm_type(arm_type)
+    description = runpy.run_path(str(Path(get_package_share_directory("rm_description"))
+                                    / "launch/rm_description.launch.py"))
+    description["_resolve_model"](arm_type, model)
+    return {**MODEL_CATALOG[arm_type], "arm_type": arm_type, "model": model}
 
 
 def _boolean_value(name, value):
@@ -247,6 +254,7 @@ def _boolean_value(name, value):
 def _launch_setup(context):
     specification = resolve_model(
         LaunchConfiguration("arm_type").perform(context),
+        LaunchConfiguration("model").perform(context),
     )
     requested_joint_states_topic = LaunchConfiguration(
         "joint_states_topic"
@@ -295,6 +303,8 @@ def _launch_setup(context):
         robot_name_in_model=specification["robot_name_in_model"],
         controller_names=specification["controller_names"],
         xacro_mappings=specification.get("xacro_mappings"),
+        arm_type=specification["arm_type"],
+        model=specification["model"],
         static_transforms=specification.get("static_transforms"),
         start_gazebo="true" if start_gazebo else "false",
         use_gazebo_gui="true" if use_gazebo_gui else "false",
@@ -313,6 +323,10 @@ def generate_launch_description():
                 description=(
                     "Robot model including end-link version, e.g. 65-6f or eco63-6fb"
                 ),
+            ),
+            DeclareLaunchArgument(
+                "model", default_value="auto", choices=["auto", "stl", "dae"],
+                description="auto prefers available DAE models; stl selects the original mesh",
             ),
             DeclareLaunchArgument(
                 "start_gazebo",

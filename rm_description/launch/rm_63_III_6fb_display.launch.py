@@ -9,7 +9,7 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     actions = [
-        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "glb"]),
+        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "dae"]),
         DeclareLaunchArgument("link6_type", default_value="Link6_6fb"),
         DeclareLaunchArgument("base_type", default_value="base_link_III"),
     ]

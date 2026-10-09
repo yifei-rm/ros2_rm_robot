@@ -56,7 +56,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | 参数 | 默认值 | 说明 |
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 直接使用下表的值，例如 `65-6f`、`eco63-6fb` |
-| `model` | `auto` | 真机模式 `auto` 优先使用配套 GLB；`stl` 使用原 STL，`glb` 要求配套 GLB；Gazebo 模式使用 STL |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
 | `mode` | `real` | `real` 或 `gazebo` |
 | `allow_trajectory_execution` | `true` | 是否允许MoveIt执行轨迹；首次真机验证应使用 `false` |
 | `use_moveit` | `true` | 是否启动MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
@@ -83,7 +83,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | `gen72_ii` | `gen72_ii` |
 | `rx75` | `rx75-6fb`, `rx75-6fb-v` |
 
-不支持的选择会在启动节点前报错。Gazebo Classic 使用原 STL；`model:=glb` 在 Gazebo 模式报错。
+不支持的选择会在启动节点前报错。有 DAE 资源的 14 个型号/末端组合在 Gazebo Classic 和 RViz2 中使用相同彩色外观；添加 `model:=stl` 切回原网格，碰撞和物理参数保持不变。
 
 离线规划不启动驱动或控制节点，默认禁止轨迹执行：
 
@@ -97,7 +97,7 @@ ros2 launch rm_bringup rm_moveit.launch.py \
 | 参数 | 默认值 | 说明 |
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 型号与末端版本，例如 `eco62`、`65-6f`、`rx75-6fb` |
-| `model` | `auto` | `auto` 优先使用配套 GLB，否则使用 STL；也可指定 `stl` 或 `glb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
 | `allow_trajectory_execution` | `false` | 是否允许 MoveIt 执行轨迹；离线规划默认禁止执行 |
 | `use_rviz` | `true` | 是否启动 MoveIt RViz |
 | `use_robot_state_publisher` | `true` | 是否启动模型 TF 发布节点 |

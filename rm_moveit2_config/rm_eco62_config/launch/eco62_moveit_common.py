@@ -1,3 +1,5 @@
+import runpy
+from launch.actions import OpaqueFunction
 import os
 
 import xacro
@@ -34,7 +36,7 @@ def load_yaml(package_name, file_path):
         return None
 
 
-def generate_moveit_launch(robot_xacro, xacro_mappings=None):
+def generate_moveit_launch(robot_xacro, xacro_mappings=None, model="stl"):
     package_name = "rm_eco62_config"
 
     tutorial_arg = DeclareLaunchArgument(
@@ -52,6 +54,13 @@ def generate_moveit_launch(robot_xacro, xacro_mappings=None):
         mappings=xacro_mappings or {},
     )
     robot_description = {"robot_description": robot_description_config.toxml()}
+    description = runpy.run_path(os.path.join(
+        get_package_share_directory("rm_description"), "launch", "rm_description.launch.py",
+    ))
+    robot_description["robot_description"] = description["_apply_visual_model"](
+        robot_description["robot_description"], "eco62", model,
+    )
+
 
     robot_description_semantic = {
         "robot_description_semantic": load_file(
@@ -171,7 +180,12 @@ def generate_moveit_launch(robot_xacro, xacro_mappings=None):
 
 
 def generate_moveit_gazebo_launch(robot_xacro, xacro_mappings=None):
-    return generate_moveit_launch(robot_xacro, xacro_mappings)
+    return LaunchDescription([
+        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "dae"]),
+        OpaqueFunction(function=lambda context: list(generate_moveit_launch(
+            robot_xacro, xacro_mappings, LaunchConfiguration("model").perform(context),
+        ).entities)),
+    ])
 
 
 def generate_moveit_real_launch(robot_xacro, xacro_mappings=None):

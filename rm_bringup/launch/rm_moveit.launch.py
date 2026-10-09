@@ -134,7 +134,7 @@ def generate_launch_description():
     }
     return LaunchDescription([
         DeclareLaunchArgument("arm_type", description="Robot model, e.g. 65-6f or eco63-6fb"),
-        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "glb"]),
+        DeclareLaunchArgument("model", default_value="auto", choices=["auto", "stl", "dae"]),
         *(DeclareLaunchArgument(name, default_value=default) for name, default in arguments.items()),
         OpaqueFunction(function=launch_setup),
     ])

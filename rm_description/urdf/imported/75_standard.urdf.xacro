@@ -15,7 +15,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/base/base_link_75.glb" />
+        <mesh filename="package://rm_description/meshes/dae/base/base_link_75.dae" />
       </geometry>
     </visual>
   </link>
@@ -34,7 +34,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_1.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_1.dae" />
       </geometry>
     </visual>
   </link>
@@ -60,7 +60,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="-1.57079632679 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_2.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_2.dae" />
       </geometry>
     </visual>
   </link>
@@ -86,7 +86,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_3.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_3.dae" />
       </geometry>
     </visual>
   </link>
@@ -112,7 +112,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="-1.57079632679 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_4.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_4.dae" />
       </geometry>
     </visual>
   </link>
@@ -138,7 +138,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_5.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_5.dae" />
       </geometry>
     </visual>
   </link>
@@ -164,7 +164,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="-1.57079632679 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_6.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_6.dae" />
       </geometry>
     </visual>
   </link>
@@ -190,7 +190,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/rm75/link_7.glb" />
+        <mesh filename="package://rm_description/meshes/dae/rm75/link_7.dae" />
       </geometry>
     </visual>
   </link>

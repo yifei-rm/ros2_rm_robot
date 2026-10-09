@@ -1,6 +1,7 @@
 """Unified component-level bringup for all supported RealMan arms."""
 
 import os
+import runpy
 import re
 
 from ament_index_python.packages import get_package_share_directory
@@ -224,6 +225,8 @@ def _moveit_action(
         return _include("rm_bringup", "rm_moveit.launch.py", arguments)
     if arm_type.startswith("rx75-"):
         arguments["joint_states_topic"] = joint_states_topic
+    if mode == "gazebo":
+        arguments["model"] = _value(context, "model")
     return _include(
         package,
         real_launch if mode == "real" else gazebo_launch,
@@ -310,6 +313,7 @@ def _build_gazebo_actions(
             {
                 "arm_type": arm_type,
                 "start_gazebo": _value(context, "start_gazebo"),
+                "model": _value(context, "model"),
                 "use_gazebo_gui": _value(context, "use_gazebo_gui"),
                 "joint_states_topic": "auto",
                 "use_sim_time": "true",
@@ -340,12 +344,10 @@ def _compose_bringup(context):
         _value(context, "mode"),
     )
     model = _value(context, "model").strip().casefold()
-    if model not in ("auto", "stl", "glb"):
-        raise RuntimeError(f"Unsupported model='{model}'; use auto, stl or glb.")
-    if model == "glb" and (mode == "gazebo" or moveit_spec[0] not in (
-        "rm_65_config", "rm_75_config", "rm_eco62_config", "rm_eco63_config", "rm_eco65_config", "rm_rx75_config"
-    )):
-        raise RuntimeError("GLB is unavailable for this model or Gazebo mode.")
+    description = runpy.run_path(os.path.join(
+        get_package_share_directory("rm_description"), "launch", "rm_description.launch.py",
+    ))
+    description["_resolve_model"](arm_type, model)
 
     use_moveit = _boolean_value("use_moveit", _value(context, "use_moveit"))
     use_rviz = _boolean_value("use_rviz", _value(context, "use_rviz"))
@@ -394,7 +396,7 @@ def generate_launch_description():
                 ),
             ),
             DeclareLaunchArgument(
-                "model", default_value="auto", choices=["auto", "stl", "glb"],
+                "model", default_value="auto", choices=["auto", "stl", "dae"],
             ),
             DeclareLaunchArgument("mode", default_value="real"),
             DeclareLaunchArgument(

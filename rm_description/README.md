@@ -53,7 +53,7 @@ ros2 launch rm_description rm_description.launch.py \
 | Argument | Default | Description |
 | :--- | :--- | :--- |
 | `arm_type` | Required | Model and end-link version, e.g. `65-6f` or `eco63-6fb`; see the model table linked below |
-| `model` | `auto` | `auto` prefers matching GLB and falls back to STL; also accepts `stl` or `glb` |
+| `model` | `auto` | `auto` prefers matching DAE and falls back to STL; `stl` selects the original meshes, `dae` requires matching DAE |
 | `use_sim_time` | `false` | Use the ROS simulation clock |
 | `joint_states_topic` | `/joint_states` | Joint-state topic consumed by the model; also the merged output topic when the dual-arm bridge is enabled |
 | `use_joint_state_bridge` | `auto` | Merge dual-arm joint states; `auto` enables it for RX75, or set `true` or `false` |
@@ -68,9 +68,9 @@ ros2 launch rm_description rm_description.launch.py \
 
 `arm_type` directly selects the model and end-link version; see the
 [rm_bringup support matrix](../rm_bringup/README.md).
-Models with GLB use it by default; `model:=stl` selects the original STL.
-`model:=glb` requires matching GLB resources. Legacy display entries also accept `model`.
-Foxy uses uncompressed GLB with the same colors, materials and geometry.
+Models with DAE use it by default; `model:=stl` selects the original STL.
+`model:=dae` requires matching DAE resources. Legacy display entries also accept `model`.
+DAE resources and their textures are installed under `rm_description/meshes/dae/`.
 Only visuals change; original joints, inertia and STL collisions are retained.
 
 The Foxy URDF values were synchronized field by field from `rm_models` commit

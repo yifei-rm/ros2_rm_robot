@@ -149,7 +149,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | Argument | Default | Description |
 | :--- | :--- | :--- |
 | `arm_type` | Required | Model and end-link version, e.g. `65-6f`, `eco63-6fb` |
-| `model` | `auto` | `auto` prefers matching GLB in real mode; `stl` selects original STL, `glb` requires matching GLB; Gazebo mode uses STL |
+| `model` | `auto` | `auto` prefers matching DAE and falls back to STL; `stl` selects the original meshes, `dae` requires matching DAE |
 | `mode` | `real` | `real` or `gazebo` |
 | `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; use `false` for the first real-robot validation |
 | `use_moveit` | `true` | Start MoveIt; when false, also set `use_rviz:=false` |

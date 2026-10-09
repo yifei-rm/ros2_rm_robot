@@ -75,8 +75,8 @@ _MODELS = {
 }
 
 
-MODEL_FORMATS = ("auto", "stl", "glb")
-_GLB_MODELS = {
+MODEL_FORMATS = ("auto", "stl", "dae")
+_DAE_MODELS = {
     arm_type: ("imported/" + filename + ".urdf.xacro", _MODELS[arm_type][1], {}, _MODELS[arm_type][3])
     for arm_type, filename in {
         "65": "65_standard",
@@ -107,12 +107,54 @@ def _resolve_model(arm_type, model="auto"):
         )
     model = model.strip().casefold()
     if model not in MODEL_FORMATS:
-        raise RuntimeError(f"Unsupported model='{model}'; use auto, stl or glb.")
-    if model == "glb" and normalized not in _GLB_MODELS:
-        raise RuntimeError(f"No GLB model for arm_type='{arm_type}'.")
-    catalog = _GLB_MODELS if model != "stl" and normalized in _GLB_MODELS else _MODELS
+        raise RuntimeError(f"Unsupported model='{model}'; use auto, stl or dae.")
+    if model == "dae" and normalized not in _DAE_MODELS:
+        raise RuntimeError(f"No DAE model for arm_type='{arm_type}'.")
+    catalog = _DAE_MODELS if model != "stl" and normalized in _DAE_MODELS else _MODELS
     return normalized, catalog[normalized]
 
+
+
+def _apply_visual_model(robot_description, arm_type, model="auto"):
+    """Apply DAE visuals without changing the caller's physical model."""
+    _, spec = _resolve_model(arm_type, model)
+    if not spec[0].startswith("imported/"):
+        return robot_description
+
+    from copy import deepcopy
+    from pathlib import Path
+    import xml.etree.ElementTree as ET
+    import xacro
+
+    source = Path(get_package_share_directory("rm_description")) / "urdf" / spec[0]
+    visuals = ET.fromstring(xacro.process_file(str(source)).toxml())
+    robot = ET.fromstring(robot_description)
+    links = {link.get("name"): link for link in robot.findall("link")}
+    replaced = set()
+    for source_link in visuals.findall("link"):
+        if not source_link.findall("visual"):
+            continue
+        name = source_link.get("name")
+        if name not in links:
+            raise ValueError("DAE visual link '{}' is missing from arm_type='{}'.".format(name, arm_type))
+        target = links[name]
+        for visual in target.findall("visual"):
+            target.remove(visual)
+        for visual in source_link.findall("visual"):
+            visual = deepcopy(visual)
+            for mesh in visual.findall("geometry/mesh"):
+                filename = mesh.get("filename", "")
+                if filename.startswith("package://"):
+                    package, relative = filename[len("package://"):].split("/", 1)
+                    mesh.set("filename", (Path(get_package_share_directory(package)) / relative).as_uri())
+            target.append(visual)
+        replaced.add(name)
+    # Gazebo solid colors override the colors stored in DAE materials.
+    for gazebo in robot.findall("gazebo"):
+        if gazebo.get("reference") in replaced:
+            for material in gazebo.findall("material"):
+                gazebo.remove(material)
+    return ET.tostring(robot, encoding="unicode")
 
 def _launch_value(context, name):
     return LaunchConfiguration(name).perform(context)
@@ -151,8 +193,8 @@ def _launch_setup(context):
                 raise RuntimeError(f"'{mapping_name}_override' is not valid for '{requested_arm_type}'.")
             mappings[mapping_name] = override
     if mappings != legacy[2]:
-        if requested_model.strip().casefold() == "glb":
-            raise RuntimeError("Custom STL mesh overrides cannot be used with model='glb'.")
+        if requested_model.strip().casefold() == "dae":
+            raise RuntimeError("Custom STL mesh overrides cannot be used with model='dae'.")
         if requested_model.strip().casefold() == "auto":
             requested_model = "stl"
     _, spec = _resolve_model(

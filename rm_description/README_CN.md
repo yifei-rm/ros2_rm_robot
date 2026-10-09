@@ -51,7 +51,7 @@ ros2 launch rm_description rm_description.launch.py \
 | 参数 | 默认值 | 说明 |
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 型号与末端版本，例如 `65-6f`、`eco63-6fb`；支持值见下方型号表链接 |
-| `model` | `auto` | `auto` 优先使用配套 GLB，没有则使用 STL；也可指定 `stl` 或 `glb` |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
 | `use_sim_time` | `false` | 是否使用 ROS 仿真时钟 |
 | `joint_states_topic` | `/joint_states` | 模型读取的关节状态话题；启用双臂桥接时也作为合并后的输出话题 |
 | `use_joint_state_bridge` | `auto` | 是否合并双臂关节状态；`auto` 仅对 RX75 启用，也可指定 `true` 或 `false` |
@@ -66,9 +66,9 @@ ros2 launch rm_description rm_description.launch.py \
 
 `arm_type` 直接选择型号和末端版本，支持值见
 [rm_bringup能力表](../rm_bringup/README_CN.md)。
-有 GLB 的型号默认使用 GLB（带材质和颜色的模型）；添加 `model:=stl` 使用原 STL（不带颜色与材质的模型），
-`model:=glb` 使用 GLB。旧 display 入口也支持 `model`。
-Foxy 使用不压缩 GLB，保留颜色、材质和几何。
+有 DAE 的型号默认使用 DAE（带材质和颜色的模型）；添加 `model:=stl` 使用原 STL（不带颜色与材质的模型），
+`model:=dae` 使用 DAE。旧 display 入口也支持 `model`。
+DAE 及其贴图随包安装，位于 `rm_description/meshes/dae/`。
 
 
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_description功能包。  

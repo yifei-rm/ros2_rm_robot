@@ -149,7 +149,7 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | 参数 | 默认值 | 说明 |
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 型号与末端版本，例如 `65-6f`、`eco63-6fb` |
-| `model` | `auto` | 真机模式 `auto` 优先使用配套 GLB；`stl` 使用原 STL，`glb` 要求配套 GLB；Gazebo 模式使用 STL |
+| `model` | `auto` | 有配套资源时优先使用 DAE，否则使用 STL；`stl` 切回原网格，`dae` 要求配套 DAE |
 | `mode` | `real` | `real` 或 `gazebo` |
 | `allow_trajectory_execution` | `true` | 是否允许MoveIt执行轨迹；首次真机验证应使用 `false` |
 | `use_moveit` | `true` | 是否启动MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
