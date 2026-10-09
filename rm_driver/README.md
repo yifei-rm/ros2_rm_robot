@@ -56,16 +56,18 @@ Source code address:https://github.com/RealManRobot/ros2_rm_robot.git.
 ### 2.1 Basic use of the package
 The unified entry point is recommended:
 ```bash
-ros2 launch rm_driver rm_driver.launch.py arm_type:=65
+ros2 launch rm_driver rm_driver.launch.py arm_type:=65-6fb
 ```
 
 Unified launch arguments:
 
-- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`.
+- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`. Supported complete selectors such as `65-6fb`, `eco63-6fb`, and `rx75-6fb-v` are also accepted; see the [complete model table](../rm_bringup/README.md#unified-launch-entry).
 - `driver_config` (default: `auto`): driver YAML path for a single-arm model.
 - `left_driver_config` / `right_driver_config` (default: `auto`): left- and right-arm driver YAML paths for RX75.
 
-RX75 uses separate left and right configurations; override them with `left_driver_config` and `right_driver_config`. `driver_config` is valid only for single-arm models, while the left/right arguments are valid only for RX75. Invalid combinations or missing files fail immediately.
+The suffix identifies the complete model; Driver still selects the existing family YAML. For example, `65-6fb` and `65` both use `rm_65_config.yaml`.
+
+RX75 (including `rx75-6fb` and `rx75-6fb-v`) uses separate left and right configurations; override them with `left_driver_config` and `right_driver_config`. `driver_config` is valid only for single-arm models, while the left/right arguments are valid only for RX75. Invalid combinations or missing files fail immediately.
 
 The eight legacy model entry points (`63`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, and `rx75`) are now compatibility wrappers, and their existing commands remain supported.
 

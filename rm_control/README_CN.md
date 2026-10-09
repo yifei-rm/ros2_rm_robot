@@ -48,7 +48,7 @@ ros2 launch rm_control rm_control.launch.py arm_type:=65
 
 统一入口参数：
 
-- `arm_type`（必填）：可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。
+- `arm_type`（必填）：可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。同时支持完整型号，如 `65-6fb`、`eco63-6fb`、`rx75-6fb-v`；末端后缀范围见 [完整型号表](../rm_bringup/README_CN.md#统一启动入口)。
 - `follow`（默认 `auto`）：仅接受 `auto`、`true` 或 `false`；`auto` 保留对应型号原有的默认跟随模式。
 
 选择 `rx75` 时会自动创建 `left_arm` 和 `right_arm` 两个控制节点。原有 8 个型号入口（`63`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`rx75`）现为兼容 wrapper，原命令仍可继续使用。

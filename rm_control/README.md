@@ -49,7 +49,7 @@ ros2 launch rm_control rm_control.launch.py arm_type:=65
 
 Unified launch arguments:
 
-- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`.
+- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`. Complete selectors such as `65-6fb`, `eco63-6fb`, and `rx75-6fb-v` are also supported; see the [complete model table](../rm_bringup/README.md#unified-launch-entry).
 - `follow` (default: `auto`): accepts only `auto`, `true`, or `false`; `auto` preserves the model's existing default following mode.
 
 Selecting `rx75` creates both the `left_arm` and `right_arm` control nodes. The eight legacy model entry points (`63`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, and `rx75`) are now compatibility wrappers, and their existing commands remain supported.

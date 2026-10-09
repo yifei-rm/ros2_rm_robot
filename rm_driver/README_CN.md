@@ -49,16 +49,18 @@ rm_driver功能包在机械臂ROS2功能包中是十分重要的，该功能包�
 ### 功能包基础使用
 推荐优先使用统一入口：
 ```bash
-ros2 launch rm_driver rm_driver.launch.py arm_type:=65
+ros2 launch rm_driver rm_driver.launch.py arm_type:=65-6fb
 ```
 
 统一入口参数：
 
-- `arm_type`（必填）：可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。
+- `arm_type`（必填）：可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。同时接受受支持的完整型号，如 `65-6fb`、`eco63-6fb`、`rx75-6fb-v`；末端后缀支持范围见 [完整型号表](../rm_bringup/README_CN.md#统一启动入口)。
 - `driver_config`（默认 `auto`）：单臂型号的驱动 YAML 路径。
 - `left_driver_config` / `right_driver_config`（默认 `auto`）：RX75 左、右臂的驱动 YAML 路径。
 
-RX75 使用左右两份配置；如需覆盖默认配置，应使用 `left_driver_config` 和 `right_driver_config`。`driver_config` 仅用于单臂型号，左右臂参数仅用于 RX75；无效组合或不存在的文件会直接报错。
+末端后缀只用于完整型号选择，Driver 仍按基础型号选择原有 YAML；例如 `65-6fb` 与 `65` 使用相同的 `rm_65_config.yaml`。
+
+RX75（包括 `rx75-6fb`、`rx75-6fb-v`）使用左右两份配置；如需覆盖默认配置，应使用 `left_driver_config` 和 `right_driver_config`。`driver_config` 仅用于单臂型号，左右臂参数仅用于 RX75；无效组合或不存在的文件会直接报错。
 
 原有 8 个型号入口（`63`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`rx75`）现为兼容 wrapper，原命令仍可继续使用。
 
