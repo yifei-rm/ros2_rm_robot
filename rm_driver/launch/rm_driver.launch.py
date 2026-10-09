@@ -34,18 +34,22 @@ _ARM_TYPE_ALIASES = {
 
 _DRIVER_PROFILES = {
     '63': {
+        'suffixes': ('6f', '6fb'),
         'topology': 'single',
         'config': 'rm_63_config.yaml',
     },
     '63_iii': {
+        'suffixes': ('6fb',),
         'topology': 'single',
         'config': 'rm_63_config.yaml',
     },
     '65': {
+        'suffixes': ('6f', '6fb'),
         'topology': 'single',
         'config': 'rm_65_config.yaml',
     },
     '75': {
+        'suffixes': ('6f', '6fb'),
         'topology': 'single',
         'config': 'rm_75_config.yaml',
     },
@@ -54,10 +58,12 @@ _DRIVER_PROFILES = {
         'config': 'rm_eco62_config.yaml',
     },
     'eco63': {
+        'suffixes': ('6fb',),
         'topology': 'single',
         'config': 'rm_eco63_config.yaml',
     },
     'eco65': {
+        'suffixes': ('6f', '6fb'),
         'topology': 'single',
         'config': 'rm_eco65_config.yaml',
     },
@@ -70,11 +76,19 @@ _DRIVER_PROFILES = {
         'config': 'rm_gen72_config.yaml',
     },
     'rx75': {
+        'suffixes': ('6fb', '6fb-v'),
         'topology': 'dual',
         'left_config': 'rm_rx75_left_config.yaml',
         'right_config': 'rm_rx75_right_config.yaml',
     },
 }
+
+
+_ARM_TYPE_ALIASES.update({
+    alias + suffix.replace('-', ''): family
+    for alias, family in _ARM_TYPE_ALIASES.items()
+    for suffix in _DRIVER_PROFILES[family].get('suffixes', ())
+})
 
 
 def _compact_token(value):
@@ -89,7 +103,11 @@ def normalize_arm_type(value):
 
     normalized = _ARM_TYPE_ALIASES.get(_compact_token(value.strip()))
     if normalized is None:
-        valid_types = ', '.join(_DRIVER_PROFILES)
+        valid_types = ', '.join(
+            family + ('-' + suffix if suffix else '')
+            for family, profile in _DRIVER_PROFILES.items()
+            for suffix in ('',) + profile.get('suffixes', ())
+        )
         raise ValueError(
             f'Unsupported arm_type: {value.strip()}. '
             f'Valid arm types: {valid_types}.'
@@ -237,8 +255,8 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 'arm_type',
                 description=(
-                    'Robot model: 63, 63_iii, 65, 75, eco62, eco63, '
-                    'eco65, gen72, gen72_ii, or rx75'
+                    'Robot model including supported end-link suffixes, '
+                    'e.g. 65, 65-6fb and eco63-6fb'
                 ),
             ),
             DeclareLaunchArgument(

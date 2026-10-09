@@ -43,15 +43,17 @@ rm_control功能包为实现moveit2控制真实机械臂时所必须的一个功
 ### 功能包基础使用
 推荐优先使用统一入口：
 ```bash
-ros2 launch rm_control rm_control.launch.py arm_type:=65
+ros2 launch rm_control rm_control.launch.py arm_type:=65-6fb
 ```
 
 统一入口参数：
 
-- `arm_type`（必填）：可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。
+- `arm_type`（必填）：可选 `63`、`63_iii`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`gen72_ii` 或 `rx75`。同时接受受支持的完整型号，如 `65-6fb`、`eco63-6fb`、`rx75-6fb-v`；末端后缀支持范围见 [完整型号表](../rm_bringup/README_CN.md#统一启动入口)。
 - `follow`（默认 `auto`）：仅接受 `auto`、`true` 或 `false`；`auto` 保留对应型号原有的默认跟随模式。
 
-选择 `rx75` 时会自动创建 `left_arm` 和 `right_arm` 两个控制节点。原有 8 个型号入口（`63`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`rx75`）现为兼容 wrapper，原命令仍可继续使用。
+后缀型号使用基础型号的原硬件代码和 `follow` 默认值。`follow:=auto` 对 `75`、`gen72`、`gen72_ii`、`rx75` 为高跟随（`true`），其余型号为低跟随（`false`）。
+
+选择 `rx75`、`rx75-6fb` 或 `rx75-6fb-v` 时会自动创建 `left_arm` 和 `right_arm` 两个控制节点。原有 8 个型号入口（`63`、`65`、`75`、`eco62`、`eco63`、`eco65`、`gen72`、`rx75`）现为兼容 wrapper，原命令仍可继续使用。
 
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_control功能包。
 ```
@@ -74,7 +76,7 @@ ros2 launch rm_control rm_control.launch.py arm_type:=65 follow:=true
 
 `follow:=true` 表示高跟随，`follow:=false` 表示低跟随。高跟随对透传速率以及机械臂速度、加速度参数的匹配要求更高，但控制更精细；低跟随的使用门槛较低，但来不及到达的点可能被丢弃。使用 `follow:=auto` 可保留所选型号原有的默认跟随模式。
 
-用户传入的 `arm_type` 应使用基础使用章节列出的规范型号字符串。`65`、`651`、`634`、`632`、`621`、`75`、`72` 等数值是统一 launch 内部向节点参数转换时使用的型号代码，不应作为 `arm_type` 启动参数传入。
+用户传入的 `arm_type` 应使用基础使用章节列出的型号字符串，例如 `65`、`65-6fb`、`eco65-6f`。节点使用的数值型号代码由统一 launch 自动转换，无需手动填写。
 ## rm_control功能包架构说明
 ### 功能包文件总览
 当前rm_control功能包的文件构成如下。

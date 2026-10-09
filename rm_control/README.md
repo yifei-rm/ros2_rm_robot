@@ -44,15 +44,17 @@ Source code address: https://github.com/RealManRobot/ros2_rm_robot.git。
 ### Basic_use_of_the_package
 The unified entry point is recommended:
 ```bash
-ros2 launch rm_control rm_control.launch.py arm_type:=65
+ros2 launch rm_control rm_control.launch.py arm_type:=65-6fb
 ```
 
 Unified launch arguments:
 
-- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`.
+- `arm_type` (required): `63`, `63_iii`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, `gen72_ii`, or `rx75`. Supported complete selectors such as `65-6fb`, `eco63-6fb`, and `rx75-6fb-v` are also accepted; see the [complete model table](../rm_bringup/README.md#unified-launch-entry).
 - `follow` (default: `auto`): accepts only `auto`, `true`, or `false`; `auto` preserves the model's existing default following mode.
 
-Selecting `rx75` creates both the `left_arm` and `right_arm` control nodes. The eight legacy model entry points (`63`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, and `rx75`) are now compatibility wrappers, and their existing commands remain supported.
+Complete selectors retain their family hardware code and `follow` default. With `follow:=auto`, `75`, `gen72`, `gen72_ii`, and `rx75` use high-follow mode (`true`); other families use low-follow mode (`false`).
+
+Selecting `rx75`, `rx75-6fb`, or `rx75-6fb-v` creates both the `left_arm` and `right_arm` control nodes. The eight legacy model entry points (`63`, `65`, `75`, `eco62`, `eco63`, `eco65`, `gen72`, and `rx75`) are now compatibility wrappers, and their existing commands remain supported.
 
 First, after configuring the environment and completing the connection, we can directly start the node and run the rm_control package.
 ```
@@ -75,7 +77,7 @@ ros2 launch rm_control rm_control.launch.py arm_type:=65 follow:=true
 
 `follow:=true` selects high-follow mode, while `follow:=false` selects low-follow mode. High-follow mode tracks the transmitted trajectory more closely and requires suitable transmission rate, velocity, and acceleration settings. Low-follow mode has a lower usage threshold, but points that cannot be reached in time may be discarded. Use `follow:=auto` to preserve the selected model's historical default.
 
-The user-facing `arm_type` value is the canonical model string listed in the basic-use section. The numeric values `65`, `651`, `634`, `632`, `621`, `75`, and `72` are internal node-parameter mappings maintained by the unified launch file; they are not values that users should pass to the `arm_type` launch argument.
+Pass a model string from the basic-use section as `arm_type`, such as `65`, `65-6fb`, or `eco65-6f`. The unified launch converts it to the numeric hardware code required by the node automatically.
 ## rm_control_Package_Architecture_Description
 ### Overview_of_package_files
 The current rm_control package is composed of the following files.
