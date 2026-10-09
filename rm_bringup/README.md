@@ -57,18 +57,18 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | :--- | :--- | :--- |
 | `arm_type` | Required | Model including end-link version, e.g. `65`, `65-6f`, `eco63-6fb`; see the supported values below |
 | `mode` | `real` | `real` or `gazebo` |
-| `model` | `auto` | `auto/stl/glb`; in real mode, `auto` prefers matching GLB assets and otherwise uses STL |
+| `model` | `auto` | `auto/stl/glb`; `auto` prefers matching GLB assets and otherwise uses STL |
 | `allow_trajectory_execution` | `true` | Whether MoveIt may execute trajectories; `false` keeps planning enabled without execution |
 | `use_moveit` | `true` | Start MoveIt; when false, set `use_rviz:=false` as well |
 | `use_rviz` | `true` | Start the MoveIt RViz process |
 | `driver_config` | `auto` | Single-arm driver YAML in real mode; RX75 uses the left/right options |
 | `left_driver_config` | `auto` | RX75 left-arm driver YAML |
 | `right_driver_config` | `auto` | RX75 right-arm driver YAML |
-| `follow` | `auto` | Real control follow mode: `auto/true/false` |
+| `follow` | `auto` | Real follow mode: `auto/true/false`; `auto` is `true` for `75/gen72/gen72_ii/rx75`, otherwise `false` |
 | `joint_states_topic` | `auto` | Only `auto` is currently supported; it selects the model/mode default |
 | `start_gazebo` | `true` | Start Gazebo processes in gazebo mode |
 
-Supported arm_type values (bare families select the standard version):
+The 10 families expose 21 complete `arm_type` values. Bare families select the standard version; RX75 requires an explicit suffix:
 
 | Model | Supported arm_type values |
 | :--- | :--- |
@@ -85,8 +85,10 @@ Supported arm_type values (bare families select the standard version):
 
 Unsupported combinations fail before any node starts. For example, the unified entry does not expose ECO62 with `6fb`. During real-robot checks, `allow_trajectory_execution:=false` can be passed temporarily without changing its default.
 
-The unified entry now composes the generic launch files from `rm_driver`,
-`rm_description`, `rm_control`, and `rm_gazebo` directly. The 42 historical
+The unified entry composes the generic launch files from `rm_driver`,
+`rm_description`, `rm_control`, and `rm_gazebo` directly. Each component receives
+the same complete `arm_type`, such as `65-6fb`. Driver/Control select the existing
+family YAML, hardware code, and following default internally. The 42 historical
 model-specific entries are thin compatibility wrappers; existing commands and
 the RX75 `use_moveit_rviz` argument remain available. Gazebo intentionally
 keeps the historical eight-second MoveIt delay in this structural migration;
@@ -105,11 +107,21 @@ control nodes:
 
 ```bash
 ros2 launch rm_bringup rm_moveit.launch.py \
-  arm_type:=eco62 use_joint_state_publisher_gui:=true
+  arm_type:=eco65-6fb model:=stl use_joint_state_publisher_gui:=true
 ```
 
-In `mode:=gazebo`, `model:=auto` and `model:=stl` use the original STL simulation
-configuration; explicit `model:=glb` fails.
+Defaults for this offline entry are:
+
+| Argument | Default |
+| :--- | :--- |
+| `model` | `auto` |
+| `allow_trajectory_execution` | `false` |
+| `use_rviz` | `true` |
+| `use_robot_state_publisher` | `true` |
+| `use_joint_state_publisher_gui` | `false` |
+| `joint_states_topic` | `/joint_states` |
+
+In `mode:=gazebo`, the 14 combinations with GLB assets default to colored GLB in both Gazebo and RViz2; other models keep STL. Use `model:=stl` for the original meshes. Collision and physics stay unchanged.
 
 ### moveit2_Controlling_Real_Robotic_Arm
 First, after configuring the environment and completing the connection, we can directly launch the node and run the launch.py file in the rm_bringup package through the following command.
@@ -220,7 +232,9 @@ The current rm_bringup package is composed of the following files.
 ├── rm_bringup                         # Python modules used by the unified entry
 │   ├── __init__.py                      # Python package marker
 │   ├── legacy_bringup.py                # compatibility-wrapper factory for the 42 legacy entries
-│   └── variant_catalog.py               # model capabilities, aliases, component mapping, and validation
+│   └── variant_catalog.py               # complete arm_type catalog, hardware profiles, and component mapping
+├── test
+│   └── test_model_selection.py           # offline checks for selectors, 84 wrappers, and ECO65 models
 ├── package.xml
 ├── README_CN.md                  
 └── README.md                           

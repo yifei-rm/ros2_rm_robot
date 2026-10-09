@@ -135,20 +135,28 @@ The above are the current major packages. Each package has its own role. For mor
 
 The recommended entry point is `rm_bringup.launch.py`. `arm_type` is required
 and selects the robot model including its end-link version, e.g. `65`,
-`65-6f`, or `eco63-6fb`; `mode` selects a real robot or Gazebo and defaults to
+`65-6f`, or `eco63-6fb`. RX75 requires an explicit suffix; other bare families
+select the standard version. Bringup, Description, and Gazebo use the same complete
+selector. Driver/Control accept the suffix and select the original family configuration
+and control defaults. `mode` selects a real robot or Gazebo and defaults to
 `real`. For example:
 
 ```bash
 # Real robot
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 mode:=real
+  arm_type:=65-6fb mode:=real allow_trajectory_execution:=false
 
 # Gazebo
 ros2 launch rm_bringup rm_bringup.launch.py \
   arm_type:=65 mode:=gazebo
 ```
 
-Unsupported model and variant combinations fail before any node starts.
+`model` defaults to `auto`, preferring matching GLB, and also accepts `stl/glb`.
+Bringup defaults `allow_trajectory_execution` to `true`; the real-robot example
+explicitly disables execution. Offline planning uses `rm_bringup rm_moveit.launch.py`,
+where execution defaults to `false`.
+
+Unsupported complete selectors fail before any node starts.
 The model-specific commands below are compatibility wrappers that forward to
 the unified entry, so their existing filenames and
 commands remain supported. See the [rm_bringup README](rm_bringup/README.md)
@@ -203,4 +211,4 @@ Please refer to the following operation specifications when using the robotic ar
 * Place the robotic arm in a safe location when not in use to avoid it from falling down and damaging or injuring other objects during vibration.
 * Disconnect the robotic arm from the power supply in time when not in use.
 
-<!-- v1.7.0 -->
+

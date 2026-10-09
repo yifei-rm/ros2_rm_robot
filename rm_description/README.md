@@ -52,7 +52,7 @@ The generic entry is recommended:
 
 ```bash
 ros2 launch rm_description rm_description.launch.py \
-  arm_type:=65-6f
+  arm_type:=65-6f use_rviz:=true use_joint_state_publisher_gui:=true
 ```
 
 It explicitly supports the 21 catalogued model/variant combinations. `model` accepts
@@ -65,8 +65,22 @@ combinations fail before nodes are started. The historical
 `model:=auto`. Other original arguments and defaults are retained. Append `model:=stl`
 to display the original STL appearance.
 
-Select the model and end-link version directly with `arm_type`; there is no separate
-`arm_variant` argument. A bare family selects its standard version.
+Select the complete model and end-link version directly with `arm_type`.
+A bare family selects its standard version; RX75 requires an explicit suffix.
+
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `arm_type` | Required | Complete selector, e.g. `eco65-6fb`; see the [model table](../rm_bringup/README.md#unified-launch-entry) |
+| `model` | `auto` | Prefer matching GLB; `stl` uses original STL, `glb` requires GLB |
+| `use_sim_time` | `false` | Use the simulation clock |
+| `joint_states_topic` | `/joint_states` | Joint-state subscription topic |
+| `use_joint_state_bridge` | `auto` | Enable the left/right joint-state bridge automatically for RX75 |
+| `use_joint_state_publisher_gui` | `false` | Start the joint-state GUI |
+| `use_rviz` | `false` | Start RViz2 |
+
+With `model:=stl`, `eco65-6f` and `eco65-6fb` use the existing `rm_eco65.urdf.xacro`
+and select `Link6_6f` and `Link6_6fb`, respectively. Offline expansion confirms that
+joints, inertial data, and collision parameters match their corresponding GLB models.
 
 First, after configuring the environment and completing the connection, we can directly start the node and run the rm_description package.
 ```
@@ -120,7 +134,7 @@ The current rm_description package is composed of the following files.
 │   ├── rm_description3.png
 │   └── rm_description4.png
 ├── launch
-│   ├── rm_description.launch.py       # unified model and variant launch entry
+│   ├── rm_description.launch.py       # unified complete-model launch entry
 │   ├── rm_63_6f_display.launch.py  # 63 six-axis force launch file
 │   ├── rm_63_6fb_display.launch.py # 63 integrated six-axis force launch file
 │   ├── rm_63_display.launch.py     # 63 launch file
@@ -267,7 +281,7 @@ The current rm_description package is composed of the following files.
 ├── rm_description               # Python launch support module
 │   ├── __init__.py
 │   ├── legacy_display.py         # legacy display-wrapper definitions
-│   └── variant_catalog.py        # supported model/variant catalog
+│   └── variant_catalog.py        # complete arm_type catalog, aliases, and STL/GLB mapping
 ├── rviz                               #rviz2 configuration file storage folder
 │   ├── rm_63.rviz
 │   ├── rm_65.rviz

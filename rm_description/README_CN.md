@@ -46,7 +46,7 @@ rm_description功能包为显示机器人模型和TF变换的功能包，通过�
 
 ```bash
 ros2 launch rm_description rm_description.launch.py \
-  arm_type:=65-6f
+  arm_type:=65-6f use_rviz:=true use_joint_state_publisher_gui:=true
 ```
 
 统一入口显式支持能力表中的 21 个型号/末端组合。`model` 可设为 `auto/stl/glb`，
@@ -54,6 +54,20 @@ ros2 launch rm_description rm_description.launch.py \
 `use_sim_time`、`joint_states_topic`、`use_joint_state_bridge`、
 `use_joint_state_publisher_gui` 和 `use_rviz`；RX75 还支持左右臂的
 `left_xyz/left_rpy/right_xyz/right_rpy`。非法组合会在启动节点前报错。
+
+| 参数 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `arm_type` | 必填 | 完整型号，如 `eco65-6fb`；支持值见 [完整型号表](../rm_bringup/README_CN.md#统一启动入口) |
+| `model` | `auto` | 有配套 GLB 时优先 GLB；`stl` 使用原 STL，`glb` 强制要求 GLB |
+| `use_sim_time` | `false` | 使用仿真时钟 |
+| `joint_states_topic` | `/joint_states` | 订阅的关节状态话题 |
+| `use_joint_state_bridge` | `auto` | 自动为 RX75 启用左右臂关节状态桥接 |
+| `use_joint_state_publisher_gui` | `false` | 启动关节状态 GUI |
+| `use_rviz` | `false` | 启动 RViz2 |
+
+`eco65-6f` 和 `eco65-6fb` 在 `model:=stl` 时使用现有 `rm_eco65.urdf.xacro`，
+分别选择 `Link6_6f` 和 `Link6_6fb`。离线展开后，关节、惯量和碰撞参数与对应 GLB 一致。
+
 下面列出的旧 `*_display.launch.py` 命令已改为兼容 wrapper，也默认采用
 `model:=auto`；其余原参数和默认值继续保留。要显示旧 STL，可在命令后添加 `model:=stl`。
 
@@ -255,7 +269,7 @@ rm@rm-desktop:~$ rviz2
 ├── rm_description               #Python启动辅助模块
 │   ├── __init__.py
 │   ├── legacy_display.py         #旧display入口兼容定义
-│   └── variant_catalog.py        #支持的型号/末端能力表
+│   └── variant_catalog.py        #完整arm_type能力表、别名解析和STL/GLB文件映射
 ├── rviz                          #rviz2配置文件存放文件夹
 │   ├── rm_63.rviz
 │   ├── rm_65.rviz

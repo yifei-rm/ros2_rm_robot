@@ -49,11 +49,12 @@ rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=65-6fb
 统一入口支持以下参数：
 
 * `arm_type`：必填，直接选择型号和末端版本，如 `65`、`65-6fb`、`rx75-6fb-v`；不带末端后缀时选择标准版。完整可选值见 [统一入口支持表](../rm_bringup/README_CN.md#统一启动入口)。
+* `model`：默认 `auto`，有配套资源的型号使用彩色 GLB，其余使用原 STL；`stl` 切回原网格，`glb` 强制使用 GLB。仅替换外观，保留原碰撞和物理参数。
 * `start_gazebo`：是否启动Gazebo，默认 `true`。仅当需要复用已经运行且 world 名为 `empty` 的 Gazebo 时设置为 `false`；此时只跳过 Gazebo 进程，模型创建、`/world/empty/clock` bridge 和控制器启动仍会执行。
 * `joint_states_topic`：当前仅支持 `auto`；普通机械臂解析为 `/joint_states`，RX75解析为 `/joint_state_broadcaster/joint_states`。
 * `use_sim_time`：`robot_state_publisher`是否使用仿真时间，默认 `true`。
 
-能力表覆盖10种机械臂型号和21个受支持的“型号+末端版本”组合。原有21个 `gazebo_*_demo.launch.py` 入口继续保留，参数与默认值不变。例如：
+能力表使用 10 个系列、21 个完整 `arm_type`。原有 21 个 `gazebo_*_demo.launch.py` 入口直接传递完整型号，文件名、参数与默认值继续保留。例如：
 ```
 rm@rm-desktop:~$ ros2 launch rm_gazebo gazebo_<arm_type>_demo.launch.py
 ```
@@ -121,7 +122,7 @@ RX75使用独立MoveIt配置包 `rm_rx75_config`：RX75-6FB-V请执行 `ros2 lau
 │   ├── rm_gazebo1.png
 │   └── rm_gazebo2.png
 ├── launch
-│   ├── rm_gazebo.launch.py                #统一入口，覆盖10种型号及21个型号/末端组合
+│   ├── rm_gazebo.launch.py                #统一入口，覆盖10个系列及21个完整arm_type
 │   ├── gazebo_63_6fb_demo.launch.py       #RML63一体化六维力gazebo启动文件
 │   ├── gazebo_63_6f_demo.launch.py        #RML63六维力gazebo启动文件
 │   ├── gazebo_63_demo.launch.py           #RML63gazebo启动文件

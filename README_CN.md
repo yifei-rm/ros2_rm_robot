@@ -134,18 +134,24 @@ colcon build
 ### 2.0 统一启动入口
 
 推荐使用 `rm_bringup.launch.py`：`arm_type` 同时选择机械臂型号和末端版本，
-必须指定，例如 `65`、`65-6f`、`eco63-6fb`；不带末端后缀时选择标准版。
+必须指定，例如 `65`、`65-6f`、`eco63-6fb`；除 RX75 必须指定后缀外，不带后缀时选择标准版。
+Bringup、Description、Gazebo 使用相同的完整型号；Driver/Control 也接受末端后缀，
+并按基础型号选择原有配置和控制默认值。
 `mode` 用于选择真实机械臂或 Gazebo，默认值为 `real`。例如：
 
 ```bash
 # 真实机械臂
 ros2 launch rm_bringup rm_bringup.launch.py \
-  arm_type:=65 mode:=real
+  arm_type:=65-6fb mode:=real allow_trajectory_execution:=false
 
 # Gazebo
 ros2 launch rm_bringup rm_bringup.launch.py \
   arm_type:=65 mode:=gazebo
 ```
+
+`model` 默认 `auto`，有配套 GLB 时优先 GLB，也可指定 `stl/glb`。
+Bringup 的 `allow_trajectory_execution` 默认 `true`；上述真机示例显式关闭执行。
+离线规划使用 `rm_bringup rm_moveit.launch.py`，执行默认 `false`。
 
 不支持的型号与末端组合会在启动任何节点前直接报错。下面按型号拆分的
 旧 launch 文件会作为兼容 wrapper 转发到统一入口，原文件名和命令继续
@@ -201,4 +207,4 @@ ros2 launch rm_bringup rm_65_bringup.launch.py
 * 在不使用机械臂时，应将机械臂置于安全位置，防止震动时机械臂跌落而损坏或砸伤其他物体。
 * 在不使用机械臂时应及时断开机械臂电源。
 
-<!-- v1.7.0 -->
+

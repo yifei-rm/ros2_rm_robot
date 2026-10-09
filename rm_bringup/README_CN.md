@@ -55,18 +55,18 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 | :--- | :--- | :--- |
 | `arm_type` | 无，必须指定 | 型号及末端版本，如 `65`、`65-6f`、`eco63-6fb`；完整可选值见下表 |
 | `mode` | `real` | `real` 或 `gazebo` |
-| `model` | `auto` | `auto/stl/glb`；真机模式下 `auto` 优先使用配套 GLB，其余变体使用 STL |
+| `model` | `auto` | `auto/stl/glb`；`auto` 优先使用配套 GLB，其余变体使用 STL |
 | `allow_trajectory_execution` | `true` | 是否允许 MoveIt 执行轨迹；设为 `false` 时仅规划，不执行 |
 | `use_moveit` | `true` | 是否启动 MoveIt；为 `false` 时还需设置 `use_rviz:=false` |
 | `use_rviz` | `true` | 是否启动 MoveIt RViz |
 | `driver_config` | `auto` | 真机单臂 driver YAML；RX75 请使用左右两项 |
 | `left_driver_config` | `auto` | RX75 左臂 driver YAML |
 | `right_driver_config` | `auto` | RX75 右臂 driver YAML |
-| `follow` | `auto` | 真机控制跟随模式：`auto/true/false` |
+| `follow` | `auto` | 真机控制跟随模式：`auto/true/false`；`auto` 对 `75/gen72/gen72_ii/rx75` 为 `true`，其余为 `false` |
 | `joint_states_topic` | `auto` | 当前仅支持 `auto`，按型号和模式选择默认 joint states Topic |
 | `start_gazebo` | `true` | Gazebo 模式下是否启动仿真进程 |
 
-支持的 arm_type 如下，不带末端后缀时选择标准版：
+支持 10 个系列、21 个完整 `arm_type`。除 RX75 必须指定后缀外，不带末端后缀时选择标准版：
 
 | 型号 | arm_type 可选值 |
 | :--- | :--- |
@@ -83,8 +83,9 @@ ros2 launch rm_bringup rm_bringup.launch.py \
 
 不支持的组合会在任何节点启动前直接报错。例如，ECO62 不提供 `6fb` 统一入口。真实机械臂联调时可临时传入 `allow_trajectory_execution:=false`，该设置不会修改默认值。
 
-统一入口现在直接组合 `rm_driver`、`rm_description`、`rm_control` 和
-`rm_gazebo` 的通用 launch，而不是再跳转到某个型号的旧 bringup 文件。
+统一入口直接组合 `rm_driver`、`rm_description`、`rm_control` 和
+`rm_gazebo` 的通用 launch；各组件接收同一个完整 `arm_type`，例如 `65-6fb`。
+Driver/Control 在内部选择基础型号的 YAML、硬件代码和跟随默认值。
 原有 42 个按型号入口已改成薄兼容 wrapper，旧命令及 RX75 的
 `use_moveit_rviz` 参数继续可用。Gazebo 仍按历史行为在 8 秒后启动
 MoveIt；controller readiness 时序优化将在后续独立实施。
@@ -100,11 +101,21 @@ MoveIt；controller readiness 时序优化将在后续独立实施。
 
 ```bash
 ros2 launch rm_bringup rm_moveit.launch.py \
-  arm_type:=eco62 use_joint_state_publisher_gui:=true
+  arm_type:=eco65-6fb model:=stl use_joint_state_publisher_gui:=true
 ```
 
-`mode:=gazebo` 下，`model:=auto` 和 `model:=stl` 使用原 STL 仿真配置，显式
-`model:=glb` 会报错。
+此离线入口的默认值为：
+
+| 参数 | 默认值 |
+| :--- | :--- |
+| `model` | `auto` |
+| `allow_trajectory_execution` | `false` |
+| `use_rviz` | `true` |
+| `use_robot_state_publisher` | `true` |
+| `use_joint_state_publisher_gui` | `false` |
+| `joint_states_topic` | `/joint_states` |
+
+`mode:=gazebo` 下，有配套 GLB 的 14 个型号/末端组合默认在 Gazebo 与 RViz2 中使用彩色 GLB；其余型号使用原 STL。添加 `model:=stl` 可切回原网格，碰撞和物理参数保持不变。
 
 ### moveit2控制真实机械臂
 首先配置好环境完成连接后我们可以通过以下命令直接启动节点，运行rm_bringup功能包中的launch.py文件。
@@ -216,7 +227,9 @@ rm@rm-desktop:~$ ros2 launch rm_bringup rm_65_gazebo.launch.py
 ├── rm_bringup                         #统一启动入口使用的Python模块
 │   ├── __init__.py                      #Python包标记文件
 │   ├── legacy_bringup.py                #42个旧入口的兼容wrapper工厂
-│   └── variant_catalog.py               #型号能力、别名、组件映射与组合校验
+│   └── variant_catalog.py               #完整arm_type能力表、硬件profile和组件映射
+├── test
+│   └── test_model_selection.py           #完整型号、84个旧入口和ECO65模型的离线回归检查
 ├── package.xml                         #依赖说明文件
 ├── README_CN.md                        #中文说明文档
 └── README.md                           #英文说明文档

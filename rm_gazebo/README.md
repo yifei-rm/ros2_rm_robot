@@ -52,11 +52,12 @@ rm@rm-desktop:~$ ros2 launch rm_gazebo rm_gazebo.launch.py arm_type:=65-6fb
 The unified entry accepts:
 
 * `arm_type`: required; selects the model and end-link version, e.g. `65`, `65-6fb`, or `rx75-6fb-v`. Bare families select the standard version. See the [supported selections](../rm_bringup/README.md#unified-launch-entry).
+* `model`: `auto` uses colored GLB where available and otherwise keeps STL; `stl` selects the original meshes, and `glb` requires GLB. Only visuals change; collision and physics stay unchanged.
 * `start_gazebo`: default `true`. Set it to `false` only to reuse an already running Gazebo world named `empty`. This skips the Gazebo process itself, but robot spawning, the `/world/empty/clock` bridge, and controller spawning still run.
 * `joint_states_topic`: only `auto` is currently supported. It resolves to `/joint_states` for normal arms and `/joint_state_broadcaster/joint_states` for RX75.
 * `use_sim_time`: controls simulation time for `robot_state_publisher`, default `true`.
 
-The catalog covers 10 robot models and 21 supported model/variant combinations. All 21 legacy `gazebo_*_demo.launch.py` entries remain available with their original arguments and defaults. For example:
+The catalog uses 21 complete `arm_type` selectors across 10 families. All 21 legacy `gazebo_*_demo.launch.py` entries forward a complete selector and retain their filenames, arguments, and defaults. For example:
 ```
 rm@rm-desktop:~$ ros2 launch rm_gazebo gazebo_65_demo.launch.py
 ```
@@ -125,7 +126,7 @@ The current rm_gazebo package is composed of the following files.
 │   ├── rm_gazebo1.png
 │   └── rm_gazebo2.png
 ├── launch
-│   ├── rm_gazebo.launch.py                # unified entry for 10 models and 21 model/variant combinations
+│   ├── rm_gazebo.launch.py                # unified entry for 10 families and 21 complete arm_type selectors
 │   ├── gazebo_63_6fb_demo.launch.py       #63 integrated six-axis force gazebo launch file
 │   ├── gazebo_63_6f_demo.launch.py        #63 six-axis force gazebo launch file
 │   ├── gazebo_63_demo.launch.py           #63 gazebo launch file
