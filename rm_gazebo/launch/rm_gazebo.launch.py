@@ -6,7 +6,7 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
 from rm_description.variant_catalog import (
-    normalize_arm_type,
+    MODEL_FORMATS, normalize_arm_type, resolve_gazebo_model,
 )
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -165,13 +165,17 @@ if len(MODEL_CATALOG) != 21:
 ARM_TYPES = tuple(MODEL_CATALOG)
 
 
-def resolve_model(arm_type):
-    return MODEL_CATALOG[normalize_arm_type(arm_type)]
+def resolve_model(arm_type, model="auto"):
+    arm_type = normalize_arm_type(arm_type)
+    specification = MODEL_CATALOG[arm_type]
+    selected_model = resolve_gazebo_model(arm_type, model)
+    return {**specification, "arm_type": arm_type, "model": selected_model}
 
 
 def _launch_setup(context):
     specification = resolve_model(
         LaunchConfiguration("arm_type").perform(context),
+        LaunchConfiguration("model").perform(context),
     )
     requested_joint_states_topic = LaunchConfiguration(
         "joint_states_topic"
@@ -191,6 +195,8 @@ def _launch_setup(context):
         robot_name_in_model=specification["robot_name_in_model"],
         controller_names=specification["controller_names"],
         xacro_mappings=specification.get("xacro_mappings"),
+        arm_type=specification["arm_type"],
+        model=specification["model"],
         start_gazebo=LaunchConfiguration("start_gazebo"),
         joint_states_topic=joint_states_topic,
         use_sim_time=LaunchConfiguration("use_sim_time"),
@@ -208,6 +214,10 @@ def generate_launch_description():
                 ),
             ),
             DeclareLaunchArgument(
+                "model", default_value="auto", choices=MODEL_FORMATS,
+                description="auto prefers available DAE visuals; stl selects the original mesh",
+            ),
+            DeclareLaunchArgument(
                 "start_gazebo",
                 default_value="true",
                 description="Start Gazebo Sim; false connects to an existing world",
@@ -218,7 +228,7 @@ def generate_launch_description():
                 choices=["auto"],
                 description=(
                     "Only auto is currently supported; it selects the legacy "
-                    "default for the chosen variant"
+                    "default for the chosen model"
                 ),
             ),
             DeclareLaunchArgument(

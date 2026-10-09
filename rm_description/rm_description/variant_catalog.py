@@ -87,9 +87,9 @@ DESCRIPTION_MODELS: Dict[str, DescriptionModel] = {
     ),
 }
 
-GLB_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75")
-MODEL_FORMATS = ("auto", "glb", "stl")
-GLB_MODELS = {
+DAE_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75")
+MODEL_FORMATS = ("auto", "dae", "stl")
+DAE_MODELS = {
     arm_type: DescriptionModel(
         "imported/" + arm_type.replace("-", "_")
         + ("_standard" if "-" not in arm_type else "") + ".urdf.xacro",
@@ -97,7 +97,7 @@ GLB_MODELS = {
         dual_arm=spec.dual_arm,
     )
     for arm_type, spec in DESCRIPTION_MODELS.items()
-    if arm_type.split("-")[0] in GLB_ARM_TYPES
+    if arm_type.split("-")[0] in DAE_ARM_TYPES
 }
 
 
@@ -183,8 +183,8 @@ def resolve_model(arm_type: str, model: str = "auto") -> DescriptionModel:
             f"Unsupported model='{model}'. "
             f"Valid values: {', '.join(MODEL_FORMATS)}."
         )
-    use_glb = model == "glb" or (model == "auto" and arm_type in GLB_MODELS)
-    catalog = GLB_MODELS if use_glb else DESCRIPTION_MODELS
+    use_dae = model == "dae" or (model == "auto" and arm_type in DAE_MODELS)
+    catalog = DAE_MODELS if use_dae else DESCRIPTION_MODELS
     try:
         return catalog[arm_type]
     except KeyError as exc:
@@ -192,3 +192,57 @@ def resolve_model(arm_type: str, model: str = "auto") -> DescriptionModel:
             f"No {model.upper()} model for arm_type='{arm_type}'. "
             f"Valid arm_type values: {', '.join(catalog)}."
         ) from exc
+
+
+def resolve_gazebo_model(arm_type: str, model: str = "auto") -> str:
+    """Use available DAE visuals with the existing simulation skeleton."""
+    arm_type = normalize_arm_type(arm_type)
+    resolve_model(arm_type, model)
+    model = model.strip().casefold()
+    return "dae" if model != "stl" and arm_type in DAE_MODELS else "stl"
+
+
+def apply_visual_model(robot_description: str, arm_type: str, model: str = "auto") -> str:
+    """Replace visuals only; preserve the caller's joints, collisions and physics."""
+    if resolve_gazebo_model(arm_type, model) == "stl":
+        return robot_description
+
+    from copy import deepcopy
+    from pathlib import Path
+    import xml.etree.ElementTree as ET
+
+    from ament_index_python.packages import get_package_share_directory
+    import xacro
+
+    spec = resolve_model(arm_type, "dae")
+    source = Path(get_package_share_directory("rm_description")) / "urdf" / spec.model_file
+    visuals = ET.fromstring(xacro.process_file(str(source)).toxml())
+    robot = ET.fromstring(robot_description)
+    links = {link.get("name"): link for link in robot.findall("link")}
+    replaced = set()
+
+    for source_link in visuals.findall("link"):
+        if not source_link.findall("visual"):
+            continue
+        name = source_link.get("name")
+        if name not in links:
+            raise ValueError(f"DAE visual link '{name}' is missing from arm_type='{arm_type}'.")
+        target = links[name]
+        for visual in target.findall("visual"):
+            target.remove(visual)
+        for visual in source_link.findall("visual"):
+            visual = deepcopy(visual)
+            for mesh in visual.findall("geometry/mesh"):
+                filename = mesh.get("filename", "")
+                if filename.startswith("package://"):
+                    package, relative = filename[len("package://"):].split("/", 1)
+                    mesh.set("filename", (Path(get_package_share_directory(package)) / relative).as_uri())
+            target.append(visual)
+        replaced.add(name)
+
+    # Gazebo's solid-color override hides the materials stored inside DAE.
+    for gazebo in robot.findall("gazebo"):
+        if gazebo.get("reference") in replaced:
+            for material in gazebo.findall("material"):
+                gazebo.remove(material)
+    return ET.tostring(robot, encoding="unicode")

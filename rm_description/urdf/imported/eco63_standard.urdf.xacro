@@ -21,7 +21,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/base/base_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/base/base_v1.0.dae" />
       </geometry>
     </visual>
   </link>
@@ -40,7 +40,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco63/link1_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco63/link1_v1.0.dae" />
       </geometry>
     </visual>
   </link>
@@ -66,7 +66,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="3.14159265359 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco63/link2_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco63/link2_v1.0.dae" />
       </geometry>
     </visual>
   </link>
@@ -92,7 +92,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco63/link3_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco63/link3_v1.0.dae" />
       </geometry>
     </visual>
   </link>
@@ -118,7 +118,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco63/link4_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco63/link4_v1.0.dae" />
       </geometry>
     </visual>
   </link>
@@ -144,7 +144,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco63/link5_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco63/link5_v1.0.dae" />
       </geometry>
     </visual>
   </link>
@@ -170,7 +170,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://rm_description/meshes/glb/eco63/link6_v1.0.glb" />
+        <mesh filename="package://rm_description/meshes/dae/eco63/link6_v1.0.dae" />
       </geometry>
     </visual>
   </link>

@@ -1,3 +1,6 @@
+from launch.actions import OpaqueFunction
+from rm_description.variant_catalog import MODEL_FORMATS, apply_visual_model
+
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -25,7 +28,7 @@ def load_yaml(path):
         return yaml.safe_load(file)
 
 
-def generate_launch_description():
+def _launch_setup(context):
     description_path = os.path.join(
         get_package_share_directory("rm_gazebo"),
         "config",
@@ -35,6 +38,10 @@ def generate_launch_description():
         MoveItConfigsBuilder("rm_eco63_description", package_name="rm_eco63_config")
         .robot_description(file_path=description_path)
         .to_moveit_configs()
+    )
+    moveit_config.robot_description["robot_description"] = apply_visual_model(
+        moveit_config.robot_description["robot_description"],
+        "eco63", LaunchConfiguration("model").perform(context),
     )
 
     ld = LaunchDescription()
@@ -52,7 +59,7 @@ def generate_launch_description():
         )
     )
 
-    return ld
+    return list(ld.entities)
 
 
 def my_generate_move_group_launch(ld, moveit_config):
@@ -155,3 +162,10 @@ def my_generate_moveit_rviz_launch(ld, moveit_config):
     )
 
     return ld
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument("model", default_value="auto", choices=MODEL_FORMATS),
+        OpaqueFunction(function=_launch_setup),
+    ])

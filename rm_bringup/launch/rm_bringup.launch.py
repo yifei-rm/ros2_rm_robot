@@ -15,7 +15,8 @@ from launch.substitutions import LaunchConfiguration
 
 from rm_bringup.variant_catalog import LaunchReference, resolve_model
 from rm_description.variant_catalog import (
-    GLB_MODELS, MODEL_FORMATS,
+    DAE_MODELS, MODEL_FORMATS,
+    resolve_gazebo_model,
     resolve_model as resolve_description,
 )
 
@@ -77,7 +78,7 @@ def _moveit_action(context, plan, joint_states_topic, model):
             'use_rviz', _value(context, 'use_rviz')
         )).lower(),
     }
-    if model == 'glb':
+    if model == 'dae' and plan.mode == 'real':
         moveit_arguments.update({
             'arm_type': plan.arm_type,
             'model': model,
@@ -90,6 +91,8 @@ def _moveit_action(context, plan, joint_states_topic, model):
         )
     if plan.arm_profile.topology == 'dual' and plan.mode == 'gazebo':
         moveit_arguments['joint_states_topic'] = joint_states_topic
+    if plan.mode == 'gazebo' and plan.arm_type in DAE_MODELS:
+        moveit_arguments['model'] = model
 
     return _include(plan.moveit, moveit_arguments)
 
@@ -138,7 +141,7 @@ def _build_real_actions(context, plan, joint_states_topic, use_moveit, model):
     return actions
 
 
-def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
+def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit, model):
     for name in (
         'driver_config',
         'left_driver_config',
@@ -156,6 +159,7 @@ def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
             {
                 'arm_type': plan.arm_type,
                 'start_gazebo': _value(context, 'start_gazebo'),
+                'model': model,
                 'joint_states_topic': 'auto',
             },
         )
@@ -165,7 +169,7 @@ def _build_gazebo_actions(context, plan, joint_states_topic, use_moveit):
             TimerAction(
                 period=8.0,
                 actions=[
-                    _moveit_action(context, plan, joint_states_topic, 'stl')
+                    _moveit_action(context, plan, joint_states_topic, model)
                 ],
             )
         )
@@ -188,15 +192,17 @@ def _compose_bringup(context):
         )
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
-    if requested_model == 'glb' and plan.mode == 'gazebo':
-        raise RuntimeError(
-            "GLB models support mode='real' and rm_moveit.launch.py. "
-            "Gazebo requires model='auto' or model='stl'."
-        )
     model = (
-        'glb' if plan.mode == 'real' and requested_model != 'stl'
-        and plan.arm_type in GLB_MODELS else 'stl'
+        'dae' if plan.mode == 'real' and requested_model != 'stl'
+        and plan.arm_type in DAE_MODELS else 'stl'
     )
+    if plan.mode == 'gazebo':
+        try:
+            model = resolve_gazebo_model(
+                plan.arm_type, requested_model,
+            )
+        except ValueError as exc:
+            raise RuntimeError(str(exc)) from exc
 
     use_moveit = _boolean_value(
         'use_moveit', _value(context, 'use_moveit')
@@ -221,7 +227,7 @@ def _compose_bringup(context):
             context, plan, joint_states_topic, use_moveit, model
         )
     return _build_gazebo_actions(
-        context, plan, joint_states_topic, use_moveit
+        context, plan, joint_states_topic, use_moveit, model
     )
 
 
@@ -242,7 +248,7 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 'model', default_value='auto', choices=list(MODEL_FORMATS),
-                description='auto selects GLB when available; stl selects the original model',
+                description='auto selects DAE when available; stl selects the original model',
             ),
             DeclareLaunchArgument(
                 'allow_trajectory_execution',

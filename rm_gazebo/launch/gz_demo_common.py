@@ -23,6 +23,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 import xacro
 
+from rm_description.variant_catalog import MODEL_FORMATS, apply_visual_model
 
 
 _CREATE_SUCCESS_MARKER = "OK creation of entity."
@@ -144,6 +145,8 @@ def generate_gz_demo_actions(
     start_gazebo=True,
     joint_states_topic="/joint_states",
     use_sim_time=True,
+    arm_type=None,
+    model="auto",
 ):
     """Build the shared Gazebo actions for one already-resolved arm variant."""
     package_name = "rm_gazebo"
@@ -166,6 +169,8 @@ def generate_gz_demo_actions(
             "ros2_control_plugin_name": ros2_control_backend["plugin_name"],
         },
     ).toxml()
+    if arm_type is not None:
+        robot_description = apply_visual_model(robot_description, arm_type, model)
     params = {"robot_description": robot_description}
 
     gz_resource_path = SetEnvironmentVariable(
@@ -340,6 +345,7 @@ def generate_legacy_gz_demo_launch(
 
     return LaunchDescription(
         [
+            DeclareLaunchArgument("model", default_value="auto", choices=MODEL_FORMATS),
             DeclareLaunchArgument("start_gazebo", default_value="true"),
             DeclareLaunchArgument(
                 "joint_states_topic",
@@ -354,6 +360,7 @@ def generate_legacy_gz_demo_launch(
                 PythonLaunchDescriptionSource(generic_launch_path),
                 launch_arguments={
                     "arm_type": arm_type,
+                    "model": LaunchConfiguration("model"),
                     "start_gazebo": LaunchConfiguration("start_gazebo"),
                     "joint_states_topic": LaunchConfiguration(
                         "joint_states_topic"

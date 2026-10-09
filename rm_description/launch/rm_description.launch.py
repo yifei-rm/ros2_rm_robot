@@ -89,7 +89,7 @@ def _launch_setup(context):
                 mappings[mapping_name] = override
             elif override != original_mappings[mapping_name]:
                 raise RuntimeError(
-                    f"'{mapping_name}_override' cannot change a GLB variant. "
+                    f"'{mapping_name}_override' cannot change a DAE variant. "
                     "Select arm_type or use model:=stl for custom STL mappings."
                 )
 
@@ -227,7 +227,7 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 "model", default_value="auto", choices=MODEL_FORMATS,
-                description="auto prefers available GLB visuals; stl selects the original model",
+                description="auto prefers available DAE visuals; stl selects the original model",
             ),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
             DeclareLaunchArgument(

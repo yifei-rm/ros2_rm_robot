@@ -1,3 +1,6 @@
+from launch.actions import OpaqueFunction
+from rm_description.variant_catalog import MODEL_FORMATS, apply_visual_model
+
 from moveit_configs_utils import MoveItConfigsBuilder
 from moveit_configs_utils.launches import generate_moveit_rviz_launch
 
@@ -16,8 +19,12 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.parameter_descriptions import ParameterValue
 
 
-def generate_launch_description():
+def _launch_setup(context):
     moveit_config = MoveItConfigsBuilder("rm_eco62_description", package_name="rm_eco62_config").to_moveit_configs()
+    moveit_config.robot_description["robot_description"] = apply_visual_model(
+        moveit_config.robot_description["robot_description"],
+        "eco62", LaunchConfiguration("model").perform(context),
+    )
 
     ld = LaunchDescription()
     ld.add_action(DeclareBooleanLaunchArg("use_rviz", default_value=True))
@@ -34,7 +41,7 @@ def generate_launch_description():
         )
     )
 
-    return ld
+    return list(ld.entities)
 
 
 def my_generate_move_group_launch(ld, moveit_config):
@@ -124,3 +131,10 @@ def my_generate_moveit_rviz_launch(ld, moveit_config):
     )
 
     return ld
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument("model", default_value="auto", choices=MODEL_FORMATS),
+        OpaqueFunction(function=_launch_setup),
+    ])
