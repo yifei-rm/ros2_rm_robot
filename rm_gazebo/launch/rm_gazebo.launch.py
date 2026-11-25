@@ -162,10 +162,16 @@ MODEL_CATALOG = {
         "controller_names": RX75_CONTROLLERS,
         "joint_states_topic_default": RX75_JOINT_STATES_TOPIC,
     },
+    "rx75s-6f": {
+        "urdf_filename": "gazebo_rx75s_6f_description.urdf.xacro",
+        "robot_name_in_model": "rm_rx75s_dual",
+        "controller_names": RX75_CONTROLLERS,
+        "joint_states_topic_default": RX75_JOINT_STATES_TOPIC,
+    },
 }
 
-if len(MODEL_CATALOG) != 22:
-    raise RuntimeError("Gazebo model catalog must contain 22 arm types.")
+if len(MODEL_CATALOG) != 23:
+    raise RuntimeError("Gazebo model catalog must contain 23 arm types.")
 
 ARM_TYPES = tuple(MODEL_CATALOG)
 

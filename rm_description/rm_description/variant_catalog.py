@@ -72,9 +72,12 @@ DESCRIPTION_MODELS: Dict[str, DescriptionModel] = {
     "rx75-6fb-v": DescriptionModel(
         "rm_rx75-6fb_v.urdf.xacro", "rm_rx75.rviz", dual_arm=True
     ),
+    "rx75s-6f": DescriptionModel(
+        "rm_rx75s-6f.urdf.xacro", "rm_rx75.rviz", dual_arm=True
+    ),
 }
 
-GLB_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75")
+GLB_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75", "rx75s")
 MODEL_FORMATS = ("auto", "glb", "stl")
 GLB_MODELS = {
     arm_type: DescriptionModel(
@@ -113,6 +116,7 @@ LEGACY_DISPLAY_LAUNCHES: Dict[str, str] = {
     "rm_gen72_II_display.launch.py": "gen72_ii",
     "rm_rx75_6fb_display.launch.py": "rx75-6fb",
     "rm_rx75_6fb_v_display.launch.py": "rx75-6fb-v",
+    "rm_rx75s_6f_display.launch.py": "rx75s-6f",
 }
 
 _ARM_TYPE_ALIASES = {
@@ -140,6 +144,8 @@ _ARM_TYPE_ALIASES = {
     'rmgen72ii': 'gen72_ii',
     'rx75': 'rx75',
     'rmrx75': 'rx75',
+    'rx75s': 'rx75s',
+    'rmrx75s': 'rx75s',
 }
 
 _ARM_TYPE_ALIASES.update({
@@ -158,8 +164,10 @@ def normalize_arm_type(arm_type: str, controller_version: int = 3) -> str:
         raise ValueError("arm_type must be a non-empty string.")
     token = re.sub(r"[\s_-]+", "", arm_type.strip().casefold())
     if controller_version == 4:
-        # Fourth-generation 6F names reuse the existing integrated-force models.
-        token = re.sub(r"6f(v?)$", r"6fb\1", token)
+        # Fourth-generation 6F names reuse the existing integrated-force models when available.
+        candidate = re.sub(r"6f(v?)$", r"6fb\1", token)
+        if candidate in _ARM_TYPE_ALIASES:
+            token = candidate
     normalized = _ARM_TYPE_ALIASES.get(token)
     if normalized not in DESCRIPTION_MODELS:
         raise ValueError(

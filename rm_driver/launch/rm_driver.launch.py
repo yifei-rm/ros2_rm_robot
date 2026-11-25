@@ -32,6 +32,8 @@ _ARM_TYPE_ALIASES = {
     'rmgen72ii': 'gen72_ii',
     'rx75': 'rx75',
     'rmrx75': 'rx75',
+    'rx75s': 'rx75s',
+    'rmrx75s': 'rx75s',
 }
 
 _DRIVER_PROFILES = {
@@ -86,6 +88,12 @@ _DRIVER_PROFILES = {
         'topology': 'dual',
         'left_config': 'rm_rx75_left_config.yaml',
         'right_config': 'rm_rx75_right_config.yaml',
+    },
+    'rx75s': {
+        'suffixes': ('6f', '6fb'),
+        'topology': 'dual',
+        'left_config': 'rm_rx75s_left_config.yaml',
+        'right_config': 'rm_rx75s_right_config.yaml',
     },
 }
 

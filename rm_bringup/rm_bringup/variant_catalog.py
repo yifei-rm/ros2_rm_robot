@@ -87,6 +87,15 @@ ARM_PROFILES = {
         '/joint_state_broadcaster/joint_states',
         use_joint_state_bridge=True,
     ),
+    'rx75s': ArmProfile(
+        'rx75s',
+        'rx75s',
+        'rx75s',
+        'dual',
+        '/joint_states',
+        '/joint_state_broadcaster/joint_states',
+        use_joint_state_bridge=True,
+    ),
 }
 
 
@@ -264,6 +273,12 @@ _MODEL_ENTRIES = (
         'rm_rx75_6fb_v_bringup.launch.py',
         'rm_rx75_6fb_v_gazebo.launch.py',
     ),
+    ModelEntry(
+        'rx75s-6f',
+        'rx75s',
+        'rm_rx75s_6f_bringup.launch.py',
+        'rm_rx75s_6f_gazebo.launch.py',
+    ),
 )
 
 MODEL_CATALOG = {entry.arm_type: entry for entry in _MODEL_ENTRIES}
@@ -388,6 +403,11 @@ _MOVEIT_LAUNCHES = {
         'rm_rx75_config',
         'real_moveit_demo_6fb_v.launch.py',
         'gazebo_moveit_demo_6fb_v.launch.py',
+    ),
+    'rx75s-6f': (
+        'rm_rx75s_config',
+        'real_moveit_demo_6f.launch.py',
+        'gazebo_moveit_demo_6f.launch.py',
     ),
 }
 

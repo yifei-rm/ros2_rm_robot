@@ -1,0 +1,52 @@
+planning_plugins:
+  - ompl_interface/OMPLPlanner
+request_adapters:
+  - default_planning_request_adapters/ResolveConstraintFrames
+  - default_planning_request_adapters/ValidateWorkspaceBounds
+  - default_planning_request_adapters/CheckStartStateBounds
+  - default_planning_request_adapters/CheckStartStateCollision
+response_adapters:
+  - default_planning_response_adapters/AddTimeOptimalParameterization
+  - default_planning_response_adapters/ValidateSolution
+  - default_planning_response_adapters/DisplayMotionPath
+
+start_state_max_bounds_error: 0.1
+simplify_solutions: true
+
+planner_configs:
+  RRTConnect:
+    type: geometric::RRTConnect
+    range: 0.25
+  RRTstar:
+    type: geometric::RRTstar
+    range: 0.25
+    goal_bias: 0.1
+    delay_collision_checking: 1
+    optimization_objective: PathLengthOptimizationObjective
+  BITstar:
+    type: geometric::BITstar
+    optimization_objective: PathLengthOptimizationObjective
+
+left_arm:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - RRTConnect
+    - RRTstar
+    - BITstar
+  longest_valid_segment_fraction: 0.005
+
+right_arm:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - RRTConnect
+    - RRTstar
+    - BITstar
+  longest_valid_segment_fraction: 0.005
+
+dual_arms:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - RRTConnect
+    - RRTstar
+    - BITstar
+  longest_valid_segment_fraction: 0.005

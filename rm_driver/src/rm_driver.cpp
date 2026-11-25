@@ -4342,7 +4342,7 @@ RmArm::RmArm():
     {
         realman_arm = 62;
     }
-    else if(arm_type_ == "RX_75")
+    else if(arm_type_ == "RX_75" || arm_type_ == "RX_75S")
     {
         realman_arm = 75;
     }

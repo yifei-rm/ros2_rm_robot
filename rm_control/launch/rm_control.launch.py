@@ -29,6 +29,8 @@ _ARM_TYPE_ALIASES = {
     'rmgen72ii': 'gen72_ii',
     'rx75': 'rx75',
     'rmrx75': 'rx75',
+    'rx75s': 'rx75s',
+    'rmrx75s': 'rx75s',
 }
 
 _CONTROL_PROFILES = {
@@ -90,6 +92,12 @@ _CONTROL_PROFILES = {
     },
     'rx75': {
         'suffixes': ('6f', '6f-v', '6fb', '6fb-v'),
+        'arm_type_code': 75,
+        'default_follow': False,
+        'namespaces': ('left_arm', 'right_arm'),
+    },
+    'rx75s': {
+        'suffixes': ('6f', '6fb'),
         'arm_type_code': 75,
         'default_follow': False,
         'namespaces': ('left_arm', 'right_arm'),

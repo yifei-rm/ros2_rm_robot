@@ -31,6 +31,7 @@
   <exec_depend>rm_gen62_config</exec_depend>
   <exec_depend>rm_gen72_config</exec_depend>
   <exec_depend>rm_rx75_config</exec_depend>
+  <exec_depend>rm_rx75s_config</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
