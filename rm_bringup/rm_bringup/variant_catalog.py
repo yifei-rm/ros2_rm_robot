@@ -69,6 +69,9 @@ ARM_PROFILES = {
     'eco65': ArmProfile(
         'eco65', 'eco65', 'eco65', 'single', '/joint_states', '/joint_states'
     ),
+    'gen62': ArmProfile(
+        'gen62', 'gen62', 'gen62', 'single', '/joint_states', '/joint_states'
+    ),
     'gen72': ArmProfile(
         'gen72', 'gen72', 'gen72', 'single', '/joint_states', '/joint_states'
     ),
@@ -232,6 +235,12 @@ _MODEL_ENTRIES = (
         'rm_eco65_6fb_gazebo.launch.py',
     ),
     ModelEntry(
+        'gen62',
+        'gen62',
+        'rm_gen62_bringup.launch.py',
+        'rm_gen62_gazebo.launch.py',
+    ),
+    ModelEntry(
         'gen72',
         'gen72',
         'rm_gen72_bringup.launch.py',
@@ -354,6 +363,11 @@ _MOVEIT_LAUNCHES = {
         'rm_eco65_config',
         'real_moveit_demo_6fb.launch.py',
         'gazebo_moveit_demo_6fb.launch.py',
+    ),
+    'gen62': (
+        'rm_gen62_config',
+        'real_moveit_demo.launch.py',
+        'gazebo_moveit_demo.launch.py',
     ),
     'gen72': (
         'rm_gen72_config',

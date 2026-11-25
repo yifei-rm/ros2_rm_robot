@@ -43,6 +43,8 @@ _ARM_TYPE_ALIASES = {
     'rmeco63': 'eco63',
     'eco65': 'eco65',
     'rmeco65': 'eco65',
+    'gen62': 'gen62',
+    'rmgen62': 'gen62',
     'gen72': 'gen72',
     'rmgen72': 'gen72',
     'gen72ii': 'gen72_ii',
@@ -85,6 +87,10 @@ _DRIVER_PROFILES = {
         'suffixes': ('6f', '6fb'),
         'topology': 'single',
         'config': 'rm_eco65_config.yaml',
+    },
+    'gen62': {
+        'topology': 'single',
+        'config': 'rm_gen62_config.yaml',
     },
     'gen72': {
         'topology': 'single',

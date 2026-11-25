@@ -35,6 +35,8 @@ _ARM_TYPE_ALIASES = {
     'rmeco63': 'eco63',
     'eco65': 'eco65',
     'rmeco65': 'eco65',
+    'gen62': 'gen62',
+    'rmgen62': 'gen62',
     'gen72': 'gen72',
     'rmgen72': 'gen72',
     'gen72ii': 'gen72_ii',
@@ -82,6 +84,11 @@ _CONTROL_PROFILES = {
     'eco65': {
         'suffixes': ('6f', '6fb'),
         'arm_type_code': 651,
+        'default_follow': False,
+        'namespaces': (None,),
+    },
+    'gen62': {
+        'arm_type_code': 62,
         'default_follow': False,
         'namespaces': (None,),
     },

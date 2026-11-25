@@ -75,6 +75,7 @@ DESCRIPTION_MODELS: Dict[str, DescriptionModel] = {
     "eco65-6fb": DescriptionModel(
         "rm_eco65.urdf.xacro", "rm_eco65.rviz", (("link6_type", "Link6_6fb"),)
     ),
+    "gen62": DescriptionModel("rm_gen62.urdf", "rm_gen62.rviz"),
     "gen72": DescriptionModel("rm_gen72.urdf", "rm_gen72.rviz"),
     "gen72_ii": DescriptionModel(
         "rm_gen72_II.urdf", "rm_gen72.rviz"
@@ -87,7 +88,7 @@ DESCRIPTION_MODELS: Dict[str, DescriptionModel] = {
     ),
 }
 
-DAE_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75")
+DAE_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "gen62", "rx75")
 MODEL_FORMATS = ("auto", "dae", "stl")
 DAE_MODELS = {
     arm_type: DescriptionModel(
@@ -121,6 +122,7 @@ LEGACY_DISPLAY_LAUNCHES: Dict[str, str] = {
     "rm_eco65_display.launch.py": "eco65",
     "rm_eco65_6f_display.launch.py": "eco65-6f",
     "rm_eco65_6fb_display.launch.py": "eco65-6fb",
+    "rm_gen62_display.launch.py": "gen62",
     "rm_gen72_display.launch.py": "gen72",
     "rm_gen72_II_display.launch.py": "gen72_ii",
     "rm_rx75_6fb_display.launch.py": "rx75-6fb",
@@ -144,6 +146,8 @@ _ARM_TYPE_ALIASES = {
     'rmeco63': 'eco63',
     'eco65': 'eco65',
     'rmeco65': 'eco65',
+    'gen62': 'gen62',
+    'rmgen62': 'gen62',
     'gen72': 'gen72',
     'rmgen72': 'gen72',
     'gen72ii': 'gen72_ii',
