@@ -152,6 +152,11 @@ MODEL_CATALOG = {
         "controller_names": NORMAL_CONTROLLERS,
         "xacro_mappings": {"link6_type": "Link6_6fb"},
     },
+    "gen62": {
+        "urdf_filename": "gazebo_gen62_description.urdf.xacro",
+        "robot_name_in_model": "rm_gen62_description",
+        "controller_names": NORMAL_CONTROLLERS,
+    },
     "gen72": {
         "urdf_filename": "gazebo_gen72_description.urdf.xacro",
         "robot_name_in_model": "rm_gen72_description",
@@ -176,8 +181,8 @@ MODEL_CATALOG = {
     },
 }
 
-if len(MODEL_CATALOG) != 21:
-    raise RuntimeError("Gazebo model catalog must contain 21 arm types.")
+if len(MODEL_CATALOG) != 22:
+    raise RuntimeError("Gazebo model catalog must contain 22 arm types.")
 
 ARM_TYPES = tuple(MODEL_CATALOG)
 

@@ -4538,6 +4538,10 @@ RmArm::RmArm():
         // Rm_Api.Service_RM_API_Init(72, NULL);
         realman_arm = 72;
     }
+    else if(arm_type_ == "GEN_62")
+    {
+        realman_arm = 62;
+    }
     else if(arm_type_ == "RX_75")
     {
         realman_arm = 75;

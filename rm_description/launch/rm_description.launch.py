@@ -62,6 +62,7 @@ _MODELS = {
         "rm_eco65.urdf.xacro", "rm_eco65.rviz",
         {"link6_type": "Link6_6fb"}, False
     ),
+    "gen62": ("rm_gen62.urdf", "rm_gen62.rviz", {}, False),
     "gen72": ("rm_gen72.urdf", "rm_gen72.rviz", {}, False),
     "gen72_ii": (
         "rm_gen72_II.urdf", "rm_gen72.rviz", {}, False
@@ -91,6 +92,7 @@ _DAE_MODELS = {
         "eco65": "eco65_standard",
         "eco65-6f": "eco65_6f",
         "eco65-6fb": "eco65_6fb",
+        "gen62": "gen62_standard",
         "rx75-6fb": "rx75_6fb",
         "rx75-6fb-v": "rx75_6fb_v",
     }.items()

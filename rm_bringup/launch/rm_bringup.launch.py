@@ -39,6 +39,8 @@ _ARM_TYPE_ALIASES = {
     "rmeco63": "eco63",
     "eco65": "eco65",
     "rmeco65": "eco65",
+    "gen62": "gen62",
+    "rmgen62": "gen62",
     "gen72": "gen72",
     "rmgen72": "gen72",
     "gen72ii": "gen72_ii",
@@ -117,6 +119,10 @@ _MODELS = {
         "rm_eco65_config", "real_moveit_demo_6fb.launch.py",
         "gazebo_moveit_demo_6fb.launch.py"
     ),
+    "gen62": (
+        "rm_gen62_config", "real_moveit_demo.launch.py",
+        "gazebo_moveit_demo.launch.py"
+    ),
     "gen72": (
         "rm_gen72_config", "real_moveit_demo.launch.py",
         "gazebo_moveit_demo.launch.py"
@@ -135,8 +141,8 @@ _MODELS = {
     ),
 }
 
-if len(_MODELS) != 21:
-    raise RuntimeError("Bringup model catalog must contain 21 arm types.")
+if len(_MODELS) != 22:
+    raise RuntimeError("Bringup model catalog must contain 22 arm types.")
 
 _ARM_TYPE_ALIASES.update({
     alias + arm_type[len(family):].replace("-", ""): arm_type
@@ -224,7 +230,7 @@ def _moveit_action(
         "use_rviz": str(_boolean_value("use_rviz", _value(context, "use_rviz"))).lower(),
     }
     if mode == "real" and _value(context, "model").strip().casefold() != "stl" and package in (
-        "rm_65_config", "rm_75_config", "rm_eco62_config", "rm_eco63_config", "rm_eco65_config", "rm_rx75_config"
+        "rm_65_config", "rm_75_config", "rm_eco62_config", "rm_eco63_config", "rm_eco65_config", "rm_gen62_config", "rm_rx75_config"
     ):
         helper = runpy.run_path(os.path.join(
             get_package_share_directory("rm_bringup"), "launch", "real_moveit.py",
