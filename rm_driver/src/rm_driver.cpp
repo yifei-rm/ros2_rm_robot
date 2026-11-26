@@ -1380,7 +1380,6 @@ void RmArm::Get_Modbus_Tcp_Master_Callback(const rm_ros_interfaces::msg::Mastern
     get_Tcp_Master_info.ip = master.ip;
     get_Tcp_Master_info.master_name = master.master_name;
     get_Tcp_Master_info.port = master.port;
-    get_Tcp_Master_info.timeout = 0;
     get_Tcp_Master_info.state = true;
     this->Get_Modbus_Tcp_Master_Result->publish(get_Tcp_Master_info);
   } else {
@@ -1417,7 +1416,6 @@ void RmArm::Get_Modbus_Tcp_Master_List_Callback(
       master_info.ip = master_list.master_list[i].ip;
       master_info.master_name = master_list.master_list[i].master_name;
       master_info.port = master_list.master_list[i].port;
-      master_info.timeout = 0;
       get_Tcp_Master_list.master_list.push_back(master_info);
     }
     get_Tcp_Master_list.state = true;
