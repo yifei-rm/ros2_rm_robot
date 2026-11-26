@@ -50,6 +50,9 @@ typedef enum{
     RM_MODEL_RXR75II_E,    ///< 人型机器人右臂II
     RM_MODEL_RXL75T_E,    ///< 力矩左臂
     RM_MODEL_RXR75T_E,    ///< 力矩右臂
+    RM_MODEL_GEN_62_E,    ///< GEN62（六轴）
+    RM_MODEL_RXR75S_E,    ///< RXR75S
+    RM_MODEL_RXL75S_E,    ///< RXL75S
 }rm_robot_arm_model_e;
 
 /**
