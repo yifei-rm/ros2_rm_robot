@@ -77,7 +77,7 @@ DESCRIPTION_MODELS: Dict[str, DescriptionModel] = {
     ),
 }
 
-GLB_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "rx75", "rx75s")
+GLB_ARM_TYPES = ("65", "75", "eco62", "eco63", "eco65", "gen62", "rx75", "rx75s")
 MODEL_FORMATS = ("auto", "glb", "stl")
 GLB_MODELS = {
     arm_type: DescriptionModel(
